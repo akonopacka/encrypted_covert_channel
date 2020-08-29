@@ -15,12 +15,15 @@
 class TCP_Packet
 {
 private:
-    std::string src_address;
-    std::string dst_address;
+    const char *src_address;
+    const char *dst_address;
     uint16_t tcp_src_port;	/* source port */
     uint16_t tcp_dst_port;	/* destination port */
+    char datagram[4096] , source_ip[32] , *data;
 
 public:
+    TCP_Packet(const char *srcAddress, const char *dstAddress, uint16_t tcpSrcPort, uint16_t tcpDstPort);
+
     std::string send_packet();
     unsigned short check_sum(unsigned short *ptr, int nbytes);
 };
