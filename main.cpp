@@ -21,6 +21,7 @@ packet)
     static int count = 1;
     fprintf(stdout, "%3d, ", count);
     fflush(stdout);
+    std::cout<<packet;
     count++;
 }
 
@@ -60,18 +61,6 @@ int main(int argc, char **argv) {
         descr = pcap_open_live(dev, BUFSIZ, 1,-1, errbuf);
         if(descr == NULL) {
             printf("pcap_open_live(): %s\n", errbuf);
-            exit(1);
-        }
-
-        /* Now we'll compile the filter expression*/
-        if(pcap_compile(descr, &fp, argv[1], 0, netp) == -1) {
-            fprintf(stderr, "Error calling pcap_compile\n");
-            exit(1);
-        }
-
-        /* set the filter */
-        if(pcap_setfilter(descr, &fp) == -1) {
-            fprintf(stderr, "Error setting filter\n");
             exit(1);
         }
 
