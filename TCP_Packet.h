@@ -19,7 +19,7 @@ private:
     const char *dst_address;
     uint16_t tcp_src_port;	/* source port */
     uint16_t tcp_dst_port;	/* destination port */
-    char datagram[4096] , source_ip[32] , *data;
+    char datagram[4096] , source_ip[32],  destination_ip[32], *data;
 
 public:
     TCP_Packet(const char *srcAddress, const char *dstAddress, uint16_t tcpSrcPort, uint16_t tcpDstPort);

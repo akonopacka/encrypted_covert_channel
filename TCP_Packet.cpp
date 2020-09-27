@@ -1,10 +1,11 @@
 #include "TCP_Packet.h"
 
+
 std::string TCP_Packet::send_packet() {
     //Create a raw socket
-    int s = socket(PF_INET, SOCK_RAW, IPPROTO_TCP);
+    int tcp_socket = socket(PF_INET, SOCK_RAW, IPPROTO_TCP);
 
-    if (s == -1) {
+    if (tcp_socket == -1) {
         //socket creation failed, may be because of non-root privileges
         perror("Failed to create socket");
         exit(1);
@@ -20,7 +21,7 @@ std::string TCP_Packet::send_packet() {
 
     //TCP header
     struct tcphdr *tcp_header = (struct tcphdr *) (datagram + sizeof(struct ip));
-    struct sockaddr_in sin;
+    struct sockaddr_in socket_address_in;
 
     //Data part
     data = datagram + sizeof(struct iphdr) + sizeof(struct tcphdr);
@@ -28,9 +29,10 @@ std::string TCP_Packet::send_packet() {
 
     //some address resolution
     strcpy(source_ip, src_address);
-    sin.sin_family = AF_INET;
-    sin.sin_port = htons(666);
-    sin.sin_addr.s_addr = inet_addr(dst_address);
+    strcpy(destination_ip, dst_address);
+    socket_address_in.sin_family = AF_INET;
+    socket_address_in.sin_port = htons(666);
+    socket_address_in.sin_addr.s_addr = inet_addr(dst_address);
 
     //Fill in the IP Header
     ip_header->ihl = 5;
@@ -43,7 +45,7 @@ std::string TCP_Packet::send_packet() {
     ip_header->protocol = IPPROTO_TCP;
     ip_header->check = 0;        //Set to 0 before calculating checksum
     ip_header->saddr = inet_addr(source_ip);    //Spoof the source ip address
-    ip_header->daddr = sin.sin_addr.s_addr;
+    ip_header->daddr = inet_addr(destination_ip);
 
     //Ip checksum
     ip_header->check = check_sum((unsigned short *) datagram, ip_header->tot_len);
@@ -69,12 +71,12 @@ std::string TCP_Packet::send_packet() {
     int one = 1;
     const int *val = &one;
 
-    if (setsockopt(s, IPPROTO_IP, IP_HDRINCL, val, sizeof(one)) < 0) {
+    if (setsockopt(tcp_socket, IPPROTO_IP, IP_HDRINCL, val, sizeof(one)) < 0) {
         perror("Error setting IP_HDRINCL");
         exit(0);
     }
     //Send the packet
-    if (sendto(s, datagram, ip_header->tot_len, 0, (struct sockaddr *) &sin, sizeof(sin)) < 0) {
+    if (sendto(tcp_socket, datagram, ip_header->tot_len, 0, (struct sockaddr *) &socket_address_in, sizeof(socket_address_in)) < 0) {
         perror("sendto failed");
         return "sendto failed";
     }
