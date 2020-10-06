@@ -2,16 +2,8 @@
 	Better description
 */
 #include <string.h> //memset
-#include <sys/socket.h>    //for socket of course
-#include <stdlib.h> //for exit(0);
-#include <netinet/tcp.h>    //Provides declarations for tcp header
-#include <netinet/ip.h>    //Provides declarations for ip header
-#include <arpa/inet.h> // inet_addr
 #include <unistd.h> // sleep()
 #include <iostream>
-#include <pcap.h>
-#include <net/ethernet.h>
-#include <netinet/in.h>
 #include <tins/tins.h>
 
 using namespace Tins;
@@ -22,8 +14,20 @@ bool callback(const PDU &pdu) {
     const IP &ip = pdu.rfind_pdu<IP>();
     // Find the TCP layer
     const TCP &tcp = pdu.rfind_pdu<TCP>();
-    std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
-              << ip.dst_addr() << ':' << tcp.dport() << endl;
+    string message = "";
+    if(ip.dst_addr()=="192.55.0.1"){
+        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
+                  << ip.dst_addr() << ':' << tcp.dport() << "    "
+                  << ip.tot_len() << endl;
+        int a = ip.tot_len()-40;
+        char c = static_cast<char>(a);
+
+        std::cout<<c<<endl;
+        message = message+c;
+    }
+    if (message[message.size()-1] == '0'){
+        std::cout<<"Received message: "<<message<<endl;
+    }
     return true;
 }
 
@@ -38,10 +42,27 @@ int main(int argc, char **argv) {
 
     if (!strcmp(argv[1], "--client")) {
         std::cout << "Client\n";
+        string message = "HELLO";
+        for (std::string::size_type i = 0; i < message.size(); i++) {
+
+            char a = message[i];
+            int ia = (int)a;
+            std::cout << message[i] << ' '<<ia<<endl;
+            PacketSender sender;
+            std::string s(ia, 'a');
+            IP pkt = IP("192.55.0.1") / TCP(22) / RawPDU(s);
+            sender.send(pkt);
+            sleep(1);
+        }
+        std::cout<<endl;
 
         PacketSender sender;
-        IP pkt = IP("192.55.0.1") / TCP(22) / RawPDU("Martin is still cute");
+        int ia = (int)'0';
+        std::string s(ia, 'a');
+        IP pkt = IP("192.55.0.1") / TCP(22) / RawPDU(s);
         sender.send(pkt);
+
+
         std::cout << "Packet has been sent";
 
         // sleep for 1 seconds
