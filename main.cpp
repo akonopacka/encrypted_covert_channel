@@ -21,6 +21,21 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
+#include <iostream>
+#include <tins/tins.h>
+
+using namespace Tins;
+using namespace std;
+
+bool callback(const PDU &pdu) {
+    // Find the IP layer
+    const IP &ip = pdu.rfind_pdu<IP>();
+    // Find the TCP layer
+    const TCP &tcp = pdu.rfind_pdu<TCP>();
+    std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
+         << ip.dst_addr() << ':' << tcp.dport() << endl;
+    return true;
+}
 
 void my_callback(u_char *args, const struct pcap_pkthdr* pkthdr, const u_char* packet){
     const struct ether_header* ethernetHeader;
@@ -67,41 +82,7 @@ int main(int argc, char **argv) {
         if (!strcmp(argv[1], "--server")){
             std::cout << "Server!\n";
 
-            int i;
-            char *dev;
-            char errbuf[PCAP_ERRBUF_SIZE];
-            pcap_t* descr;
-            const u_char *packet;
-            struct pcap_pkthdr hdr;
-            struct ether_header *eptr;    /* net/ethernet.h */
-            struct bpf_program fp;        /* hold compiled program */
-            bpf_u_int32 maskp;            /* subnet mask */
-            bpf_u_int32 netp;             /* ip */
-
-            if(argc != 2){
-                fprintf(stdout, "Usage: %s \"expression\"\n", argv[0]);
-                return 0;
-            }
-
-            /* Now get a device */
-            dev = pcap_lookupdev(errbuf);
-
-            if(dev == NULL) {
-                fprintf(stderr, "%s\n", errbuf);
-                exit(1);
-            }
-            /* Get the network address and mask */
-            pcap_lookupnet(dev, &netp, &maskp, errbuf);
-
-            /* open device for reading in promiscuous mode */
-            descr = pcap_open_live(dev, BUFSIZ, 1,-1, errbuf);
-            if(descr == NULL) {
-                printf("pcap_open_live(): %s\n", errbuf);
-                exit(1);
-            }
-
-            /* loop for callback function */
-            pcap_loop(descr, -1, my_callback, NULL);
+            Sniffer("wlo1").sniff_loop(callback);
         }
     }
 
