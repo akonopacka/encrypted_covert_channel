@@ -9,12 +9,14 @@
 using namespace Tins;
 using namespace std;
 
+string message = "";
+
 bool callback(const PDU &pdu) {
     // Find the IP layer
     const IP &ip = pdu.rfind_pdu<IP>();
     // Find the TCP layer
     const TCP &tcp = pdu.rfind_pdu<TCP>();
-    string message = "";
+
     if(ip.dst_addr()=="192.55.0.1"){
         std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
                   << ip.dst_addr() << ':' << tcp.dport() << "    "
@@ -22,11 +24,11 @@ bool callback(const PDU &pdu) {
         int a = ip.tot_len()-40;
         char c = static_cast<char>(a);
 
-        std::cout<<c<<endl;
         message = message+c;
     }
     if (message[message.size()-1] == '0'){
         std::cout<<"Received message: "<<message<<endl;
+        message = "";
     }
     return true;
 }
@@ -42,7 +44,7 @@ int main(int argc, char **argv) {
 
     if (!strcmp(argv[1], "--client")) {
         std::cout << "Client\n";
-        string message = "HELLO";
+        string message = "HELLO1";
         for (std::string::size_type i = 0; i < message.size(); i++) {
 
             char a = message[i];
@@ -74,4 +76,3 @@ int main(int argc, char **argv) {
     }
 
 }
-
