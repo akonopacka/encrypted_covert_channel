@@ -55,23 +55,27 @@ bool callback_timing_CC(const PDU &pdu) {
 //        std::cout <<endl<<endl<< ip.src_addr() << ':' << tcp.sport() << " -> "
 //                  << ip.dst_addr() << ':' << tcp.dport() << "    "
 //                  << ip.tot_len() << endl;
-//        std::cout << "Interval: " << interval<<endl;
+        std::cout << "Interval: " << interval<<endl;
         if (interval > 5000){
-            if(message!="")
+            if(message!=""){
+                message.erase (0,1);
                 std::cout<<"Received message: "<<message<<endl;
-            time_of_last_packet = std::chrono::high_resolution_clock::now();
+            }
+
             message = "";
         }
         else if(interval < 200){
+            cout<< "0"<<endl;
             message = message + "0";
-            time_of_last_packet = std::chrono::high_resolution_clock::now();
         }
         else{
             message = message + "1";
-            time_of_last_packet = std::chrono::high_resolution_clock::now();
+
         }
 //        std::cout<<"Received message: "<<message<<endl;
+        time_of_last_packet = std::chrono::high_resolution_clock::now();
     }
+
     return true;
 }
 
@@ -125,7 +129,7 @@ int main(int argc, char **argv) {
                     PacketSender sender;
                     IP pkt = IP("192.55.0.1") / TCP(22) / RawPDU("s");
                     sender.send(pkt);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(800));
                 }
             }
         }
