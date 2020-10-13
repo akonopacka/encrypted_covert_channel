@@ -9,6 +9,8 @@
 #include <chrono>
 #include <unistd.h>
 #include <thread>
+#include <bitset>
+#include <sstream>
 
 using namespace Tins;
 using namespace std;
@@ -60,6 +62,16 @@ bool callback_timing_CC(const PDU &pdu) {
             if(message!=""){
                 message.erase (0,1);
                 std::cout<<"Received message: "<<message<<endl;
+                std::stringstream sstream(message);
+                std::string output;
+                while(sstream.good())
+                {
+                    std::bitset<8> bits;
+                    sstream >> bits;
+                    char c = char(bits.to_ulong());
+                    output += c;
+                }
+                std::cout <<"Uncoded message: "<< output<<endl;
             }
 
             message = "";
@@ -113,7 +125,13 @@ int main(int argc, char **argv) {
         }
         else{
             std::cout<<"Timing method"<<endl;
-            message = "1101011";
+            string word = "OLA";
+            string binaryString = "";
+            for (char& _char : word) {
+                binaryString +=bitset<8>(_char).to_string();
+            }
+            cout<<"word: "<<word<<" bin: "<<binaryString<<endl;
+            message = binaryString;
             PacketSender sender;
             IP pkt = IP("192.55.0.1") / TCP(22) / RawPDU("s");
             sender.send(pkt);
@@ -129,7 +147,7 @@ int main(int argc, char **argv) {
                     PacketSender sender;
                     IP pkt = IP("192.55.0.1") / TCP(22) / RawPDU("s");
                     sender.send(pkt);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(800));
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 }
             }
         }
