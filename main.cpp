@@ -24,7 +24,6 @@ using std::string;
 #include "include/Cryptographer.h"
 #include "include/Receiver.h"
 
-unsigned int microseconds;
 
 using namespace Tins;
 using namespace std;
@@ -35,11 +34,8 @@ std::chrono::high_resolution_clock::time_point time_received_;
 std::chrono::duration<double, std::milli> time_span_;
 double last_packet_timestamp_;
 
-string message = "";
-std::chrono::high_resolution_clock::time_point time_of_last_packet = std::chrono::high_resolution_clock::now();
-std::chrono::high_resolution_clock::time_point time_received;
-std::chrono::duration<double, std::milli> time_span;
-double last_packet_timestamp = 0;
+string message_to_send = "One_two_three";
+
 /* A 256 bit key */
 unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
 
@@ -217,11 +213,11 @@ int main(int argc, char **argv) {
         string message = sName;
 
         if (covert_channel_type!="timing"){
-            Sender sender = Sender("Dluzsza proba","storage");
+            Sender sender = Sender(message_to_send,"storage");
             sender.send_with_storage_method();
         }
         else{
-            Sender sender = Sender("Dluzsza proba","timing");
+            Sender sender = Sender(message_to_send,"timing");
             sender.send_with_timing_method();
         }
         return 0;
