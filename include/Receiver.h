@@ -7,7 +7,7 @@
 #include <iostream>
 #include <bitset>
 #include <sstream>
-//#include "Globals.h"
+#include "Globals.h"
 
 using namespace std;
 using std::string;
@@ -18,16 +18,17 @@ public:
     Receiver();
 
     static bool timing_callback(const PDU &pdu);
+    static bool storage_callback(const PDU &pdu);
 
 private:
-//    string message;
-    unsigned char ciphertext[128];
-    unsigned char decryptedtext[128];
-    int decryptedtext_len, ciphertext_len;
-//    std::chrono::high_resolution_clock::time_point time_of_last_packet = std::chrono::high_resolution_clock::now();
-//    std::chrono::high_resolution_clock::time_point time_received;
-//    std::chrono::duration<double, std::milli> time_span;
-//    double last_packet_timestamp = 0;
+//    string message_;
+////    unsigned char ciphertext[128];
+////    unsigned char decryptedtext[128];
+////    int decryptedtext_len, ciphertext_len;
+//    static std::chrono::high_resolution_clock::time_point time_of_last_packet_;
+//    static std::chrono::high_resolution_clock::time_point time_received_;
+//    static std::chrono::duration<double, std::milli> time_span_;
+//    static double last_packet_timestamp_;
 
 };
 

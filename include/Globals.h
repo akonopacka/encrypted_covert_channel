@@ -9,11 +9,11 @@
 #include <string>
 using std::string;
 
-extern std::chrono::high_resolution_clock::time_point time_of_last_packet = std::chrono::high_resolution_clock::now();
-extern std::chrono::high_resolution_clock::time_point time_received;
-extern std::chrono::duration<double, std::milli> time_span;
-extern double last_packet_timestamp = 0;
-extern std::string message = "";
+extern std::chrono::high_resolution_clock::time_point time_of_last_packet_;
+extern std::chrono::high_resolution_clock::time_point time_received_;
+extern std::chrono::duration<double, std::milli> time_span_;
+extern double last_packet_timestamp_;
+extern std::string message_;
 
 
 #endif //ENCRYPTED_COVERT_CHANNEL_GLOBALS_H

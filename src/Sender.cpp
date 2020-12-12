@@ -24,14 +24,14 @@ void Sender::send_with_timing_method(){
             IP pkt = IP("127.0.0.1") / UDP(22, i) / RawPDU("s");
 //                    pkt.ttl(129);
             sender.send(pkt);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+//            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         else{
             std::cout << i<<". "<<message[i] << endl;
             IP pkt = IP("127.0.0.1") / UDP(22, i) / RawPDU("s");
 //                    pkt.ttl(229);
             sender.send(pkt);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1100));
         }
     }
     sender.send(pkt);

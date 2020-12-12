@@ -18,14 +18,22 @@ using std::string;
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <unistd.h>
+#include "include/Globals.h"
 #include "include/Sender.h"
-//#include "include/Globals.h"
+
 #include "include/Cryptographer.h"
+#include "include/Receiver.h"
 
 unsigned int microseconds;
 
 using namespace Tins;
 using namespace std;
+
+std::string message_;
+std::chrono::high_resolution_clock::time_point time_of_last_packet_;
+std::chrono::high_resolution_clock::time_point time_received_;
+std::chrono::duration<double, std::milli> time_span_;
+double last_packet_timestamp_;
 
 string message = "";
 std::chrono::high_resolution_clock::time_point time_of_last_packet = std::chrono::high_resolution_clock::now();
@@ -40,6 +48,7 @@ unsigned char *iv = (unsigned char *)"0123456789012345";
 
 
 string covert_channel_type = "storage";
+
 
 void handleErrors(void)
 {
@@ -137,120 +146,17 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
     return plaintext_len;
 }
 
-bool storage_callback(const PDU &pdu) {
-    // Find the IP layer
-    const IP &ip = pdu.rfind_pdu<IP>();
-    // Find the TCP layer
-    const TCP &tcp = pdu.rfind_pdu<TCP>();
-
-//    if(ip.dst_addr()=="192.55.0.1"){
-    if(tcp.dport()==22){
-        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
-                  << ip.dst_addr() << ':' << tcp.dport() << "    "
-                  << ip.tot_len() << endl;
-        int a = ip.tot_len()-40;
-        char c = static_cast<char>(a);
-
-        message = message+c;
-
-        if (message[message.size()-1] == '0'){
-            std::cout<<"Received message: "<<message<<endl;
-            message = "";
-        }
-    }
-    return true;
-}
-
-bool timing_callback(const PDU &pdu) {
-    time_received = std::chrono::high_resolution_clock::now();
-    time_span = time_received - time_of_last_packet;
-    double interval = time_span.count();
-//    // Find the IP layer
-    const IP &ip = pdu.rfind_pdu<IP>();
-    // Find the TCP layer
-    const UDP &udp = pdu.rfind_pdu<UDP>();
-    std::cout << udp.sport()<< ' ';
-    Tins::Packet packet = Tins::Packet(pdu);
-    Timestamp ts = packet.timestamp();
-    double timestamp = ts.seconds()*1000000 + ts.microseconds();
-    std::cout<<std::fixed<<"Seconds: "<<ts.seconds()<<" microseconds:"<<ts.microseconds()<<endl;
-    double inv = timestamp - last_packet_timestamp ;
-    std::cout<<"Inter: "<< inv<<" "<< "Ts: " << timestamp << std::endl;
-
-    //    std::cout <<endl<<endl<< ip.src_addr() << ':' << udp.sport() << " -> "
-//          << ip.dst_addr() << ':' << udp.dport() << "    "
-//          << ip.tot_len() << endl;
-//
-    if(udp.dport()==22){
-//        time_span = time_received - time_of_last_packet;
-//        double interval = time_span.count();
-//        std::cout <<endl ip.src_addr() << ':' << udp.sport() << " -> "
-//                  << ip.dst_addr() << ':' << udp.dport() << "    "
-//                  << ip.tot_len() << endl;
-//        std::cout << "Interval: " << interval<<" ";
-
-        if(inv < 1000){
-            message = message + "0";
-            std::cout << "0"<<endl;
-        }
-        else if (inv < 4000000){
-            message = message + "1";
-            std::cout << "1"<<endl;
-        }
-        else {
-            if(message!=""){
-                message.erase (0,1);
-                std::cout<<"Received message: "<<message<<endl;
-                std::stringstream sstream(message);
-                std::string output;
-                while(sstream.good())
-                {
-                    std::bitset<8> bits;
-                    sstream >> bits;
-                    char c = char(bits.to_ulong());
-                    output += c;
-                }
-                std::cout <<"Uncoded message: "<< output<<endl;
-    //                unsigned char ciphertext[128];
-    //                /* Buffer for the decrypted text */
-    //                unsigned char decryptedtext[128];
-    //                int decryptedtext_len, ciphertext_len;
-    //                /* Decrypt the ciphertext */
-    //
-    //                std::copy( output.begin(), output.end(), ciphertext );
-    //                ciphertext[output.length()] = 0;
-    //                std::cout << ciphertext << std::endl;
-    //                ciphertext_len = output.length()-1;
-    //
-    //                decryptedtext_len = decrypt(ciphertext, ciphertext_len, key, iv,
-    //                                            decryptedtext);
-    //
-    //                /* Add a NULL terminator. We are expecting printable text */
-    //                decryptedtext[decryptedtext_len] = '\0';
-    //
-    //                /* Show the decrypted text */
-    //                printf("Decrypted text is:\n");
-    //                printf("%s\n", decryptedtext);
-            }
-            message = "";
-        }
-//        std::cout<<"Received message: "<<message<<endl;
-        time_of_last_packet = std::chrono::high_resolution_clock::now();
-        last_packet_timestamp = ts.seconds()*1000000 + ts.microseconds();
-    }
-
-    return true;
-}
 
 int main(int argc, char **argv) {
     if (argc > 1) {
         if (!strcmp(argv[1], "--server")) {
+            Receiver receiver = Receiver();
 
             if(covert_channel_type!="timing"){
                 std::cout << "Server! - Storage method\n";
                 Sniffer sniffer("lo");
                 sniffer.set_filter("tcp&&port 22");
-                Sniffer("lo").sniff_loop(storage_callback);
+                Sniffer("lo").sniff_loop(receiver.storage_callback);
             }
             else{
                 std::cout << "Server! - Timing method\n";
@@ -260,8 +166,8 @@ int main(int argc, char **argv) {
                 Sniffer sniffer("lo", sniffer_configuration);
 //                Receiver receiver = Receiver();
                 sniffer.set_filter("udp&&port 22");
-                sniffer.sniff_loop(timing_callback);
-//                sniffer.sniff_loop(receiver.timing_callback);
+//                sniffer.sniff_loop(timing_callback);
+                sniffer.sniff_loop(receiver.timing_callback);
             }
         }
     }
@@ -310,26 +216,7 @@ int main(int argc, char **argv) {
 //        string message = "HELLO1";
         string message = sName;
 
-
         if (covert_channel_type!="timing"){
-//            for (std::string::size_type i = 0; i < message.size(); i++) {
-//                std::cout<<"Storage method"<<endl;
-//                char a = message[i];
-//                int ia = (int)a;
-//                std::cout << message[i] << ' '<<ia<<endl;
-//                PacketSender sender;
-//                std::string s(ia, 'a');
-//                IP pkt = IP("127.0.0.1") / UDP(22) / RawPDU(s);
-//                sender.send(pkt);
-//
-//                double interval = time_span.count();
-//                cout<<"It should be 100: "<<interval<<endl;
-//            }
-//            PacketSender sender;
-//            IP pkt = IP("127.0.0.1") / UDP(22) / RawPDU("s");
-//            int ia = (int)'0';
-//            std::string s(ia, 'a');
-//            sender.send(pkt);
             Sender sender = Sender("Dluzsza proba","storage");
             sender.send_with_storage_method();
         }
@@ -342,5 +229,4 @@ int main(int argc, char **argv) {
         std::cerr << "Bad usage";
         return 1;
     }
-
 }
