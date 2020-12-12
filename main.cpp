@@ -147,7 +147,6 @@ int main(int argc, char **argv) {
     if (argc > 1) {
         if (!strcmp(argv[1], "--server")) {
             Receiver receiver = Receiver();
-
             if(covert_channel_type!="timing"){
                 std::cout << "Server! - Storage method\n";
                 Sniffer sniffer("lo");
@@ -158,11 +157,9 @@ int main(int argc, char **argv) {
                 std::cout << "Server! - Timing method\n";
                 SnifferConfiguration sniffer_configuration = SnifferConfiguration();
                 sniffer_configuration.set_immediate_mode(false);
-//                sniffer_configuration.set_timeout(1);
                 Sniffer sniffer("lo", sniffer_configuration);
 //                Receiver receiver = Receiver();
                 sniffer.set_filter("udp&&port 22");
-//                sniffer.sniff_loop(timing_callback);
                 sniffer.sniff_loop(receiver.timing_callback);
             }
         }
@@ -209,17 +206,10 @@ int main(int argc, char **argv) {
         std::cout << "Client\n";
         std::string sName(reinterpret_cast<char*>(plaintext));
         std::cout <<sName<<endl;
-//        string message = "HELLO1";
-        string message = sName;
 
-        if (covert_channel_type!="timing"){
-            Sender sender = Sender(message_to_send,"storage");
-            sender.send_with_storage_method();
-        }
-        else{
-            Sender sender = Sender(message_to_send,"timing");
-            sender.send_with_timing_method();
-        }
+        Sender sender = Sender(covert_channel_type);
+        sender.send_message(message_to_send);
+
         return 0;
     } else {
         std::cerr << "Bad usage";

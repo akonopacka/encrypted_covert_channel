@@ -4,12 +4,13 @@
 
 #include "../include/Sender.h"
 
-Sender::Sender(const string &message, const string &method) : message(message), method(method) {};
+Sender::Sender(const string &method) : method(method) {};
 
-void Sender::send_with_timing_method(){
+void Sender::send_with_timing_method(const string message_to_send){
     std::cout<<"Timing method"<<endl;
-    string word = message;
+    string word = message_to_send;
     string binaryString = "";
+    string message = message_to_send;
     for (char& _char : word) {
         binaryString +=bitset<8>(_char).to_string();
     }
@@ -41,8 +42,9 @@ void Sender::send_with_timing_method(){
     std::cout << "Sending completed.";
 }
 
-void Sender::send_with_storage_method(){
+void Sender::send_with_storage_method(const string message_to_send){
     std::cout<<"Storage method"<<endl;
+    string message = message_to_send;
     for (std::string::size_type i = 0; i < message.size(); i++) {
         char a = message[i];
         int ia = (int)a;
@@ -59,4 +61,13 @@ void Sender::send_with_storage_method(){
     sender.send(pkt);
     std::cout << '0' << ' '<<ia<<endl;
 
+}
+
+void Sender::send_message(const string message_to_send){
+    if (method!="timing"){
+        send_with_storage_method(message_to_send);
+    }
+    else{
+        send_with_timing_method(message_to_send);
+    }
 }

@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_library(TINS_LIBRARY tins)
 include(FindPCAP.cmake)
 
-add_executable(encrypted_covert_channel main.cpp include/Globals.h TCP_Packet.cpp TCP_Packet.h include/Receiver.h src/Receiver.cpp   src/Sender.cpp include/Sender.h src/Cryptographer.cpp include/Cryptographer.h)
+add_executable(encrypted_covert_channel main.cpp include/Globals.h TCP_Packet.cpp TCP_Packet.h include/Receiver.h src/Receiver.cpp   src/Sender.cpp include/Sender.h src/Cryptographer.cpp include/Cryptographer.h src/MethodTypeEnum.cpp)
 target_link_libraries(encrypted_covert_channel ${PCAP_LIBRARY})
 target_link_libraries(encrypted_covert_channel "${TINS_LIBRARY}")
 
