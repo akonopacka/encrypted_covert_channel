@@ -13,6 +13,8 @@
 #include <chrono>
 #include <thread>
 #include "../src/MethodTypeEnum.cpp"
+#include "Globals.h"
+
 using namespace std;
 using namespace Tins;
 
@@ -26,6 +28,7 @@ public:
     Sender(const string &method);
     void send_with_timing_method(const string message_to_send);
     void send_with_storage_method(const string message_to_send);
+    void send_with_storage_method_IP_identificator(const string message_to_send);
     void send_message(const string message_to_send);
 };
 

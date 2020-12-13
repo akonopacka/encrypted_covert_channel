@@ -18,7 +18,7 @@ using std::string;
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <unistd.h>
-#include "include/Globals.h"
+//#include "include/Globals.h"
 #include "include/Sender.h"
 
 #include "include/Cryptographer.h"
@@ -43,7 +43,7 @@ unsigned char *key = (unsigned char *)"01234567890123456789012345678901";
 unsigned char *iv = (unsigned char *)"0123456789012345";
 
 
-string covert_channel_type = "storage";
+string covert_channel_type = "IP_identificator";
 
 
 void handleErrors(void)
@@ -203,9 +203,10 @@ int main(int argc, char **argv) {
 //        printf("%s\n", decryptedtext);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-        std::cout << "Client\n";
-        std::string sName(reinterpret_cast<char*>(plaintext));
-        std::cout <<sName<<endl;
+//        std::cout << "Client\n";
+//        std::string sName(reinterpret_cast<char*>(plaintext));
+//        std::cout <<sName<<endl;
+
 
         Sender sender = Sender(covert_channel_type);
         sender.send_message(message_to_send);

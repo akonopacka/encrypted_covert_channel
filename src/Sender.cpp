@@ -17,19 +17,19 @@ void Sender::send_with_timing_method(const string message_to_send){
     cout<<"word: "<<word<<" bin: "<<binaryString<<endl;
     message = binaryString;
     PacketSender sender;
-    IP pkt = IP("127.0.0.1") / UDP(22) / RawPDU("s");
+    IP pkt = IP("127.0.0.1") / UDP(dst_port_, src_port_) / RawPDU("s");
     sender.send(pkt);
     for (std::string::size_type i = 0; i < message.size(); i++) {
         if (message[i]=='0'){
             std::cout << i<<". "<< message[i] << endl;
-            IP pkt = IP("127.0.0.1") / UDP(22, i) / RawPDU("s");
+            IP pkt = IP("127.0.0.1") / UDP(dst_port_, src_port_) / RawPDU("s");
 //                    pkt.ttl(129);
             sender.send(pkt);
 //            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         else{
             std::cout << i<<". "<<message[i] << endl;
-            IP pkt = IP("127.0.0.1") / UDP(22, i) / RawPDU("s");
+            IP pkt = IP("127.0.0.1") / UDP(dst_port_, src_port_) / RawPDU("s");
 //                    pkt.ttl(229);
             sender.send(pkt);
             std::this_thread::sleep_for(std::chrono::milliseconds(1100));
@@ -50,22 +50,41 @@ void Sender::send_with_storage_method(const string message_to_send){
         int ia = (int)a;
         PacketSender sender;
         std::string s(ia, 'a');
-        IP pkt = IP("127.0.0.1") / TCP(22) / RawPDU(s);
+        IP pkt = IP("127.0.0.1") / TCP(dst_port_, src_port_) / RawPDU(s);
         sender.send(pkt);
         std::cout << message[i] << ' '<<ia<<endl;
     }
     PacketSender sender;
     int ia = (int)'0';
     std::string s(ia, 'a');
-    IP pkt = IP("127.0.0.1") / TCP(22) / RawPDU(s);
+    IP pkt = IP("127.0.0.1") / TCP(dst_port_, src_port_) / RawPDU(s);
     sender.send(pkt);
     std::cout << '0' << ' '<<ia<<endl;
 
 }
 
+void Sender::send_with_storage_method_IP_identificator(const string message_to_send){
+    std::cout<<"Storage IP_identificator method"<<endl;
+    PacketSender sender;
+    int ia = (int)'0';
+    std::string s(ia, 'a');
+    IP ip = IP("127.0.0.1");
+    ip.id(12);
+    ip.ttl(100);
+    TCP tcp = TCP(dst_port_, src_port_);
+    tcp.flags(Tins::TCP::RST);
+    IP pkt = ip / tcp / RawPDU(s);
+
+    sender.send(pkt);
+    std::cout << '0' << ' '<<ia<<endl;
+}
+
 void Sender::send_message(const string message_to_send){
-    if (method!="timing"){
+    if (method=="storage"){
         send_with_storage_method(message_to_send);
+    }
+    else if (method=="IP_identificator"){
+        send_with_storage_method_IP_identificator(message_to_send);
     }
     else{
         send_with_timing_method(message_to_send);
