@@ -63,18 +63,30 @@ void Sender::send_with_storage_method(const string message_to_send){
 
 }
 
-void Sender::send_with_storage_method_IP_identificator(const string message_to_send){
-    std::cout<<"Storage IP_identificator method"<<endl;
+void Sender::send_with_storage_method_IP_id(const string message_to_send){
+    std::cout<<"Storage IP_id method"<<endl;
+    string message = message_to_send;
     PacketSender sender;
-    int ia = (int)'0';
-    std::string s(ia, 'a');
+    for (std::string::size_type i = 0; i < message.size(); i++) {
+        char a = message[i];
+        int ia = (int)a;
+        IP ip = IP("127.0.0.1");
+        ip.id(ia);
+        ip.ttl(100);
+        TCP tcp = TCP(dst_port_, src_port_);
+        tcp.flags(Tins::TCP::RST);
+        IP pkt = ip / tcp / RawPDU("");
+        sender.send(pkt);
+        std::cout << message[i] << ' '<<ia<<endl;
+    }
+    char a = '0';
+    int ia = (int)a;
     IP ip = IP("127.0.0.1");
-    ip.id(12);
+    ip.id(ia);
     ip.ttl(100);
     TCP tcp = TCP(dst_port_, src_port_);
     tcp.flags(Tins::TCP::RST);
-    IP pkt = ip / tcp / RawPDU(s);
-
+    IP pkt = ip / tcp / RawPDU("");
     sender.send(pkt);
     std::cout << '0' << ' '<<ia<<endl;
 }
@@ -84,7 +96,7 @@ void Sender::send_message(const string message_to_send){
         send_with_storage_method(message_to_send);
     }
     else if (method=="IP_identificator"){
-        send_with_storage_method_IP_identificator(message_to_send);
+        send_with_storage_method_IP_id(message_to_send);
     }
     else{
         send_with_timing_method(message_to_send);
