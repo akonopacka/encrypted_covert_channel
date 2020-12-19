@@ -18,8 +18,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
     std::cout << std::fixed << "Seconds: " << ts.seconds() << " microseconds:" << ts.microseconds() << endl;
     double inv = timestamp - last_packet_timestamp_;
     std::cout << "Inter: " << inv << " " << "Ts: " << timestamp << std::endl;
-
-    if (udp.dport() == 22) {
+    if (udp.dport() == dst_port_) {
         if (inv < 1000) {
             message_ = message_ + "0";
             std::cout << "0" << endl;
@@ -38,11 +37,10 @@ bool Receiver::timing_callback(const PDU &pdu) {
                     char c = char(bits.to_ulong());
                     output += c;
                 }
-                std::cout << "Uncoded message: " << output << endl;
+                std::cout << "Encoded message: " << output << endl;
             }
             message_ = "";
         }
-//        std::cout<<"Received message: "<<message<<endl;
         time_of_last_packet_ = std::chrono::high_resolution_clock::now();
         last_packet_timestamp_ = ts.seconds() * 1000000 + ts.microseconds();
     }
@@ -52,13 +50,12 @@ bool Receiver::timing_callback(const PDU &pdu) {
 bool Receiver::storage_callback(const PDU &pdu) {
     const IP &ip = pdu.rfind_pdu<IP>();
     const TCP &tcp = pdu.rfind_pdu<TCP>();
-    if (tcp.dport() == 22) {
+    if (tcp.dport() == dst_port_) {
         std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
                   << ip.dst_addr() << ':' << tcp.dport() << "    "
                   << ip.tot_len() << endl;
         int a = ip.tot_len() - 40;
         char c = static_cast<char>(a);
-
         if (c == '0') {
             std::cout << "Received message: " << message_ << endl;
             message_ = "";
@@ -72,13 +69,12 @@ bool Receiver::storage_callback(const PDU &pdu) {
 bool Receiver::IP_id_callback(const PDU &pdu) {
     const IP &ip = pdu.rfind_pdu<IP>();
     const TCP &tcp = pdu.rfind_pdu<TCP>();
-    if (tcp.dport() == 22) {
+    if (tcp.dport() == dst_port_) {
         std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
                   << ip.dst_addr() << ':' << tcp.dport() << "    "
-                  << ip.tot_len() << endl;
-        int a = ip.tot_len() - 40;
+                  << ip.id() << endl;
+        int a = ip.id();
         char c = static_cast<char>(a);
-
         if (c == '0') {
             std::cout << "Received message: " << message_ << endl;
             message_ = "";

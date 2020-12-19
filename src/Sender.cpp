@@ -93,10 +93,10 @@ void Sender::send_message(const string message_to_send){
     if (method=="storage"){
         send_with_storage_method(message_to_send);
     }
-    else if (method=="IP_identificator"){
+    else if (method=="IP_id"){
         send_with_storage_method_IP_id(message_to_send);
     }
-    else{
+    else if (method=="timing"){
         send_with_timing_method(message_to_send);
     }
 }

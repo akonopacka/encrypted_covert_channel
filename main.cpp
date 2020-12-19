@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
                 sniffer.set_filter("tcp&&port 22");
                 Sniffer("lo").sniff_loop(receiver.storage_callback);
             } else if (covert_channel_type == "IP_id") {
-                std::cout << "Server! - Storage method\n";
+                std::cout << "Server! - IP_id method\n";
                 Sniffer sniffer("lo");
                 sniffer.set_filter("tcp&&port 22");
                 Sniffer("lo").sniff_loop(receiver.IP_id_callback);
