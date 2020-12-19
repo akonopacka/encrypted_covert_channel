@@ -8,6 +8,7 @@ Sender::Sender(const string &method) : method(method) {};
 
 void Sender::send_with_timing_method(const string message_to_send){
     std::cout<<"Timing method"<<endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     string word = message_to_send;
     string binaryString = "";
     string message = message_to_send;
@@ -23,14 +24,11 @@ void Sender::send_with_timing_method(const string message_to_send){
         if (message[i]=='0'){
             std::cout << i<<". "<< message[i] << endl;
             IP pkt = IP("127.0.0.1") / UDP(dst_port_, src_port_) / RawPDU("s");
-//                    pkt.ttl(129);
             sender.send(pkt);
-//            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         else{
             std::cout << i<<". "<<message[i] << endl;
             IP pkt = IP("127.0.0.1") / UDP(dst_port_, src_port_) / RawPDU("s");
-//                    pkt.ttl(229);
             sender.send(pkt);
             std::this_thread::sleep_for(std::chrono::milliseconds(1100));
         }

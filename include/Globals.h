@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <string>
+
 using std::string;
 
 extern std::chrono::high_resolution_clock::time_point time_of_last_packet_;
@@ -16,7 +17,6 @@ extern double last_packet_timestamp_;
 extern std::string message_;
 static int src_port_ = 4321;
 static int dst_port_ = 1234;
-
 
 
 #endif //ENCRYPTED_COVERT_CHANNEL_GLOBALS_H
