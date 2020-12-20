@@ -35,6 +35,7 @@ public:
 
     static bool sequence_callback(const PDU &pdu);
 
+    static bool loss_callback(const PDU &pdu);
 };
 
 

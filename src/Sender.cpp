@@ -212,6 +212,38 @@ void Sender::send_with_sequence_method(const string message_to_send) {
     std::cout << "Sending finished" <<endl;
 }
 
+void Sender::send_with_loss_method(const string message_to_send){
+    std::cout<<"Loss method"<<endl;
+    string word = message_to_send;
+    string binaryString = "";
+    for (char& _char : word) {
+        binaryString +=bitset<8>(_char).to_string();
+    }
+    cout<<"word: "<<word<<" bin: "<<binaryString<<endl;
+    string message = binaryString;
+    PacketSender sender;
+    int seq = 1;
+    IP ip = IP("127.0.0.1");
+    TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
+    tcp.seq(seq);
+    IP pkt = ip / tcp / RawPDU("");
+    sender.send(pkt);
+    for (std::string::size_type i = 0; i < message.size(); i++) {
+        seq=seq+1;
+        if (message[i]=='0'){
+            tcp.seq(seq);
+            IP pkt = ip / tcp / RawPDU("");
+            sender.send(pkt);
+        }
+    }
+    tcp.seq(seq);
+    pkt = ip / tcp / RawPDU("");
+    sender.send(pkt);
+    tcp.seq(0);
+    pkt = ip / tcp / RawPDU("");
+    sender.send(pkt);
+    std::cout << "Sending finished" <<endl;
+}
 
 void Sender::send_message(const string message_to_send){
     if (method=="storage"){
@@ -228,6 +260,9 @@ void Sender::send_message(const string message_to_send){
     }
     else if(method=="sequence"){
         send_with_sequence_method(message_to_send);
+    }
+    else if(method=="loss"){
+        send_with_loss_method(message_to_send);
     }
     else if (method=="timing"){
         send_with_timing_method(message_to_send);

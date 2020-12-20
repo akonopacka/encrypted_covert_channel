@@ -69,6 +69,8 @@ public:
 
     void send_with_sequence_method(const string message_to_send);
 
+    void send_with_loss_method(const string message_to_send);
+
     void send_message(const string message_to_send);
 };
 

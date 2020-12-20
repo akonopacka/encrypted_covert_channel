@@ -44,8 +44,8 @@ unsigned char *key = (unsigned char *) "01234567890123456789012345678901";
 /* A 128 bit IV */
 unsigned char *iv = (unsigned char *) "0123456789012345";
 
-// "timing", "storage", "IP_id", "HTTP", "LSB", "sequence"
-string covert_channel_type = "sequence";
+// "timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss"
+string covert_channel_type = "loss";
 
 
 void handleErrors(void) {
@@ -176,6 +176,14 @@ int main(int argc, char **argv) {
                 Sniffer sniffer("lo");
                 sniffer.set_filter("tcp.dstport==1234");
                 sniffer.sniff_loop(receiver.sequence_callback);
+            }
+            else if (covert_channel_type == "loss") {
+                std::cout << "Server! - Loss method\n";
+                Globals::message_="";
+                Globals::last_seq_ = 1;
+                Sniffer sniffer("lo");
+                sniffer.set_filter("tcp.dstport==1234");
+                sniffer.sniff_loop(receiver.loss_callback);
             }
             else if (covert_channel_type == "timing") {
                 std::cout << "Server! - Timing method\n";

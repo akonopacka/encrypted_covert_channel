@@ -197,3 +197,44 @@ bool Receiver::sequence_callback(const PDU &pdu){
     }
     return true;
 }
+
+bool Receiver::loss_callback(const PDU &pdu){
+    const IP &ip = pdu.rfind_pdu<IP>();
+    const TCP &tcp = pdu.rfind_pdu<TCP>();
+
+    if (tcp.dport()==Globals::dst_port_){
+        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
+                  << ip.dst_addr() << ':' << tcp.dport() << "    "
+                  << tcp.seq() << endl;
+        int seq = tcp.seq();
+        if (seq == 0){
+            std::stringstream sstream(Globals::message_);
+            std::string output;
+            while (sstream.good()) {
+                std::bitset<8> bits;
+                sstream >> bits;
+                char c = char(bits.to_ulong());
+                output += c;
+            }
+            Globals::last_seq_=0;
+            std::cout<<"Received message: "<<Globals::message_ << std::endl<< output<<std::endl;
+        }
+        else{
+            if (seq!=1){
+                int i = seq - Globals::last_seq_;
+                string m = Globals::message_;
+                if (i==1){
+                    Globals::message_ = Globals::message_ + '0';
+                    Globals::last_seq_ = seq;
+                }
+                else{
+                    std::string s(i-1, '1');
+                    Globals::message_ = Globals::message_ + s+'0';
+                    Globals::last_seq_ = Globals::last_seq_ + i;
+                }
+            }
+
+        }
+    }
+    return true;
+}
