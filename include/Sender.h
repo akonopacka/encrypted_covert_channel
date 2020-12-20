@@ -14,6 +14,36 @@
 #include <thread>
 #include "../src/MethodTypeEnum.cpp"
 #include "Globals.h"
+#include <iostream>
+#include "../cpp-httplib-master/httplib.h"
+#include <iostream>
+#include <ctype.h>
+#include <cstring>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <sstream>
+#include <fstream>
+#include <string>
+
+#include <iostream>
+
+#include <cpr/cpr.h>
+#include <stdio.h> /* printf, sprintf */
+#include <stdlib.h> /* exit */
+#include <unistd.h> /* read, write, close */
+#include <string.h> /* memcpy, memset */
+#include <sys/socket.h> /* socket, connect */
+#include <netinet/in.h> /* struct sockaddr_in, struct sockaddr */
+#include <netdb.h> /* struct hostent, gethostbyname */
+
+
+
+using namespace std;
+
 
 using namespace std;
 using namespace Tins;
@@ -32,6 +62,12 @@ public:
     void send_with_storage_method(const string message_to_send);
 
     void send_with_storage_method_IP_id(const string message_to_send);
+
+    void send_with_storage_method_HTTP(const string message_to_send);
+
+    void send_with_LSB_Hop_method(const string message_to_send);
+
+    void send_with_sequence_method(const string message_to_send);
 
     void send_message(const string message_to_send);
 };

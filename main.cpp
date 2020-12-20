@@ -44,8 +44,8 @@ unsigned char *key = (unsigned char *) "01234567890123456789012345678901";
 /* A 128 bit IV */
 unsigned char *iv = (unsigned char *) "0123456789012345";
 
-// "timing", "storage", "IP_id"
-string covert_channel_type = "IP_id";
+// "timing", "storage", "IP_id", "HTTP", "LSB", "sequence"
+string covert_channel_type = "sequence";
 
 
 void handleErrors(void) {
@@ -149,20 +149,41 @@ int main(int argc, char **argv) {
             if (covert_channel_type == "storage") {
                 std::cout << "Server! - Storage method\n";
                 Sniffer sniffer("lo");
-                sniffer.set_filter("tcp&&port 22");
+                sniffer.set_filter("tcp&&port 1234");
                 Sniffer("lo").sniff_loop(receiver.storage_callback);
             } else if (covert_channel_type == "IP_id") {
                 std::cout << "Server! - IP_id method\n";
                 Sniffer sniffer("lo");
-                sniffer.set_filter("tcp&&port 22");
+                sniffer.set_filter("tcp&&port 1234");
                 Sniffer("lo").sniff_loop(receiver.IP_id_callback);
-            } else if (covert_channel_type == "timing") {
+
+            }
+            else if (covert_channel_type == "HTTP") {
+                std::cout << "Server! - HTTP method\n";
+                receiver.HTTP_callback();
+            }
+            else if (covert_channel_type == "LSB") {
+                std::cout << "Server! - LSB Hop limit method\n";
+                Sniffer sniffer("lo");
+                sniffer.set_filter("tcp&&port 1234");
+                Sniffer("lo").sniff_loop(receiver.LSB_Hop_callback);
+            }
+            else if (covert_channel_type == "sequence") {
+                std::cout << "Server! - sequence method\n";
+
+                Globals::message_="";
+                Globals::last_seq_ = 1;
+                Sniffer sniffer("lo");
+                sniffer.set_filter("tcp.dstport==1234");
+                sniffer.sniff_loop(receiver.sequence_callback);
+            }
+            else if (covert_channel_type == "timing") {
                 std::cout << "Server! - Timing method\n";
                 SnifferConfiguration sniffer_configuration = SnifferConfiguration();
                 sniffer_configuration.set_immediate_mode(false);
                 Sniffer sniffer("lo", sniffer_configuration);
 //                Receiver receiver = Receiver();
-                sniffer.set_filter("udp&&port 22");
+                sniffer.set_filter("udp&&port 1234");
                 sniffer.sniff_loop(receiver.timing_callback);
             }
         }

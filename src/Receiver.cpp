@@ -2,13 +2,14 @@
 
 
 Receiver::Receiver() {
-    message_ = "";
+    Globals::message_ = "";
+    Globals::last_seq_=1;
 }
 
 bool Receiver::timing_callback(const PDU &pdu) {
-    time_received_ = std::chrono::high_resolution_clock::now();
-    time_span_ = time_received_ - time_of_last_packet_;
-    double interval = time_span_.count();
+    Globals::time_received_ = std::chrono::high_resolution_clock::now();
+    Globals::time_span_ = Globals::time_received_ - Globals::time_of_last_packet_;
+    double interval = Globals::time_span_.count();
     const IP &ip = pdu.rfind_pdu<IP>();
     const UDP &udp = pdu.rfind_pdu<UDP>();
     std::cout << udp.sport() << ' ';
@@ -16,20 +17,20 @@ bool Receiver::timing_callback(const PDU &pdu) {
     Timestamp ts = packet.timestamp();
     double timestamp = ts.seconds() * 1000000 + ts.microseconds();
     std::cout << std::fixed << "Seconds: " << ts.seconds() << " microseconds:" << ts.microseconds() << endl;
-    double inv = timestamp - last_packet_timestamp_;
+    double inv = timestamp - Globals::last_packet_timestamp_;
     std::cout << "Inter: " << inv << " " << "Ts: " << timestamp << std::endl;
-    if (udp.dport() == dst_port_) {
+    if (udp.dport() == Globals::dst_port_) {
         if (inv < 1000) {
-            message_ = message_ + "0";
+            Globals::message_ = Globals::message_ + "0";
             std::cout << "0" << endl;
         } else if (inv < 4000000) {
-            message_ = message_ + "1";
+            Globals::message_ = Globals::message_ + "1";
             std::cout << "1" << endl;
         } else {
-            if (message_ != "") {
-                message_.erase(0, 1);
-                std::cout << "Received message: " << message_ << endl;
-                std::stringstream sstream(message_);
+            if (Globals::message_ != "") {
+                Globals::message_.erase(0, 1);
+                std::cout << "Received message: " << Globals::message_ << endl;
+                std::stringstream sstream(Globals::message_);
                 std::string output;
                 while (sstream.good()) {
                     std::bitset<8> bits;
@@ -39,10 +40,10 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 }
                 std::cout << "Encoded message: " << output << endl;
             }
-            message_ = "";
+            Globals::message_ = "";
         }
-        time_of_last_packet_ = std::chrono::high_resolution_clock::now();
-        last_packet_timestamp_ = ts.seconds() * 1000000 + ts.microseconds();
+        Globals::time_of_last_packet_ = std::chrono::high_resolution_clock::now();
+        Globals::last_packet_timestamp_ = ts.seconds() * 1000000 + ts.microseconds();
     }
     return true;
 }
@@ -50,17 +51,17 @@ bool Receiver::timing_callback(const PDU &pdu) {
 bool Receiver::storage_callback(const PDU &pdu) {
     const IP &ip = pdu.rfind_pdu<IP>();
     const TCP &tcp = pdu.rfind_pdu<TCP>();
-    if (tcp.dport() == dst_port_) {
+    if (tcp.dport() == Globals::dst_port_) {
         std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
                   << ip.dst_addr() << ':' << tcp.dport() << "    "
                   << ip.tot_len() << endl;
         int a = ip.tot_len() - 40;
         char c = static_cast<char>(a);
         if (c == '0') {
-            std::cout << "Received message: " << message_ << endl;
-            message_ = "";
+            std::cout << "Received message: " << Globals::message_ << endl;
+            Globals::message_ = "";
         } else {
-            message_ = message_ + c;
+            Globals::message_ = Globals::message_ + c;
         }
     }
     return true;
@@ -69,17 +70,129 @@ bool Receiver::storage_callback(const PDU &pdu) {
 bool Receiver::IP_id_callback(const PDU &pdu) {
     const IP &ip = pdu.rfind_pdu<IP>();
     const TCP &tcp = pdu.rfind_pdu<TCP>();
-    if (tcp.dport() == dst_port_) {
+    if (tcp.dport() == Globals::dst_port_) {
         std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
                   << ip.dst_addr() << ':' << tcp.dport() << "    "
                   << ip.id() << endl;
         int a = ip.id();
         char c = static_cast<char>(a);
         if (c == '0') {
-            std::cout << "Received message: " << message_ << endl;
-            message_ = "";
+            std::cout << "Received message: " << Globals::message_ << endl;
+            Globals::message_ = "";
         } else {
-            message_ = message_ + c;
+            Globals::message_ = Globals::message_ + c;
+        }
+    }
+    return true;
+}
+
+void Receiver::HTTP_callback(){
+
+    int server_fd, new_socket, valread;
+    struct sockaddr_in address;
+    int opt = 1;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+
+// Creating socket file descriptor
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+    {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
+
+// Forcefully attaching socket to the port 8080
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+                   &opt, sizeof(opt)))
+    {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons( Globals::dst_port_ );
+
+// Forcefully attaching socket to the port 8080
+    if (bind(server_fd, (struct sockaddr *)&address,
+             sizeof(address))<0)
+    {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+    if (listen(server_fd, 3) < 0)
+    {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
+                             (socklen_t*)&addrlen))<0)
+    {
+        perror("accept");
+        exit(EXIT_FAILURE);
+    }
+    bool end = false;
+    while(!end){
+        valread = read( new_socket , buffer, 1024);
+        printf("%s\n",buffer );
+        buffer[1024] = {0};
+    }
+}
+
+bool Receiver::LSB_Hop_callback(const PDU &pdu) {
+    const IPv6 &ip = pdu.rfind_pdu<IPv6>();
+    const TCP &tcp = pdu.rfind_pdu<TCP>();
+
+    std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
+              << ip.dst_addr() << ':' << tcp.dport() << "    "
+              << ip.hop_limit() << endl;
+    int a = ip.hop_limit();
+    if (a != 100){
+        Globals::message_ = Globals::message_ + to_string(a & 1);
+    }
+    else{
+        std::stringstream sstream(Globals::message_);
+        std::string output;
+        while (sstream.good()) {
+            std::bitset<8> bits;
+            sstream >> bits;
+            char c = char(bits.to_ulong());
+            output += c;
+        }
+        std::cout<<"Received message: "<<output<<std::endl;
+    }
+    return true;
+}
+
+bool Receiver::sequence_callback(const PDU &pdu){
+    const IP &ip = pdu.rfind_pdu<IP>();
+    const TCP &tcp = pdu.rfind_pdu<TCP>();
+
+    if (tcp.dport()==Globals::dst_port_){
+        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
+                  << ip.dst_addr() << ':' << tcp.dport() << "    "
+                  << tcp.seq() << endl;
+        int seq = tcp.seq();
+        if (seq == 0){
+            Globals::message_.erase(0, 1);
+            std::stringstream sstream(Globals::message_);
+            std::string output;
+            while (sstream.good()) {
+                std::bitset<8> bits;
+                sstream >> bits;
+                char c = char(bits.to_ulong());
+                output += c;
+            }
+            Globals::last_seq_=0;
+            std::cout<<"Received message: "<<Globals::message_ << std::endl<< output<<std::endl;
+        }
+        else{
+            if (seq == Globals::last_seq_ + 1){
+                Globals::message_ = Globals::message_ + '0';
+                Globals::last_seq_ = seq;
+            }
+            else{
+                Globals::message_ = Globals::message_ + '1';
+            }
         }
     }
     return true;
