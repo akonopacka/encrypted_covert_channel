@@ -190,7 +190,6 @@ int main(int argc, char **argv) {
                 SnifferConfiguration sniffer_configuration = SnifferConfiguration();
                 sniffer_configuration.set_immediate_mode(false);
                 Sniffer sniffer("lo", sniffer_configuration);
-//                Receiver receiver = Receiver();
                 sniffer.set_filter("udp&&port 1234");
                 sniffer.sniff_loop(receiver.timing_callback);
             }

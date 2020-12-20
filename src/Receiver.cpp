@@ -159,6 +159,7 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
             output += c;
         }
         std::cout<<"Received message: "<<output<<std::endl;
+        Globals::message_ = "";
     }
     return true;
 }
@@ -184,6 +185,7 @@ bool Receiver::sequence_callback(const PDU &pdu){
             }
             Globals::last_seq_=0;
             std::cout<<"Received message: "<<Globals::message_ << std::endl<< output<<std::endl;
+            Globals::message_ = "";
         }
         else{
             if (seq == Globals::last_seq_ + 1){
@@ -208,6 +210,8 @@ bool Receiver::loss_callback(const PDU &pdu){
                   << tcp.seq() << endl;
         int seq = tcp.seq();
         if (seq == 0){
+            Globals::message_.pop_back();
+            Globals::message_ = Globals::message_ + '1';
             std::stringstream sstream(Globals::message_);
             std::string output;
             while (sstream.good()) {
@@ -216,13 +220,13 @@ bool Receiver::loss_callback(const PDU &pdu){
                 char c = char(bits.to_ulong());
                 output += c;
             }
-            Globals::last_seq_=0;
+            Globals::last_seq_=1;
             std::cout<<"Received message: "<<Globals::message_ << std::endl<< output<<std::endl;
+            Globals::message_ = "";
         }
         else{
             if (seq!=1){
                 int i = seq - Globals::last_seq_;
-                string m = Globals::message_;
                 if (i==1){
                     Globals::message_ = Globals::message_ + '0';
                     Globals::last_seq_ = seq;
@@ -233,7 +237,6 @@ bool Receiver::loss_callback(const PDU &pdu){
                     Globals::last_seq_ = Globals::last_seq_ + i;
                 }
             }
-
         }
     }
     return true;
