@@ -45,7 +45,7 @@ unsigned char *key = (unsigned char *) "01234567890123456789012345678901";
 unsigned char *iv = (unsigned char *) "0123456789012345";
 
 // "timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss"
-string covert_channel_type = "loss";
+string covert_channel_type = "HTTP";
 
 
 void handleErrors(void) {

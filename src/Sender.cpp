@@ -89,7 +89,8 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send){
     std::cout << '0' << ' '<<ia<<endl;
 }
 
-void Sender::send_with_storage_method_HTTP(const string message_to_send) {
+void Sender::send_with_HTTP_case_method(const string message_to_send) {
+    std::cout<<"Storage HTTP case method"<<endl;
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
 
@@ -111,22 +112,46 @@ void Sender::send_with_storage_method_HTTP(const string message_to_send) {
     {
         printf("\nConnection Failed \n");
     }
+
+    string word = message_to_send;
+    string binaryString = "";
+    for (char& _char : word) {
+        binaryString +=bitset<8>(_char).to_string();
+    }
+    cout<<"word: "<<word<<" bin: "<<binaryString<<endl;
+    string message = binaryString;
+    PacketSender sender;
     stringstream ss;
-    ss << "GET /" << 550 << "?api_key=xxx HTTP/1.1\r\n"
-       << "Host: TEST\r\n"
+    for (std::string::size_type i = 0; i < message.size(); i++) {
+        if (message[i]=='0'){
+            ss << "GET / HTTP/1.1\r\n"
+               << "Host: google.com\r\n"
+               << "Accept: application/json\r\n"
+               << "\r\n\r\n";
+            string request = ss.str();
+            send(sock , request.c_str(), request.length() , 0 );
+            ss.str("");
+        }
+        else{
+            ss << "GET /  HTTP/1.1\r\n"
+               << "host: google.com\r\n"
+               << "Accept: application/json\r\n"
+               << "\r\n\r\n";
+            string request = ss.str();
+            send(sock , request.c_str(), request.length() , 0 );
+            ss.str("");
+        }
+        char buffer[1024] = {0};
+        valread = read( sock , buffer, 1024);
+        printf("%s\n",buffer );
+    }
+    ss << "GET /  HTTP/1.1\r\n"
+       << "Host: fin.com\r\n"
        << "Accept: application/json\r\n"
        << "\r\n\r\n";
     string request = ss.str();
-
     send(sock , request.c_str(), request.length() , 0 );
-
-    ss << "GET /" << 550 << "?api_key=xxx HTTP/1.1\r\n"
-       << "host: t\r\n"
-       << "Accept: application/json\r\n"
-       << "\r\n\r\n";
-    request = ss.str();
-
-    send(sock , request.c_str(), request.length() , 0 );
+    ss.str("");
 
     printf("Finished");
 
@@ -253,7 +278,7 @@ void Sender::send_message(const string message_to_send){
         send_with_storage_method_IP_id(message_to_send);
     }
     else if(method=="HTTP"){
-        send_with_storage_method_HTTP(message_to_send);
+        send_with_HTTP_case_method(message_to_send);
     }
     else if(method=="LSB"){
         send_with_LSB_Hop_method(message_to_send);

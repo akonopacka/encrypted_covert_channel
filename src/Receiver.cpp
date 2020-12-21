@@ -86,13 +86,19 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
     return true;
 }
 
+template <typename Container>
+bool in_quote(const Container& cont, const std::string& s)
+{
+    return std::search(cont.begin(), cont.end(), s.begin(), s.end()) != cont.end();
+}
+
 void Receiver::HTTP_callback(){
 
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[1024] = {0};
+
 
 // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -130,11 +136,47 @@ void Receiver::HTTP_callback(){
         perror("accept");
         exit(EXIT_FAILURE);
     }
+    string message = "";
     bool end = false;
     while(!end){
-        valread = read( new_socket , buffer, 1024);
-        printf("%s\n",buffer );
-        buffer[1024] = {0};
+        char buffer[1024] = {0};
+        valread=read (new_socket , buffer, 1024);
+        if ( valread== 0)
+            continue;
+        else{
+            string str(buffer);
+            memset(buffer, 0, 1024);
+            if (str.find("fin.com")!=string::npos){
+                std::stringstream sstream(message);
+                std::string output;
+                while (sstream.good()) {
+                    std::bitset<8> bits;
+                    sstream >> bits;
+                    char c = char(bits.to_ulong());
+                    output += c;
+                }
+                std::cout<<"Received message: "<<output<<std::endl;
+                message = "";
+                str = "";
+            }
+            else{
+                string s = "Host:";
+                bool is_Host = in_quote( str, s );
+                s = "host:";
+                bool is_host = in_quote( str, s );
+                if (is_Host){
+                    message=message+'0';
+                    str = "";
+                }
+                else if (is_host){
+                    message=message+'1';
+                    str = "";
+                }
+                char *hello = "Hello from server";
+                send(new_socket , hello , strlen(hello) , 0 );
+            }
+            memset(buffer, 0, 1024);
+        }
     }
 }
 

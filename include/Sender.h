@@ -63,7 +63,7 @@ public:
 
     void send_with_storage_method_IP_id(const string message_to_send);
 
-    void send_with_storage_method_HTTP(const string message_to_send);
+    void send_with_HTTP_case_method(const string message_to_send);
 
     void send_with_LSB_Hop_method(const string message_to_send);
 
