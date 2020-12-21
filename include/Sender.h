@@ -15,7 +15,6 @@
 #include "../src/MethodTypeEnum.cpp"
 #include "Globals.h"
 #include <iostream>
-#include "../cpp-httplib-master/httplib.h"
 #include <iostream>
 #include <ctype.h>
 #include <cstring>
@@ -31,7 +30,6 @@
 
 #include <iostream>
 
-#include <cpr/cpr.h>
 #include <stdio.h> /* printf, sprintf */
 #include <stdlib.h> /* exit */
 #include <unistd.h> /* read, write, close */
