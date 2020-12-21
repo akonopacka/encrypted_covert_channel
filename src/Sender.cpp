@@ -143,7 +143,6 @@ void Sender::send_with_HTTP_case_method(const string message_to_send) {
         }
         char buffer[1024] = {0};
         valread = read( sock , buffer, 1024);
-        printf("%s\n",buffer );
     }
     ss << "GET /  HTTP/1.1\r\n"
        << "Host: fin.com\r\n"
