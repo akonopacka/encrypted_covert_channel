@@ -145,13 +145,13 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
 
 int main(int argc, char **argv) {
 
-    Json::Value people;
-    std::ifstream people_file("/home/ak/encrypted_covert_channel/config.json", std::ifstream::binary);
-    people_file >> people;
+    Json::Value config;
+    std::ifstream config_file("../config.json", std::ifstream::binary);
+    config_file >> config;
 
-    covert_channel_type = people["covert_channel_type"].asString();
-    message_to_send = people["message_to_send"].asString();
-    string m = message_to_send;
+    covert_channel_type = config["covert_channel_type"].asString();
+    message_to_send = config["message_to_send"].asString();
+
 
     if (argc > 1) {
         if (!strcmp(argv[1], "--server")) {
@@ -207,38 +207,10 @@ int main(int argc, char **argv) {
     }
 
     if (!strcmp(argv[1], "--client")) {
-        /* Message to be encrypted */
-        unsigned char *plaintext = (unsigned char *) "OLAAAAAAAAAAAA1";
-
-        /*
-         * Buffer for ciphertext. Ensure the buffer is long enough for the
-         * ciphertext which may be longer than the plaintext, depending on the
-         * algorithm and mode.
-         */
-        unsigned char ciphertext[128];
-
-        /* Buffer for the decrypted text */
-        unsigned char decryptedtext[128];
-
-        int decryptedtext_len, ciphertext_len;
-
-        /* Encrypt the plaintext */
-        ciphertext_len = encrypt(plaintext, strlen((char *) plaintext), key, iv, ciphertext);
-
-        /* Do something useful with the ciphertext here */
-        printf("Ciphertext is:\n");
-//        cout<<ciphertext<<endl;
-        BIO_dump_fp(stdout, (const char *) ciphertext, ciphertext_len);
-
-        /* Decrypt the ciphertext */
-        decryptedtext_len = decrypt(ciphertext, ciphertext_len, key, iv, decryptedtext);
-
-        /* Add a NULL terminator. We are expecting printable text */
-        decryptedtext[decryptedtext_len] = '\0';
-//
-//        /* Show the decrypted text */
-//        printf("Decrypted text is:\n");
-//        printf("%s\n", decryptedtext);
+//      Configuring parameters
+        Globals::IP_address = config["server_IP_address"].asString();
+        Globals::dst_port_ = config["dst_port"].asInt();
+        Globals::src_port_ = config["src_port"].asInt();
 
         Sender sender = Sender(covert_channel_type);
         sender.send_message(message_to_send);

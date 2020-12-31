@@ -17,8 +17,9 @@ namespace Globals
     extern double last_packet_timestamp_;
     extern int last_seq_;
     extern std::string message_;
-    static int src_port_ = 4321;
-    static int dst_port_ = 1234;
+    extern std::string IP_address;
+    extern int src_port_;
+    extern int dst_port_;
 }
 
 #endif //ENCRYPTED_COVERT_CHANNEL_GLOBALS_H

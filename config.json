@@ -1,11 +1,7 @@
 {
-  "menu": {
-    "id": "file",
-    "popup": {
-      "menuitem": "Raz"
-    },
-    "value": "File"
-  },
-  "covert_channel_type": "storage",
-  "message_to_send": "One1_two2_three3"
+  "covert_channel_type": "loss",
+  "message_to_send": "One1_two2_three3",
+  "server_IP_address": "127.0.0.1",
+  "dst_port": 1234,
+  "src_port": 4321
 }

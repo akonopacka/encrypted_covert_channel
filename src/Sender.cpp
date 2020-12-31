@@ -238,16 +238,17 @@ void Sender::send_with_sequence_method(const string message_to_send) {
 
 void Sender::send_with_loss_method(const string message_to_send){
     std::cout<<"Loss method"<<endl;
+    cout<<"Configuration: "<<Globals::IP_address<<" "<<Globals::dst_port_<<" "<<Globals::src_port_<<endl;
     string word = message_to_send;
     string binaryString = "";
     for (char& _char : word) {
         binaryString +=bitset<8>(_char).to_string();
     }
-    cout<<"word: "<<word<<" bin: "<<binaryString<<endl;
+    cout<<"Message to send: "<<word<<endl<<"Bin: "<<binaryString<<endl;
     string message = binaryString;
     PacketSender sender;
     int seq = 1;
-    IP ip = IP("127.0.0.1");
+    IP ip = IP(Globals::IP_address);
     TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
     tcp.seq(seq);
     IP pkt = ip / tcp / RawPDU("");
