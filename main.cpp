@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
 
     if (!strcmp(argv[1], "--client")) {
 //      Configuring parameters
-        Globals::IP_address = config["server_IP_address"].asString();
+        Globals::IPv4_address = config["server_IPv4_address"].asString();
         Globals::dst_port_ = config["dst_port"].asInt();
         Globals::src_port_ = config["src_port"].asInt();
 

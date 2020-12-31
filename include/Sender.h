@@ -49,8 +49,6 @@ using namespace Tins;
 
 class Sender {
     string method = "timing";
-    string ip_source_address = "127.0.0.1";
-    enum MethodTypeEnum methodTypeEnum;
 
 public:
     Sender(const string &method);
