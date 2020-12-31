@@ -26,6 +26,9 @@ using std::string;
 #include "include/Cryptographer.h"
 #include "include/Receiver.h"
 
+#include <jsoncpp/json/json.h>
+#include <jsoncpp/json/value.h>
+#include <fstream>
 
 using namespace Tins;
 using namespace std;
@@ -36,17 +39,15 @@ std::chrono::high_resolution_clock::time_point time_received_;
 std::chrono::duration<double, std::milli> time_span_;
 double last_packet_timestamp_;
 
-string message_to_send = "One_two_three";
+// "timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss"
+string covert_channel_type = "";
+string message_to_send = "";
 
 /* A 256 bit key */
 unsigned char *key = (unsigned char *) "01234567890123456789012345678901";
 
 /* A 128 bit IV */
 unsigned char *iv = (unsigned char *) "0123456789012345";
-
-// "timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss"
-string covert_channel_type = "timing";
-
 
 void handleErrors(void) {
     ERR_print_errors_fp(stderr);
@@ -143,6 +144,15 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key,
 
 
 int main(int argc, char **argv) {
+
+    Json::Value people;
+    std::ifstream people_file("/home/ak/encrypted_covert_channel/config.json", std::ifstream::binary);
+    people_file >> people;
+
+    covert_channel_type = people["covert_channel_type"].asString();
+    message_to_send = people["message_to_send"].asString();
+    string m = message_to_send;
+
     if (argc > 1) {
         if (!strcmp(argv[1], "--server")) {
             Receiver receiver = Receiver();

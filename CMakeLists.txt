@@ -13,3 +13,9 @@ target_link_libraries(encrypted_covert_channel "${TINS_LIBRARY}")
 
 find_package(OpenSSL REQUIRED)
 target_link_libraries(encrypted_covert_channel OpenSSL::SSL)
+
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(JSONCPP jsoncpp)
+link_libraries(${JSONCPP_LIBRARIES})
+target_link_libraries(encrypted_covert_channel ${JSONCPP_LIBRARIES})

@@ -1,0 +1,11 @@
+{
+  "menu": {
+    "id": "file",
+    "popup": {
+      "menuitem": "Raz"
+    },
+    "value": "File"
+  },
+  "covert_channel_type": "storage",
+  "message_to_send": "One1_two2_three3"
+}
