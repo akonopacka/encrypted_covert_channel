@@ -17,4 +17,6 @@ namespace Globals
     std::string IPv4_address = "127.0.0.1";
     int src_port_ = 1111;
     int dst_port_= 1111;
+    int time_interval_1_ms_ = 1100;
+    int time_interval_stop_ms_ = 6000;
 }

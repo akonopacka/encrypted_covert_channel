@@ -20,6 +20,8 @@ namespace Globals
     extern std::string IPv4_address;
     extern int src_port_;
     extern int dst_port_;
+    extern int time_interval_1_ms_;
+    extern int time_interval_stop_ms_;
 }
 
 #endif //ENCRYPTED_COVERT_CHANNEL_GLOBALS_H

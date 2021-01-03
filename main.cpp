@@ -152,9 +152,16 @@ int main(int argc, char **argv) {
     covert_channel_type = config["covert_channel_type"].asString();
     message_to_send = config["message_to_send"].asString();
 
-
     if (argc > 1) {
         if (!strcmp(argv[1], "--server")) {
+
+            //      Configuring parameters
+            Globals::IPv4_address = config["server_IPv4_address"].asString();
+            Globals::dst_port_ = config["dst_port"].asInt();
+            Globals::src_port_ = config["src_port"].asInt();
+            Globals::time_interval_1_ms_ = config["timing_method"]["time_interval_1_ms"].asInt();
+            Globals::time_interval_stop_ms_ = config["timing_method"]["time_interval_stop_ms"].asInt();
+
             Receiver receiver = Receiver();
             if (covert_channel_type == "storage") {
                 std::cout << "Server! - Storage method\n";
@@ -166,7 +173,6 @@ int main(int argc, char **argv) {
                 Sniffer sniffer("lo");
                 sniffer.set_filter("tcp&&port 1234");
                 Sniffer("lo").sniff_loop(receiver.IP_id_callback);
-
             }
             else if (covert_channel_type == "HTTP") {
                 std::cout << "Server! - HTTP method\n";
@@ -180,7 +186,6 @@ int main(int argc, char **argv) {
             }
             else if (covert_channel_type == "sequence") {
                 std::cout << "Server! - sequence method\n";
-
                 Globals::message_="";
                 Globals::last_seq_ = 1;
                 Sniffer sniffer("lo");
@@ -197,10 +202,13 @@ int main(int argc, char **argv) {
             }
             else if (covert_channel_type == "timing") {
                 std::cout << "Server! - Timing method\n";
+                string filter = "udp&&!icmp&&!dns&&udp.dstport=="+Globals::dst_port_;
                 SnifferConfiguration sniffer_configuration = SnifferConfiguration();
                 sniffer_configuration.set_immediate_mode(false);
+                string f = "udp port "+Globals::dst_port_;
+                sniffer_configuration.set_filter("udp port 1234");
                 Sniffer sniffer("lo", sniffer_configuration);
-                sniffer.set_filter("udp&&port 1234");
+                sniffer.set_filter(filter);
                 sniffer.sniff_loop(receiver.timing_callback);
             }
         }
@@ -211,6 +219,8 @@ int main(int argc, char **argv) {
         Globals::IPv4_address = config["server_IPv4_address"].asString();
         Globals::dst_port_ = config["dst_port"].asInt();
         Globals::src_port_ = config["src_port"].asInt();
+        Globals::time_interval_1_ms_ = config["timing_method"]["time_interval_1_ms"].asInt();
+        Globals::time_interval_stop_ms_ = config["timing_method"]["time_interval_stop_ms"].asInt();
 
         Sender sender = Sender(covert_channel_type);
         sender.send_message(message_to_send);

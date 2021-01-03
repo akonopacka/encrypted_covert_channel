@@ -12,7 +12,6 @@ bool Receiver::timing_callback(const PDU &pdu) {
     double interval = Globals::time_span_.count();
     const IP &ip = pdu.rfind_pdu<IP>();
     const UDP &udp = pdu.rfind_pdu<UDP>();
-    std::cout << udp.sport() << ' ';
     Tins::Packet packet = Tins::Packet(pdu);
     Timestamp ts = packet.timestamp();
     double timestamp = ts.seconds() * 1000000 + ts.microseconds();
@@ -22,10 +21,10 @@ bool Receiver::timing_callback(const PDU &pdu) {
     if (udp.dport() == Globals::dst_port_) {
         if (inv < 1000) {
             Globals::message_ = Globals::message_ + "0";
-            std::cout << "0" << endl;
+            std::cout << "0" << endl<< endl;
         } else if (inv < 4000000) {
             Globals::message_ = Globals::message_ + "1";
-            std::cout << "1" << endl;
+            std::cout << "1" << endl<< endl;
         } else {
             if (Globals::message_ != "") {
                 Globals::message_.erase(0, 1);
@@ -43,7 +42,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
             Globals::message_ = "";
         }
         Globals::time_of_last_packet_ = std::chrono::high_resolution_clock::now();
-        Globals::last_packet_timestamp_ = ts.seconds() * 1000000 + ts.microseconds();
+        Globals::last_packet_timestamp_ = timestamp;
     }
     return true;
 }
