@@ -204,7 +204,7 @@ int main(int argc, char **argv) {
                 std::cout << "Server! - Timing method\n";
                 string filter = "udp&&!icmp&&!dns&&udp.dstport=="+Globals::dst_port_;
                 SnifferConfiguration sniffer_configuration = SnifferConfiguration();
-                sniffer_configuration.set_immediate_mode(false);
+                sniffer_configuration.set_immediate_mode(true);
                 string f = "udp port "+Globals::dst_port_;
                 sniffer_configuration.set_filter("udp port 1234");
                 Sniffer sniffer("lo", sniffer_configuration);

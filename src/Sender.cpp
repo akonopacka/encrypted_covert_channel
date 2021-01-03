@@ -30,12 +30,12 @@ void Sender::send_with_timing_method(const string message_to_send){
             std::cout << i<<". "<<message[i] << endl;
             IP pkt = IP(Globals::IPv4_address) / UDP(Globals::dst_port_, Globals::src_port_) / RawPDU("s");
             sender.send(pkt);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
     sender.send(pkt);
     std::cout<<endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(6000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     sender.send(pkt);
     std::cout << "Sending completed.";
 }

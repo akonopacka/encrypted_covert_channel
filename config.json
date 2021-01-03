@@ -5,7 +5,7 @@
   "dst_port": 1234,
   "src_port": 4321,
   "timing_method": {
-    "time_interval_1_ms" : 1100,
+    "time_interval_1_ms" : 1000,
     "time_interval_stop_ms" : 6000
   }
 }
