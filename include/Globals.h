@@ -17,6 +17,7 @@ namespace Globals
     extern double last_packet_timestamp_;
     extern int last_seq_;
     extern std::string message_;
+    extern std::string interface_;
     extern std::string IPv4_address;
     extern int src_port_;
     extern int dst_port_;

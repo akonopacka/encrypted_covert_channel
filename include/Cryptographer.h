@@ -10,6 +10,9 @@ using namespace std;
 #include <openssl/conf.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+#include <string.h>
+
+#include <bits/stdc++.h>
 
 class Cryptographer {
     string method = "aes";
@@ -20,11 +23,17 @@ class Cryptographer {
     unsigned char *iv = (unsigned char *)"0123456789012345";
 
 public:
-    string encrypt_aes(string plaintext);
-
-    string decrypt_aes(string ciphertext);
-
+    Cryptographer(const string &method);
     void handleErrors();
+
+    string encrypt(string plaintext);
+    string decrypt(string ciphertext);
+
+    string encrypt_aes_bin(string plaintext_);
+
+    string decrypt_aes(string ciphertext_bin);
+
+
     int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
                 unsigned char *iv, unsigned char *ciphertext);
     int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, unsigned char *iv,

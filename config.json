@@ -1,11 +1,16 @@
 {
-  "covert_channel_type": "timing",
-  "message_to_send": "One1_two2_three3",
+  "interface": "lo",
+  "covert_channel_type": "loss",
+  "message_to_send": "One1_two2_three3&",
   "server_IPv4_address": "127.0.0.1",
   "dst_port": 1234,
   "src_port": 4321,
   "timing_method": {
     "time_interval_1_ms" : 1000,
     "time_interval_stop_ms" : 6000
+  },
+  "cryptography": {
+    "is_encrypted" : false,
+    "method" : "aes"
   }
 }

@@ -257,10 +257,12 @@ bool Receiver::loss_callback(const PDU &pdu){
                   << tcp.seq() << endl;
         int seq = tcp.seq();
         if (seq == 0){
+            std::cout<<"Bin: "<<Globals::message_<<std::endl;
             Globals::message_.pop_back();
             Globals::message_ = Globals::message_ + '1';
             std::stringstream sstream(Globals::message_);
             std::string output;
+
             while (sstream.good()) {
                 std::bitset<8> bits;
                 sstream >> bits;
@@ -269,6 +271,7 @@ bool Receiver::loss_callback(const PDU &pdu){
             }
             Globals::last_seq_=1;
             std::cout<<"Received message: "<<Globals::message_ << std::endl<< output<<std::endl;
+
             Globals::message_ = "";
         }
         else{

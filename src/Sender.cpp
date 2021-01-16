@@ -4,7 +4,7 @@
 
 #include "../include/Sender.h"
 
-Sender::Sender(const string &method) : method(method) {};
+Sender::Sender(const string &method, bool isEncrypted) : method(method), is_encrypted(isEncrypted) {}
 
 void Sender::send_with_timing_method(const string message_to_send){
     std::cout<<"Timing method"<<endl;
@@ -12,10 +12,16 @@ void Sender::send_with_timing_method(const string message_to_send){
     string word = message_to_send;
     string binaryString = "";
     string message = message_to_send;
-    for (char& _char : word) {
-        binaryString +=bitset<8>(_char).to_string();
+    if (!is_encrypted){
+        for (char& _char : word) {
+            binaryString +=bitset<8>(_char).to_string();
+        }
     }
-    cout<<"Message to send: "<<word<<endl<<"Bin: "<<binaryString<<endl;
+    else{
+        binaryString=message_to_send;
+    }
+
+    cout<<"Bin: "<<binaryString<<endl;
     message = binaryString;
     PacketSender sender;
     IP pkt = IP(Globals::IPv4_address) / UDP(Globals::dst_port_, Globals::src_port_) / RawPDU("s");
@@ -161,9 +167,16 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
     std::cout<<"Storage LSB Hop Limit method"<<endl;
     string word = message_to_send;
     string binaryString = "";
-    for (char& _char : word) {
-        binaryString +=bitset<8>(_char).to_string();
+
+    if (!is_encrypted){
+        for (char& _char : word) {
+            binaryString +=bitset<8>(_char).to_string();
+        }
     }
+    else{
+        binaryString=message_to_send;
+    }
+
     cout<<"Message to send: "<<word<<endl<<"Bin: "<<binaryString<<endl;
     string message = binaryString;
     PacketSender sender;
@@ -202,8 +215,13 @@ void Sender::send_with_sequence_method(const string message_to_send) {
     std::cout<<"Sequence TCP method"<<endl;
     string word = message_to_send;
     string binaryString = "";
-    for (char& _char : word) {
-        binaryString +=bitset<8>(_char).to_string();
+    if (!is_encrypted){
+        for (char& _char : word) {
+            binaryString +=bitset<8>(_char).to_string();
+        }
+    }
+    else{
+        binaryString=message_to_send;
     }
     cout<<"Message to send: "<<word<<endl<<"Bin: "<<binaryString<<endl;
     string message = binaryString;
@@ -242,8 +260,13 @@ void Sender::send_with_loss_method(const string message_to_send){
     cout << "Configuration: " << Globals::IPv4_address << " " << Globals::dst_port_ << " " << Globals::src_port_ << endl;
     string word = message_to_send;
     string binaryString = "";
-    for (char& _char : word) {
-        binaryString +=bitset<8>(_char).to_string();
+    if (!is_encrypted){
+        for (char& _char : word) {
+            binaryString +=bitset<8>(_char).to_string();
+        }
+    }
+    else{
+        binaryString=message_to_send;
     }
     cout<<"Message to send: "<<word<<endl<<"Bin: "<<binaryString<<endl;
     string message = binaryString;
@@ -251,16 +274,19 @@ void Sender::send_with_loss_method(const string message_to_send){
     int seq = 1;
     IP ip = IP(Globals::IPv4_address);
     TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
+    tcp.flags(Tins::TCP::RST);
     tcp.seq(seq);
     IP pkt = ip / tcp / RawPDU("");
     sender.send(pkt);
+    seq=seq+1;
     for (std::string::size_type i = 0; i < message.size(); i++) {
-        seq=seq+1;
+
         if (message[i]=='0'){
             tcp.seq(seq);
             IP pkt = ip / tcp / RawPDU("");
             sender.send(pkt);
         }
+        seq=seq+1;
     }
     tcp.seq(seq);
     pkt = ip / tcp / RawPDU("");
@@ -271,7 +297,13 @@ void Sender::send_with_loss_method(const string message_to_send){
     std::cout << "Sending finished" <<endl;
 }
 
-void Sender::send_message(const string message_to_send){
+void Sender::send_message(string message_to_send){
+    std::cout<<"Sending method: "<<method<<", Message is encrypted: " << std::boolalpha << is_encrypted<<endl;
+    if (is_encrypted){
+        Cryptographer cryptographer = Cryptographer("aes");
+        message_to_send = cryptographer.encrypt(message_to_send);
+        std::cout<<"Ciphertext: "<<message_to_send<<endl;
+    }
     if (method=="storage"){
         send_with_storage_method(message_to_send);
     }
@@ -294,5 +326,4 @@ void Sender::send_message(const string message_to_send){
         send_with_timing_method(message_to_send);
     }
 }
-
 

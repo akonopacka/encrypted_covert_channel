@@ -156,6 +156,7 @@ int main(int argc, char **argv) {
         if (!strcmp(argv[1], "--server")) {
 
             //      Configuring parameters
+            Globals::interface_ = config["interface"].asString();
             Globals::IPv4_address = config["server_IPv4_address"].asString();
             Globals::dst_port_ = config["dst_port"].asInt();
             Globals::src_port_ = config["src_port"].asInt();
@@ -221,8 +222,8 @@ int main(int argc, char **argv) {
         Globals::src_port_ = config["src_port"].asInt();
         Globals::time_interval_1_ms_ = config["timing_method"]["time_interval_1_ms"].asInt();
         Globals::time_interval_stop_ms_ = config["timing_method"]["time_interval_stop_ms"].asInt();
-
-        Sender sender = Sender(covert_channel_type);
+        bool is_encrypted = config["cryptography"]["is_encrypted"].asBool();
+        Sender sender = Sender(covert_channel_type, is_encrypted);
         sender.send_message(message_to_send);
         return 0;
     } else {

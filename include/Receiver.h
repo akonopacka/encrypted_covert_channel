@@ -20,6 +20,7 @@ using std::string;
 using namespace Tins;
 
 class Receiver {
+    bool is_encrypted = true;
 public:
     Receiver();
 

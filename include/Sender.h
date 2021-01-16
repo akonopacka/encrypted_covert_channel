@@ -38,6 +38,8 @@
 #include <netinet/in.h> /* struct sockaddr_in, struct sockaddr */
 #include <netdb.h> /* struct hostent, gethostbyname */
 
+#include "Cryptographer.h"
+
 
 
 using namespace std;
@@ -49,9 +51,11 @@ using namespace Tins;
 
 class Sender {
     string method = "timing";
+    bool is_encrypted = true;
 
 public:
-    Sender(const string &method);
+
+    Sender(const string &method, bool isEncrypted);
 
     void send_with_timing_method(const string message_to_send);
 

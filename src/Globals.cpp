@@ -14,6 +14,7 @@ namespace Globals
     double last_packet_timestamp_ = 0;
     int last_seq_ = 0;
     std::string message_ = "";
+    std::string interface_ = "lo";
     std::string IPv4_address = "127.0.0.1";
     int src_port_ = 1111;
     int dst_port_= 1111;
