@@ -9,7 +9,7 @@ find_library(TINS_LIBRARY tins)
 include(FindPCAP.cmake)
 add_executable(encrypted_covert_channel src/des.hpp src/Cryptographer.cpp include/Cryptographer.h main.cpp include/Globals.h src/aes.hpp include/Receiver.h src/Receiver.cpp
         src/Sender.cpp include/Sender.h  src/MethodTypeEnum.cpp
-        src/Globals.cpp clefia/clefia.h clefia/clefia.c )
+        src/Globals.cpp clefia/clefia.h clefia/clefia.c src/present.hpp)
 
 target_link_libraries(encrypted_covert_channel ${PCAP_LIBRARY})
 target_link_libraries(encrypted_covert_channel "${TINS_LIBRARY}")

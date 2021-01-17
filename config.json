@@ -11,6 +11,6 @@
   },
   "cryptography": {
     "is_encrypted" : true,
-    "method" : "aes"
+    "method" : "des"
   }
 }
