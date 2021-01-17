@@ -257,9 +257,8 @@ bool Receiver::loss_callback(const PDU &pdu){
                   << tcp.seq() << endl;
         int seq = tcp.seq();
         if (seq == 0){
-            std::cout<<"Bin: "<<Globals::message_<<std::endl;
             Globals::message_.pop_back();
-            Globals::message_ = Globals::message_ + '1';
+//            Globals::message_ = Globals::message_ + '1';
             std::stringstream sstream(Globals::message_);
             std::string output;
 
@@ -273,10 +272,10 @@ bool Receiver::loss_callback(const PDU &pdu){
                 output += c;
             }
             Globals::last_seq_=1;
-            std::cout<<"Received message: "<<Globals::message_ << std::endl<< output<<std::endl;
+            std::cout<<"Received message: bin "<<Globals::message_ << std::endl<<"as string: "<< output<<std::endl;
             if (Globals::is_encrypted){
                 Cryptographer cryptographer = Cryptographer("aes");
-                string decrypted_message = cryptographer.decrypt(output);
+                string decrypted_message = cryptographer.decrypt(Globals::message_);
                 std::cout<<"Decrypted: "<<decrypted_message <<std::endl;
             }
 
