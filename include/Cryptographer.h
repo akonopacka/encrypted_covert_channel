@@ -6,18 +6,12 @@
 #define ENCRYPTED_COVERT_CHANNEL_CRYPTOGRAPHER_H
 
 #include <string>
-using namespace std;
-#include <openssl/conf.h>
-#include <openssl/evp.h>
-#include <openssl/err.h>
-#include <string.h>
-
-#include <bits/stdc++.h>
-#include "AES.h"
-#include "../src/plusaes.hpp"
-
-#include <string>
 #include <vector>
+#include <bits/stdc++.h>
+#include "../src/aes.hpp"
+
+
+using namespace std;
 
 class Cryptographer {
     string method = "aes";
@@ -38,11 +32,6 @@ public:
 
     string decrypt_aes(string ciphertext_bin);
 
-
-    int encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key,
-                unsigned char *iv, unsigned char *ciphertext);
-    int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, unsigned char *iv,
-            unsigned char *plaintext);
 };
 
 

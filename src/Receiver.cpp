@@ -258,7 +258,6 @@ bool Receiver::loss_callback(const PDU &pdu){
         int seq = tcp.seq();
         if (seq == 0){
             Globals::message_.pop_back();
-//            Globals::message_ = Globals::message_ + '1';
             std::stringstream sstream(Globals::message_);
             std::string output;
 
@@ -266,9 +265,6 @@ bool Receiver::loss_callback(const PDU &pdu){
                 std::bitset<8> bits;
                 sstream >> bits;
                 char c = char(bits.to_ulong());
-                if (Globals::is_encrypted){
-
-                }
                 output += c;
             }
             Globals::last_seq_=1;
@@ -278,7 +274,6 @@ bool Receiver::loss_callback(const PDU &pdu){
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
                 std::cout<<"Decrypted: "<<decrypted_message <<std::endl;
             }
-
             Globals::message_ = "";
         }
         else{
