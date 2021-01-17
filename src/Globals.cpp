@@ -21,4 +21,5 @@ namespace Globals
     int time_interval_1_ms_ = 1100;
     int time_interval_stop_ms_ = 6000;
     bool is_encrypted = false;
+    std::string cipher_type = "aes";
 }

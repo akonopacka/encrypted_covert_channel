@@ -7,7 +7,7 @@
 
 
 #include <string>
-#include <bitset>
+//#include <bitset>
 #include <iostream>
 #include <tins/tins.h>
 #include <chrono>
@@ -26,9 +26,6 @@
 #include <unistd.h>
 #include <sstream>
 #include <fstream>
-#include <string>
-
-#include <iostream>
 
 #include <stdio.h> /* printf, sprintf */
 #include <stdlib.h> /* exit */
@@ -52,10 +49,11 @@ using namespace Tins;
 class Sender {
     string method = "timing";
     bool is_encrypted = true;
+    string cipher_type = "aes";
 
 public:
 
-    Sender(const string &method, bool isEncrypted);
+    Sender(const string &method, bool is_encrypted, string cipher_type);
 
     void send_with_timing_method(const string message_to_send);
 

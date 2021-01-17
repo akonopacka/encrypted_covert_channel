@@ -9,6 +9,9 @@
 
 #include <stdexcept>
 #include <vector>
+//#include <bits/stdc++.h>
+#include <string.h>
+
 
 /** Version number of plusaes.
  * 0x01020304 -> 1.2.3.4 */

@@ -4,7 +4,8 @@
 
 #include "../include/Sender.h"
 
-Sender::Sender(const string &method, bool isEncrypted) : method(method), is_encrypted(isEncrypted) {}
+Sender::Sender(const string &method, bool is_encrypted, string cipher_type) : method(method),
+                is_encrypted(is_encrypted), cipher_type(cipher_type) {}
 
 void Sender::send_with_timing_method(const string message_to_send){
     std::cout<<"Timing method"<<endl;
@@ -300,9 +301,8 @@ void Sender::send_with_loss_method(const string message_to_send){
 void Sender::send_message(string message_to_send){
     std::cout<<"Sending method: "<<method<<", Message is encrypted: " << std::boolalpha << is_encrypted<<endl;
     if (is_encrypted){
-        Cryptographer cryptographer = Cryptographer("aes");
+        Cryptographer cryptographer = Cryptographer(cipher_type);
         message_to_send = cryptographer.encrypt(message_to_send);
-        std::cout<<"Ciphertext: "<<message_to_send<<endl;
     }
     if (method=="storage"){
         send_with_storage_method(message_to_send);

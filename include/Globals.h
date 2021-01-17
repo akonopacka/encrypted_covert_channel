@@ -24,6 +24,8 @@ namespace Globals
     extern int time_interval_1_ms_;
     extern int time_interval_stop_ms_;
     extern bool is_encrypted;
+    extern std::string cipher_type;
+
 }
 
 #endif //ENCRYPTED_COVERT_CHANNEL_GLOBALS_H

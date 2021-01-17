@@ -33,6 +33,7 @@ double last_packet_timestamp_;
 // "timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss"
 string covert_channel_type = "";
 string message_to_send = "";
+string cipher_type = "";
 
 
 int main(int argc, char **argv) {
@@ -43,6 +44,7 @@ int main(int argc, char **argv) {
 
     covert_channel_type = config["covert_channel_type"].asString();
     message_to_send = config["message_to_send"].asString();
+    cipher_type = config["cryptography"]["method"].asString();
 
     if (argc > 1) {
         if (!strcmp(argv[1], "--server")) {
@@ -55,6 +57,7 @@ int main(int argc, char **argv) {
             Globals::time_interval_1_ms_ = config["timing_method"]["time_interval_1_ms"].asInt();
             Globals::time_interval_stop_ms_ = config["timing_method"]["time_interval_stop_ms"].asInt();
             Globals::is_encrypted = config["cryptography"]["is_encrypted"].asBool();
+            Globals::cipher_type = config["cryptography"]["method"].asString();
 
             Receiver receiver = Receiver();
             if (covert_channel_type == "storage") {
@@ -116,7 +119,10 @@ int main(int argc, char **argv) {
         Globals::time_interval_1_ms_ = config["timing_method"]["time_interval_1_ms"].asInt();
         Globals::time_interval_stop_ms_ = config["timing_method"]["time_interval_stop_ms"].asInt();
         bool is_encrypted = config["cryptography"]["is_encrypted"].asBool();
-        Sender sender = Sender(covert_channel_type, is_encrypted);
+
+
+
+        Sender sender = Sender(covert_channel_type, is_encrypted, cipher_type);
         sender.send_message(message_to_send);
         return 0;
     } else {
