@@ -162,6 +162,7 @@ int main(int argc, char **argv) {
             Globals::src_port_ = config["src_port"].asInt();
             Globals::time_interval_1_ms_ = config["timing_method"]["time_interval_1_ms"].asInt();
             Globals::time_interval_stop_ms_ = config["timing_method"]["time_interval_stop_ms"].asInt();
+            Globals::is_encrypted = config["cryptography"]["is_encrypted"].asBool();
 
             Receiver receiver = Receiver();
             if (covert_channel_type == "storage") {

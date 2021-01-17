@@ -15,12 +15,14 @@
 #include <netinet/in.h>
 #include <string.h>
 
+#include "Cryptographer.h"
+
+
 using namespace std;
 using std::string;
 using namespace Tins;
 
 class Receiver {
-    bool is_encrypted = true;
 public:
     Receiver();
 

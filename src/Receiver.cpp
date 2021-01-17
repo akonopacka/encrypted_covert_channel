@@ -267,10 +267,18 @@ bool Receiver::loss_callback(const PDU &pdu){
                 std::bitset<8> bits;
                 sstream >> bits;
                 char c = char(bits.to_ulong());
+                if (Globals::is_encrypted){
+
+                }
                 output += c;
             }
             Globals::last_seq_=1;
             std::cout<<"Received message: "<<Globals::message_ << std::endl<< output<<std::endl;
+            if (Globals::is_encrypted){
+                Cryptographer cryptographer = Cryptographer("aes");
+                string decrypted_message = cryptographer.decrypt(output);
+                std::cout<<"Decrypted: "<<decrypted_message <<std::endl;
+            }
 
             Globals::message_ = "";
         }
@@ -291,3 +299,4 @@ bool Receiver::loss_callback(const PDU &pdu){
     }
     return true;
 }
+

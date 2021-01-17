@@ -1,7 +1,7 @@
 {
   "interface": "lo",
   "covert_channel_type": "loss",
-  "message_to_send": "One1_two2_three3&",
+  "message_to_send": "One1_two2_three3&000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
   "server_IPv4_address": "127.0.0.1",
   "dst_port": 1234,
   "src_port": 4321,
@@ -10,7 +10,7 @@
     "time_interval_stop_ms" : 6000
   },
   "cryptography": {
-    "is_encrypted" : false,
+    "is_encrypted" : true,
     "method" : "aes"
   }
 }

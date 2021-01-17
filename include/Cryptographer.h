@@ -13,6 +13,11 @@ using namespace std;
 #include <string.h>
 
 #include <bits/stdc++.h>
+#include "AES.h"
+#include "../src/plusaes.hpp"
+
+#include <string>
+#include <vector>
 
 class Cryptographer {
     string method = "aes";
