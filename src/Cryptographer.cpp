@@ -53,6 +53,9 @@ string Cryptographer::encrypt(string plaintext){
     else if (method=="clefia"){
         return encrypt_clefia(plaintext);
     }
+    else if (method=="trivium"){
+        return encrypt_trivium(plaintext);
+    }
     return "OK";
 }
 
@@ -71,6 +74,9 @@ string Cryptographer::decrypt(string ciphertext){
     }
     else if (method=="clefia"){
         return decrypt_clefia(ciphertext);
+    }
+    else if (method=="trivium"){
+        return decrypt_trivium(ciphertext);
     }
     return "OK";
 }
@@ -528,6 +534,84 @@ string Cryptographer::decrypt_rsa(string ciphertext_bin){
         string s_(reinterpret_cast<char*>(decryptMsg));
         return s_;
     }
+}
+
+string Cryptographer::encrypt_trivium(string plaintext_){
+
+    int i =0;
+    int plaintext[10];
+    for(i=0;i<10; i++){
+        if(i<plaintext_.length())
+            plaintext[i]=(int) plaintext_[i];
+        else
+            plaintext[i]=0;
+    }
+
+//    int plaintext[10]={0xa3,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x02};
+//    plaintext = text;
+    int encrypted_text[10];
+    int decrypted_text[10];
+
+    grain mygrain;
+    int ks[10];
+
+    int key2[10] = {0x01,0x23,0x45,0x67,0x89,0xab,0xcd,0xef,0x12,0x34},
+            IV2[8] = {0x01,0x23,0x45,0x67,0x89,0xab,0xcd,0xef};
+
+    grain mygrain2 = mygrain;
+    keysetup(&mygrain,key2,80,64);
+    ivsetup(&mygrain,IV2);
+    keystream_bytes(&mygrain,ks,10);
+    mygrain2 = mygrain;
+    encrypt_bytes(&mygrain,plaintext,encrypted_text,10);
+
+//     from int array to bin string
+    string ciphertext_bin = "";
+    for (int j:encrypted_text){
+        std::string binary = std::bitset<8>(j).to_string();
+        ciphertext_bin = ciphertext_bin + binary;
+    }
+//    decrypt_trivium(ciphertext_bin);
+
+    return ciphertext_bin;
+}
+
+string Cryptographer::decrypt_trivium(string ciphertext_bin){
+    int encrypted_text[10];
+    int decrypted_text[10];
 
 
+    int ks[10];
+
+    int key2[10] = {0x01,0x23,0x45,0x67,0x89,0xab,0xcd,0xef,0x12,0x34},
+            IV2[8] = {0x01,0x23,0x45,0x67,0x89,0xab,0xcd,0xef};
+    grain mygrain;
+    keysetup(&mygrain,key2,80,64);
+    ivsetup(&mygrain,IV2);
+    keystream_bytes(&mygrain,ks,10);
+
+    std::stringstream sstream(ciphertext_bin);
+    std::string output;
+    int encrypted_text_[10];
+    memset(encrypted_text_, 0, sizeof(encrypted_text_));
+    int j = 0;
+    cout<<endl;
+    while (sstream.good()) {
+        std::bitset<8> bits;
+        sstream >> bits;
+        int c = (bits.to_ulong());
+        encrypted_text_[j]=c;
+        j++;
+//        output += c;
+    }
+
+    decrypt_bytes(&mygrain,encrypted_text_,decrypted_text,10);
+    string text = "";
+
+    for (int k: decrypted_text){
+        text = text + (char) k;
+    }
+
+//    cout<<endl<<"message:"<<text<<endl;
+    return text;
 }

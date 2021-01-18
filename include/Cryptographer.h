@@ -21,7 +21,8 @@
 //#include "Present.h"
 extern "C" {
 // Get declaration for f(int i, char c, float x)
-#include "../C_language/PRESENT.c"]
+#include "../C_language/PRESENT.c"
+
 }
 //#include "../include/openssl_rsa.h"
 #include <openssl/rsa.h>
@@ -31,7 +32,9 @@ extern "C" {
 
 #include <stdlib.h>
 #include "../src/Clefia.hpp"
-
+#include "../src/trivium.hpp"
+//#include "../C_language/grain.h"
+#include "../C_language/grain.c"
 
 using namespace std;
 
@@ -53,6 +56,8 @@ public:
     string decrypt_present(string ciphertext_bin);
     string encrypt_rsa(string plaintext_);
     string decrypt_rsa(string ciphertext_bin);
+    string encrypt_trivium(string plaintext_);
+    string decrypt_trivium(string ciphertext_bin);
 };
 
 

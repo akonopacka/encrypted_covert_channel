@@ -454,7 +454,7 @@ namespace clefia {
             } else if (i == 17) {
                 WBF0Xor(tables, fout, fin, rk, zero, rs, skey + 8);
                 WBF1Xor(tables + 16, fout + 8, fin + 8, rk + 4, zero, rs + 4, skey + 12);
-//                BytePut(fout, 16);
+                BytePut(fout, 16);
                 break;
 
             } else {
@@ -704,13 +704,13 @@ namespace clefia {
             ByteXor(temp, items + 24, temp, 4);
             ByteXor(temp, items + 28, temp, 4);
             ByteXor(fout + 12, temp, fin + 12, 4);
-//            if (i != 17) {
-//                ByteCpy(fin, fout + 4, 12);
-//                ByteCpy(fin + 12, fout, 4);
-//            }
+            if (i != 17) {
+                ByteCpy(fin, fout + 4, 12);
+                ByteCpy(fin + 12, fout, 4);
+            }
         }
 
-//        ByteCpy(ct, fout, 16);
+        ByteCpy(ct, fout, 16);
     }
 
     void ClefiaDecrypt(unsigned char *pt, const unsigned char *ct, const unsigned char *rk, const int r) {
