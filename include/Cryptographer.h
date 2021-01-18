@@ -23,6 +23,12 @@ extern "C" {
 // Get declaration for f(int i, char c, float x)
 #include "../C_language/PRESENT.c"
 }
+//#include "../include/openssl_rsa.h"
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+
+
 
 using namespace std;
 
