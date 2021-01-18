@@ -7,6 +7,38 @@
 
 Cryptographer::Cryptographer(const string &method) : method(method) {}
 
+std::string string_to_hex(const std::string& in) {
+    std::stringstream ss;
+
+    ss << std::hex << std::setfill('0');
+    for (size_t i = 0; in.length() > i; ++i) {
+        ss << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(in[i]));
+    }
+
+    return ss.str();
+}
+
+std::string hex_to_string(const std::string& in) {
+    std::string output;
+
+    if ((in.length() % 2) != 0) {
+        throw std::runtime_error("String is not valid length ...");
+    }
+
+    size_t cnt = in.length() / 2;
+
+    for (size_t i = 0; cnt > i; ++i) {
+        uint32_t s = 0;
+        std::stringstream ss;
+        ss << std::hex << in.substr(i * 2, 2);
+        ss >> s;
+
+        output.push_back(static_cast<unsigned char>(s));
+    }
+
+    return output;
+}
+
 string Cryptographer::encrypt(string plaintext){
     cout<<"Encrypting with method "<<method<<endl;
 
@@ -16,7 +48,9 @@ string Cryptographer::encrypt(string plaintext){
     else if (method=="des"){
         return encrypt_des(plaintext);
     }
-
+    else if (method=="present"){
+        return encrypt_present(plaintext);
+    }
     return "OK";
 }
 
@@ -26,6 +60,9 @@ string Cryptographer::decrypt(string ciphertext){
     }
     else if (method=="des"){
         return decrypt_des(ciphertext);
+    }
+    else if (method=="present"){
+        return decrypt_present(ciphertext);
     }
     return "OK";
 }
@@ -60,6 +97,25 @@ string Cryptographer::encrypt_aes(string plaintext_) {
 //    Checking decription
 //    decrypt_aes(binaryString);
     return binaryString;
+}
+
+string bintohex(const string &s){
+    string out;
+    for(uint i = 0; i < s.size(); i += 4){
+        int8_t n = 0;
+        for(uint j = i; j < i + 4; ++j){
+            n <<= 1;
+            if(s[j] == '1')
+                n |= 1;
+        }
+
+        if(n<=9)
+            out.push_back('0' + n);
+        else
+            out.push_back('A' + n - 10);
+    }
+
+    return out;
 }
 
 string Cryptographer::decrypt_aes(string ciphertext_bin) {
@@ -277,4 +333,52 @@ string Cryptographer::decrypt_des(string ciphertext_bin){
     string decrypted_message = des::des(cstr, key_, mode_);
     cout<< "Decrypted message: " << decrypted_message << endl;
     return decrypted_message;
+}
+
+string Cryptographer::encrypt_present(string plaintext_){
+    string p =string_to_hex(plaintext_);
+
+// the plaintext (64 bits) in hexadecimal format
+    const char *plaintext = p.c_str();
+    char * p_= const_cast<char *>(plaintext);
+//    the key (80 bits) in hexadecimal format\nUse lower case characters
+    char *key_ = "1f1f1ffa90e329231f1f1ffa90e32923";
+
+    //declare a pointer for the ciphertext
+    char *ciphertext;
+
+    ciphertext = encrypt_present_(p_, key_);
+
+
+    printf("The ciphertext is: ");
+    puts(ciphertext);
+
+    string binaryString = "";
+    string hex(ciphertext);
+
+// hex to bin
+    for (int i= 0 ;i<  hex.size(); ++i) {
+        binaryString +=bitset<8>(hex[i]).to_string();
+    }
+// return hex string as bin
+    return binaryString;
+}
+string Cryptographer::decrypt_present(string ciphertext_bin){
+    char *key_ = "1f1f1ffa90e329231f1f1ffa90e32923";
+    std::stringstream sstream(ciphertext_bin);
+    std::string ciphertext_hex;
+    while (sstream.good()) {
+        std::bitset<8> bits;
+        sstream >> bits;
+        char c = char(bits.to_ulong());
+        ciphertext_hex += c;
+    }
+    //calling the decrypt function and printing the result
+    char *cstr = new char[ciphertext_hex.length() + 1];
+    strcpy(cstr, ciphertext_hex.c_str());
+    char * s = decrypt_present_(cstr, key_);
+    string s_(s);
+    cout<<hex_to_string(s_)<<endl;
+
+    return hex_to_string(s_);
 }

@@ -13,13 +13,22 @@
 #include "../src/des.hpp"
 #include <sstream>
 #include <iostream>
+#include <stdexcept>
+#include <iomanip>
+#include <string>
+#include <cstdint>
 
-
+//#include "Present.h"
+extern "C" {
+// Get declaration for f(int i, char c, float x)
+#include "../C_language/PRESENT.c"
+}
 
 using namespace std;
 
 class Cryptographer {
     string method = "aes";
+
 
 public:
     Cryptographer(const string &method);
@@ -31,6 +40,8 @@ public:
     string decrypt_clefia(string ciphertext_bin);
     string encrypt_des(string plaintext_);
     string decrypt_des(string ciphertext_bin);
+    string encrypt_present(string plaintext_);
+    string decrypt_present(string ciphertext_bin);
 };
 
 

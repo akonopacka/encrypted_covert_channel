@@ -7,9 +7,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_library(TINS_LIBRARY tins)
 include(FindPCAP.cmake)
-add_executable(encrypted_covert_channel src/des.hpp src/Cryptographer.cpp include/Cryptographer.h main.cpp include/Globals.h src/aes.hpp include/Receiver.h src/Receiver.cpp
-        src/Sender.cpp include/Sender.h  src/MethodTypeEnum.cpp
-        src/Globals.cpp clefia/clefia.h clefia/clefia.c src/present.hpp)
+add_executable(encrypted_covert_channel main.cpp src/des.hpp   include/Globals.h src/aes.hpp include/Receiver.h
+        src/Receiver.cpp src/Sender.cpp include/Cryptographer.h src/Cryptographer.cpp
+        include/Sender.h  src/MethodTypeEnum.cpp
+        src/Globals.cpp clefia/clefia.h clefia/clefia.c )
+
+#C_language/PRESENT.c
 
 target_link_libraries(encrypted_covert_channel ${PCAP_LIBRARY})
 target_link_libraries(encrypted_covert_channel "${TINS_LIBRARY}")
