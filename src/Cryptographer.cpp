@@ -3,7 +3,9 @@
 //
 
 #include "../include/Cryptographer.h"
-
+#define PASS "8888"
+#define PUBLICKEY "../keys/pub.pem"
+#define PRIVATEKEY "../keys/pri.pem"
 
 Cryptographer::Cryptographer(const string &method) : method(method) {}
 
@@ -38,92 +40,11 @@ std::string hex_to_string(const std::string& in) {
 
     return output;
 }
-#define KEY_LENGTH  2048
-#define PUB_EXP     3
-#define PASS "8888" //口令
 
-#define PUBLICKEY "../keys/pub.pem"
-#define PRIVATEKEY "../keys/pri.pem"
 
 string Cryptographer::encrypt(string plaintext){
     cout<<"Encrypting with method "<<method<<endl;
-
-    size_t pri_len;            // Length of private key
-    size_t pub_len;            // Length of public key
-    char   *pri_key;           // Private key
-    char   *pub_key;           // Public key
-    char   msg[KEY_LENGTH/8];  // Message to encrypt
-    char   *encrypt = NULL;    // Encrypted message
-    char   *decrypt = NULL;    // Decrypted message
-    char   *err;               // Buffer for any error messages
-
-    char   *pub_key_ =  "-----BEGIN RSA PUBLIC KEY-----MIIBCAKCAQEArEKesLiqzW0qmv6IbIY06rdoUxTd8N2UliT90Fv7ku+4S2Cs69KbQTlyeDo4cjrcLXrg2/EViltqEmcoYH0HvDCHa+ZZuLEotXRcycc6AFh7oddJ8nbLxDocjfPYivbElOo5pE6r7/Q99RAO7nc+WnG5jjWBdLsOec9PGgZY2q3w/zKVaR7R9JtUpPfhEsCxEdNqERb+7XsxikzE0XW9iDWPH+ArVLn9qRp9W44JPKxzcn/RKVOmtGnYKHNVbtzDOsud3BRwxQalenFHgA/Wj+Pf2AaCBeNbPZJwMlTJxYTdYyR9/b8mF82zXmEDSLWcyN5WX4RPJr5C/AvnPjfVkwIBAw==-----END RSA PUBLIC KEY-----\n";
-    char   *pri_key_ = "-----BEGIN RSA PRIVATE KEY-----\nMIIEogIBAAKCAQEArEKesLiqzW0qmv6IbIY06rdoUxTd8N2UliT90Fv7ku+4S2Cs\n69KbQTlyeDo4cjrcLXrg2/EViltqEmcoYH0HvDCHa+ZZuLEotXRcycc6AFh7oddJ\n8nbLxDocjfPYivbElOo5pE6r7/Q99RAO7nc+WnG5jjWBdLsOec9PGgZY2q3w/zKV\naR7R9JtUpPfhEsCxEdNqERb+7XsxikzE0XW9iDWPH+ArVLn9qRp9W44JPKxzcn/R\nKVOmtGnYKHNVbtzDOsud3BRwxQalenFHgA/Wj+Pf2AaCBeNbPZJwMlTJxYTdYyR9\n/b8mF82zXmEDSLWcyN5WX4RPJr5C/AvnPjfVkwIBAwKCAQBy1xR10HHeSMcR/wWd\nrs3xz5riDelLPmMOw1PgPVJh9SWHlcidNxIre6GlfCWhfJLI/JXn9g5cPPFhmhrq\n/gUoIFpH7uZ7IMXOTZMxL3wAOv0Wj4ahpIfYJr2z9+Wx+dhjRtEYNHKf+ClOCrSe\n+imRoSZezlZN0gmmijS8BDs8ct3/WiUDrY3IU+UU2LD7Mccn1aqX2Jli0maBMn/C\nz/1XJx5ItVGumj7RtRFSrcMFdFSpSF8gBUFHsej80VZ2OFz56I714d+CU9AyBbpL\niGlEUJX6D9VgQoyJG0Jh9pdYJ2XMe08r6cD7qmHIgTopVM3tcDHHk8FnoL74SeCY\nzATLAoGBANM7m2KR40P4GREbfGOFTxF2X5QQiiWJXK/X/YcxnIEXLnlUfkrUwfnf\nkQt/gXiF15kuZzYUeB2G1Dk+jCmKIRcOmBLeTTPPppuNfVA3U/mQWWYaPRR53178\n3rNqTdOC1HU39T5EYqYfc3EFqQUXd+MS4Sq/d7Y60oYuwO89KW85AoGBANDEj/tR\ntzlQBGvqNnQUpvTfs1Ycx/NP4ufwg337oUBuTGheUeX6EKWO+dfgB+wupltGLAxk\n06dCCsFurSozZyC1VrSM9G2x4lGh61/Xbz8ZEZjGsa17oClzCtk1FRM+dU94dkj3\nfd5+2q+r9ibzPoTR1OD0rvbQep5Y3Ccb3F8rAoGBAIzSZ5cL7Nf6u2C8/ZeuNLZO\n6mK1sW5bkx/lU692aFYPdFDi/tyN1qaVC1z/q6Wuj7t0RM64UBOvOCYpssZcFg9f\nEAyUM3ffxGezqOAk4qZgO5lm02L76j9TPyJG3o0B4vjP+NQtlxlqTPYDxgNk+pdh\n63HU+nl8jFl0gJ9+G597AoGBAIsttVI2eiY1WEfxeaK4b03qd4692qI1Qe/1rP6n\nwNWe3Zrpi+6mtcO0po/qr/LJxDzZcrLt4m+BXID0c3F3mhXOOc2zTZ52luEWnOqP\nn39mC7svIR5SasZMseYjY2Ipo4pQTttPqT7/PHUdTsSiKa3hOJX4dKSK/GmQksS9\nPZTHAoGAa3Xxp1yCjzkdRK6H/Ux9lMMCXAjU9Sx/C9ulhgYFr6m+YL4kdVOu7bM0\nLEANZ4Wr3ccy1AvrcL3cCLiWw31fz4Hwr4wqDQZnSm3meE6ndlLwnL4bTYyX/h0a\nxrS+fZZtlMnnt7sZnPZ1AwfjQG+1YfQ/QSYQK6ed25kDIxXZHGk=\n-----END RSA PRIVATE KEY-----\n";
-
-    FILE *fp = NULL;
-    RSA *publicRsa = NULL;
-    RSA *privateRsa = NULL;
-    if ((fp = fopen(PUBLICKEY, "r")) == NULL)
-    {
-        printf("public key path error\n");
-        return "-1";
-    }
-
-    if ((publicRsa = PEM_read_RSA_PUBKEY(fp, NULL, NULL, NULL)) == NULL)
-    {
-        printf("PEM_read_RSA_PUBKEY error\n");
-        return "-1";
-    }
-    fclose(fp);
-
-    if ((fp = fopen(PRIVATEKEY, "r")) == NULL)
-    {
-        printf("private key path error\n");
-        return "-1";
-    }
-    OpenSSL_add_all_algorithms();//密钥有经过口令加密需要这个函数
-    if ((privateRsa = PEM_read_RSAPrivateKey(fp, NULL, NULL, (char *)PASS)) == NULL)
-    {
-        printf("PEM_read_RSAPrivateKey error\n");
-        return "NULL";
-    }
-    fclose(fp);
-
-    unsigned char *source = (unsigned char *) plaintext.c_str();
-
-    int rsa_len = RSA_size(publicRsa);
-
-    unsigned char *encryptMsg = (unsigned char *)malloc(rsa_len);
-    memset(encryptMsg, 0, rsa_len);
-
-    int len = rsa_len - 11;
-
-    if (RSA_public_encrypt(len, source, encryptMsg, publicRsa, RSA_PKCS1_PADDING) < 0)
-        printf("RSA_public_encrypt error\n");
-    else
-    {
-        rsa_len = RSA_size(privateRsa);
-        unsigned char *decryptMsg = (unsigned char *)malloc(rsa_len);
-        memset(decryptMsg, 0, rsa_len);
-
-        int mun =  RSA_private_decrypt(rsa_len, encryptMsg, decryptMsg, privateRsa, RSA_PKCS1_PADDING);
-
-        if ( mun < 0)
-            printf("RSA_private_decrypt error\n");
-        else
-        {
-            printf("RSA_private_decrypt %s\n", decryptMsg);
-            printf("RSA_public_encrypt %s\n", encryptMsg);
-            cout<<endl<<decryptMsg<<endl;
-        }
-    }
-
-    RSA_free(publicRsa);
-    RSA_free(privateRsa);
-
-
-
-    if (method=="aes"){
+     if (method=="aes"){
         return encrypt_aes(plaintext);
     }
     else if (method=="des"){
@@ -132,6 +53,9 @@ string Cryptographer::encrypt(string plaintext){
     else if (method=="present"){
         return encrypt_present(plaintext);
     }
+     else if (method=="rsa"){
+         return encrypt_rsa(plaintext);
+     }
     return "OK";
 }
 
@@ -144,6 +68,9 @@ string Cryptographer::decrypt(string ciphertext){
     }
     else if (method=="present"){
         return decrypt_present(ciphertext);
+    }
+    else if (method=="rsa"){
+        return decrypt_rsa(ciphertext);
     }
     return "OK";
 }
@@ -462,4 +389,133 @@ string Cryptographer::decrypt_present(string ciphertext_bin){
     cout<<hex_to_string(s_)<<endl;
 
     return hex_to_string(s_);
+}
+
+string Cryptographer::encrypt_rsa(string plaintext_){
+    FILE *fp = NULL;
+    RSA *publicRsa = NULL;
+    RSA *privateRsa = NULL;
+    if ((fp = fopen(PUBLICKEY, "r")) == NULL)
+    {
+        printf("public key path error\n");
+        return "-1";
+    }
+
+    if ((publicRsa = PEM_read_RSA_PUBKEY(fp, NULL, NULL, NULL)) == NULL)
+    {
+        printf("PEM_read_RSA_PUBKEY error\n");
+        return "-1";
+    }
+    fclose(fp);
+
+    if ((fp = fopen(PRIVATEKEY, "r")) == NULL)
+    {
+        printf("private key path error\n");
+        return "-1";
+    }
+//    OpenSSL_add_all_algorithms();
+    if ((privateRsa = PEM_read_RSAPrivateKey(fp, NULL, NULL, (char *)PASS)) == NULL)
+    {
+        printf("PEM_read_RSAPrivateKey error\n");
+        return "NULL";
+    }
+    fclose(fp);
+
+    unsigned char *source = (unsigned char *) plaintext_.c_str();
+
+    int rsa_len = RSA_size(publicRsa);
+
+    unsigned char *encryptMsg = (unsigned char *)malloc(rsa_len);
+    memset(encryptMsg, 0, rsa_len);
+
+    int len = rsa_len - 11;
+    string binaryString = "";
+
+    if (RSA_public_encrypt(len, source, encryptMsg, publicRsa, RSA_PKCS1_PADDING) < 0)
+        printf("RSA_public_encrypt error\n");
+
+    else
+    {
+        string s( reinterpret_cast< char const* >(encryptMsg) ) ;
+
+        for (char& _char : s) {
+            binaryString +=bitset<8>(_char).to_string();
+        }
+//        cout<<binaryString<<endl;
+        string decrypted = decrypt_rsa(binaryString);
+        cout<<"dec: "<<decrypted<<endl;
+        return binaryString;
+    }
+
+    RSA_free(publicRsa);
+    RSA_free(privateRsa);
+    return binaryString;
+
+}
+string Cryptographer::decrypt_rsa(string ciphertext_bin){
+    FILE *fp = NULL;
+    RSA *publicRsa = NULL;
+    RSA *privateRsa = NULL;
+    if ((fp = fopen("../keys/pub.pem", "r")) == NULL)
+    {
+        printf("public key path error\n");
+        return "-1";
+    }
+
+    if ((publicRsa = PEM_read_RSA_PUBKEY(fp, NULL, NULL, NULL)) == NULL)
+    {
+        printf("PEM_read_RSA_PUBKEY error\n");
+        return "-1";
+    }
+    fclose(fp);
+
+    if ((fp = fopen(PRIVATEKEY, "r")) == NULL)
+    {
+        printf("private key path error\n");
+        return "-1";
+    }
+    if ((privateRsa = PEM_read_RSAPrivateKey(fp, NULL, NULL, (char *)PASS)) == NULL)
+    {
+        printf("PEM_read_RSAPrivateKey error\n");
+        return "NULL";
+    }
+    fclose(fp);
+    OpenSSL_add_all_algorithms();
+    int rsa_len = RSA_size(publicRsa);
+
+    rsa_len = RSA_size(privateRsa);
+    unsigned char *decryptMsg = (unsigned char *)malloc(rsa_len);
+    memset(decryptMsg, 0, rsa_len);
+
+    unsigned char *encryptMsg = (unsigned char *)malloc(rsa_len);
+
+    std::stringstream sstream(ciphertext_bin);
+    std::string output;
+    while (sstream.good()) {
+        std::bitset<8> bits;
+        sstream >> bits;
+        unsigned char c = (unsigned char)(bits.to_ulong());
+        output += c;
+    }
+
+    unsigned char *val=new unsigned char[output.length()+1];
+    strcpy((char *)val,output.c_str());
+    encryptMsg = val;
+
+    int mun =  RSA_private_decrypt(rsa_len, encryptMsg, decryptMsg, privateRsa, RSA_PKCS1_PADDING);
+
+
+    if ( mun < 0){
+        printf("RSA_private_decrypt error\n");
+        return "";
+    }
+    else
+    {
+//        printf("RSA_private_decrypt %s\n", decryptMsg);
+//        printf("RSA_public_encrypt %s\n", encryptMsg);
+        string s_(reinterpret_cast<char*>(decryptMsg));
+        return s_;
+    }
+
+
 }

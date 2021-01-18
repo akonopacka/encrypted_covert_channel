@@ -50,6 +50,8 @@ public:
     string decrypt_des(string ciphertext_bin);
     string encrypt_present(string plaintext_);
     string decrypt_present(string ciphertext_bin);
+    string encrypt_rsa(string plaintext_);
+    string decrypt_rsa(string ciphertext_bin);
 };
 
 
