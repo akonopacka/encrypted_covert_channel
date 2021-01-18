@@ -27,7 +27,9 @@ extern "C" {
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/err.h>
+#include <stdio.h>
 
+#include <stdlib.h>
 
 
 using namespace std;
