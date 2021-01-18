@@ -21,7 +21,7 @@
 //#include "Present.h"
 extern "C" {
 // Get declaration for f(int i, char c, float x)
-#include "../C_language/PRESENT.c"
+#include "../C_language/PRESENT.c"]
 }
 //#include "../include/openssl_rsa.h"
 #include <openssl/rsa.h>
@@ -30,6 +30,7 @@ extern "C" {
 #include <stdio.h>
 
 #include <stdlib.h>
+#include "../src/Clefia.hpp"
 
 
 using namespace std;

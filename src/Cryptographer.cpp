@@ -11,40 +11,34 @@ Cryptographer::Cryptographer(const string &method) : method(method) {}
 
 std::string string_to_hex(const std::string& in) {
     std::stringstream ss;
-
     ss << std::hex << std::setfill('0');
     for (size_t i = 0; in.length() > i; ++i) {
         ss << std::setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(in[i]));
     }
-
     return ss.str();
 }
 
 std::string hex_to_string(const std::string& in) {
     std::string output;
-
     if ((in.length() % 2) != 0) {
         throw std::runtime_error("String is not valid length ...");
     }
-
     size_t cnt = in.length() / 2;
-
     for (size_t i = 0; cnt > i; ++i) {
         uint32_t s = 0;
         std::stringstream ss;
         ss << std::hex << in.substr(i * 2, 2);
         ss >> s;
-
         output.push_back(static_cast<unsigned char>(s));
     }
-
     return output;
 }
 
 
 string Cryptographer::encrypt(string plaintext){
     cout<<"Encrypting with method "<<method<<endl;
-     if (method=="aes"){
+
+    if (method=="aes"){
         return encrypt_aes(plaintext);
     }
     else if (method=="des"){
@@ -56,6 +50,9 @@ string Cryptographer::encrypt(string plaintext){
      else if (method=="rsa"){
          return encrypt_rsa(plaintext);
      }
+    else if (method=="clefia"){
+        return encrypt_clefia(plaintext);
+    }
     return "OK";
 }
 
@@ -71,6 +68,9 @@ string Cryptographer::decrypt(string ciphertext){
     }
     else if (method=="rsa"){
         return decrypt_rsa(ciphertext);
+    }
+    else if (method=="clefia"){
+        return decrypt_clefia(ciphertext);
     }
     return "OK";
 }
@@ -179,64 +179,88 @@ int32_t fsize(FILE *fp){
 
 
 string Cryptographer::encrypt_clefia(string plaintext_){
-//    int code_mode = strcmp("c", "c");
-//    if (code_mode == 0) {
-//        printf("Coding %s\n", "c.txt");
-//    } else {
-//        printf("Decoding %s\n", "d.txt");
-//    }
-//
-//    FILE* fp_src = fopen("c.txt", "rb");
-//    if (fp_src == NULL) {
-//        perror("Can't open src file");
-//    }
-//    FILE* fp_key = fopen("d.txt", "rb");
-//    if (fp_key == NULL) {
-//        perror("Can't open key file");
-//    }
-//    FILE* fp_result = fopen("result", "wb");
-//    if (fp_result == NULL) {
-//        perror("Can't create resulting file");
-//    }
-//
-//    uint32_t input_block[4] = {0, 0, 0, 0};
-//    uint32_t key_block[4] = {0, 0, 0, 0};
-//
-//    fread(key_block, sizeof(uint32_t), 4, fp_key);
-//
-//    uint32_t white_keys[4];
-//    uint32_t round_keys[36];
-//
-//    generate_keys(key_block, white_keys, round_keys);
-//
-//    uint32_t result_block[4];
-//
-//    printf("Size of input file: %d\n", fsize(fp_src) * 8);
-//    while (!feof(fp_src)) {
-//        memset(input_block, 0, sizeof(uint32_t) * 4);
-//        //Set blocks to 0
-//
-//        size_t read = fread(input_block, sizeof(uint32_t), 4, fp_src);
-//        if (read == 0) {
-//            continue;
-//        }
-//        printf("Read: %d\n", read * sizeof(uint32_t) * 8);
-//        //Read blocks from file
-//
-//        if (code_mode == 0) {
-//            crypt_white(input_block, round_keys, white_keys, result_block);
-//        } else {
-//            decrypt_white(input_block, round_keys, white_keys, result_block);
-//        }
-//
-//        fwrite(result_block, sizeof(uint32_t), 4, fp_result);
-//    }
-//
-//    fclose(fp_key);
-//    fclose(fp_src);
-//    fclose(fp_result);
+    unsigned char rs[384];
+    unsigned char *lookupTables[576];
+    const unsigned char skey[32] = {
+            0xffU,0xeeU,0xddU,0xccU,0xbbU,0xaaU,0x99U,0x88U,
+            0x77U,0x66U,0x55U,0x44U,0x33U,0x22U,0x11U,0x00U,
+            0xf0U,0xe0U,0xd0U,0xc0U,0xb0U,0xa0U,0x90U,0x80U,
+            0x70U,0x60U,0x50U,0x40U,0x30U,0x20U,0x10U,0x00U
+    };
 
-    return "s";
+    plaintext_.resize (16,'1');
+    const unsigned char pt[16] = "12z2465896abcdF";
+    strcpy((char *) pt, plaintext_.c_str() );
+
+
+    unsigned char ct[16];
+    unsigned char dst[16];
+    unsigned char rk[8 * 26 + 16]; /* 8 bytes x 26 rounds(max) + whitening keys */
+    clefia::ClefiaRandomSet(rs);
+    clefia::ClefiaKeySet(rk, skey, 128);
+
+    clefia::WBtableSet128(lookupTables,pt,rk,rs,skey);
+
+    printf("--- Test ---\n");
+    printf("plaintext:  "); clefia::BytePut(pt, 16);
+    printf("secretkey:  "); clefia::BytePut(skey, 32);
+
+    clefia::WBInterEnc128(ct,pt,lookupTables);
+    printf("ciphertext: "); clefia::BytePut(ct, 16);
+
+    int r;
+    /* encryption */
+    r = clefia::ClefiaKeySet(rk, skey, 128);
+    clefia::ClefiaEncrypt(dst, pt, rk, r);
+    printf("ciphertext: "); clefia::BytePut(dst, 16);
+    string binaryString = "";
+    for (unsigned char _char : dst) {
+        binaryString +=bitset<8>(_char).to_string();
+    }
+    cout<<"Bin1: "<<binaryString<<endl;
+
+    /* decryption */
+    clefia::ByteCpy(ct, dst, 16);
+    r = clefia::ClefiaKeySet(rk, skey, 128);
+    clefia::ClefiaDecrypt(dst, ct, rk, r);
+    printf("plaintext : "); clefia::BytePut(dst, 16);
+
+
+    std::stringstream sstream(binaryString);
+    std::string output;
+
+    unsigned char encrypted[16];
+    int i =0;
+    while (sstream.good()) {
+        std::bitset<8> bits;
+        sstream >> bits;
+        unsigned char c = (unsigned char)(bits.to_ulong());
+        encrypted[i]= c;
+        i++;
+    }
+//    unsigned char pt_[16];
+//    strcpy((char *) pt_, output.c_str() );
+
+
+    /* decryption */
+    unsigned char decrypted[16];
+    clefia::ByteCpy(ct, encrypted, 16);
+    r = clefia::ClefiaKeySet(rk, skey, 128);
+    clefia::ClefiaDecrypt(decrypted, encrypted, rk, r);
+    printf("plaintext : "); clefia::BytePut(encrypted, 16);
+    cout<< "after decoding "<<decrypted<<endl;
+
+//    int a,b;
+//    scanf("%d|%d", &a, &b);
+
+    std::string s = "";
+    for (unsigned char c: decrypted) {
+        s=s+(char)c;
+    }
+    cout<< "String: "<<s<<endl;
+
+
+    return binaryString;
 }
 
 string Cryptographer::decrypt_clefia(string ciphertext_bin){

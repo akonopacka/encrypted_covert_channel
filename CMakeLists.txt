@@ -10,7 +10,7 @@ include(FindPCAP.cmake)
 add_executable(encrypted_covert_channel main.cpp src/des.hpp   include/Globals.h src/aes.hpp include/Receiver.h
         src/Receiver.cpp src/Sender.cpp include/Cryptographer.h src/Cryptographer.cpp
         include/Sender.h  src/MethodTypeEnum.cpp
-        src/Globals.cpp clefia/clefia.h clefia/clefia.c )
+        src/Globals.cpp clefia/clefia.h clefia/clefia.c src/Clefia.hpp)
 
 #C_language/PRESENT.c include/openssl_rsa.h src/openssl_rsa.cpp
 
