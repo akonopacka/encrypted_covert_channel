@@ -56,8 +56,8 @@ public:
     string decrypt_present(string ciphertext_bin);
     string encrypt_rsa(string plaintext_);
     string decrypt_rsa(string ciphertext_bin);
-    string encrypt_trivium(string plaintext_);
-    string decrypt_trivium(string ciphertext_bin);
+    string encrypt_grain(string plaintext_);
+    string decrypt_grain(string ciphertext_bin);
 };
 
 

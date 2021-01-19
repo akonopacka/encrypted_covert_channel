@@ -53,8 +53,8 @@ string Cryptographer::encrypt(string plaintext){
     else if (method=="clefia"){
         return encrypt_clefia(plaintext);
     }
-    else if (method=="trivium"){
-        return encrypt_trivium(plaintext);
+    else if (method=="grain"){
+        return encrypt_grain(plaintext);
     }
     return "OK";
 }
@@ -75,8 +75,8 @@ string Cryptographer::decrypt(string ciphertext){
     else if (method=="clefia"){
         return decrypt_clefia(ciphertext);
     }
-    else if (method=="trivium"){
-        return decrypt_trivium(ciphertext);
+    else if (method=="grain"){
+        return decrypt_grain(ciphertext);
     }
     return "OK";
 }
@@ -536,7 +536,7 @@ string Cryptographer::decrypt_rsa(string ciphertext_bin){
     }
 }
 
-string Cryptographer::encrypt_trivium(string plaintext_){
+string Cryptographer::encrypt_grain(string plaintext_){
 
     int i =0;
     int plaintext[10];
@@ -571,12 +571,12 @@ string Cryptographer::encrypt_trivium(string plaintext_){
         std::string binary = std::bitset<8>(j).to_string();
         ciphertext_bin = ciphertext_bin + binary;
     }
-//    decrypt_trivium(ciphertext_bin);
+//    decrypt_grain(ciphertext_bin);
 
     return ciphertext_bin;
 }
 
-string Cryptographer::decrypt_trivium(string ciphertext_bin){
+string Cryptographer::decrypt_grain(string ciphertext_bin){
     int encrypted_text[10];
     int decrypted_text[10];
 
