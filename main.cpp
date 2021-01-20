@@ -13,7 +13,6 @@ using std::string;
 #include <chrono>
 
 #include <unistd.h>
-//#include "include/Globals.h"
 #include "include/Sender.h"
 #include "include/Receiver.h"
 

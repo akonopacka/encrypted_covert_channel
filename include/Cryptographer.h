@@ -35,6 +35,7 @@ extern "C" {
 #include "../src/trivium.hpp"
 //#include "../C_language/grain.h"
 #include "../C_language/grain.c"
+#include "../include/openssl_rsa.h"
 
 using namespace std;
 
