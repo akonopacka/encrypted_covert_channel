@@ -10,7 +10,7 @@
     "time_interval_stop_ms" : 6000
   },
   "cryptography": {
-    "is_encrypted" : true,
+    "is_encrypted" : false,
     "method" : "aes"
   }
 }

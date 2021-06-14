@@ -284,8 +284,14 @@ bool Receiver::loss_callback(const PDU &pdu){
             cout << "Capacity:  "<< capacity<<" b/s"<< endl;
 
             Globals::message_ = "";
+            Globals::is_started_receiving = false;
         }
         else{
+            if (!Globals::is_started_receiving){
+                Globals::start_receiving = high_resolution_clock::now();
+                Globals::is_started_receiving = true;
+            }
+
             if (seq != 1) {
                 int i = seq - Globals::last_seq_;
                 if (i == 1) {
@@ -296,9 +302,6 @@ bool Receiver::loss_callback(const PDU &pdu){
                     Globals::message_ = Globals::message_ + s + '0';
                     Globals::last_seq_ = Globals::last_seq_ + i;
                 }
-            }
-            else{
-                Globals::start_receiving = high_resolution_clock::now();
             }
         }
     }
