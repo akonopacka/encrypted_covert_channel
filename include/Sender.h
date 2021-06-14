@@ -36,7 +36,7 @@
 #include <netdb.h> /* struct hostent, gethostbyname */
 
 #include "Cryptographer.h"
-
+#include "Evaluation.h"
 
 
 using namespace std;
@@ -50,6 +50,7 @@ class Sender {
     string method = "timing";
     bool is_encrypted = true;
     string cipher_type = "aes";
+    Evaluation evaluation = Evaluation();
 
 public:
 

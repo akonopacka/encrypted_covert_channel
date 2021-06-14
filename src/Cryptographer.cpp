@@ -97,7 +97,7 @@ string Cryptographer::encrypt_aes(string plaintext_) {
     plusaes::encrypt_cbc((unsigned char*)raw_data.data(), raw_data.size(), &key_[0], key_.size(), &iv_, &encrypted[0], encrypted.size(), true);
     // fb 7b ae 95 d5 0f c5 6f 43 7d 14 6b 6a 29 15 70
 
-    cout<<"Message: "<<plaintext_<<" Encrypted: ";
+    cout<<"Message: "<<plaintext_<<" \nEncrypted: ";
 
     for (int i= 0 ;i<  encrypted.size(); ++i) {
         cout << encrypted[i] ;

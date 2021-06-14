@@ -300,6 +300,17 @@ void Sender::send_with_loss_method(const string message_to_send){
 
 void Sender::send_message(string message_to_send){
     std::cout<<"Sending method: "<<method<<", Message is encrypted: " << std::boolalpha << is_encrypted<<endl;
+
+    float cpu_usage = evaluation.get_CPU_value();
+    sleep(2);
+    cpu_usage = evaluation.get_CPU_value();
+    std::cout<<"CPU usage: "<<cpu_usage<<"\n";
+    sleep(2);
+    cpu_usage = evaluation.get_CPU_value();
+    std::cout<<"CPU usage: "<<cpu_usage<<"\n";
+    float mem_usage = evaluation.get_mem_value();
+    std::cout<<"Men usage: "<<mem_usage<<"\n";
+
     if (is_encrypted){
         Cryptographer cryptographer = Cryptographer(cipher_type);
         message_to_send = cryptographer.encrypt(message_to_send);

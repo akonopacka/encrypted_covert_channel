@@ -11,7 +11,7 @@ add_executable(encrypted_covert_channel main.cpp src/des.hpp   include/Globals.h
         src/Receiver.cpp src/Sender.cpp include/Cryptographer.h src/Cryptographer.cpp
         include/Sender.h  src/MethodTypeEnum.cpp include/openssl_rsa.h src/openssl_rsa.cpp
         src/Globals.cpp clefia/clefia.h clefia/clefia.c src/Clefia.hpp src/trivium.hpp C_language/grain.h C_language/grain.c
-        )
+        src/Evaluation.cpp include/Evaluation.h)
 
 target_link_libraries(encrypted_covert_channel ${PCAP_LIBRARY})
 target_link_libraries(encrypted_covert_channel "${TINS_LIBRARY}")
