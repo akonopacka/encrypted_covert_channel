@@ -13,6 +13,7 @@ namespace Globals
 {
     extern std::chrono::high_resolution_clock::time_point time_of_last_packet_;
     extern std::chrono::high_resolution_clock::time_point time_received_;
+    extern std::chrono::high_resolution_clock::time_point start_receiving, stop_receiving;
     extern std::chrono::duration<double, std::milli> time_span_;
     extern double last_packet_timestamp_;
     extern int last_seq_;

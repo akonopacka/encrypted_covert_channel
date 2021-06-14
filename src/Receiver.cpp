@@ -257,6 +257,8 @@ bool Receiver::loss_callback(const PDU &pdu){
                   << tcp.seq() << endl;
         int seq = tcp.seq();
         if (seq == 0){
+
+            Globals::stop_receiving = high_resolution_clock::now();
             Globals::message_.pop_back();
             std::stringstream sstream(Globals::message_);
             std::string output;
@@ -269,28 +271,38 @@ bool Receiver::loss_callback(const PDU &pdu){
             }
             Globals::last_seq_=1;
 //            std::cout<<"Received message: bin "<<Globals::message_ << std::endl<<"as string: "<< output<<std::endl;
+            std::cout<<"Received message: bin "<<Globals::message_ <<" len: "<<Globals::message_.length()<<std::endl;
             if (Globals::is_encrypted){
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type);
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
                 std::cout<<"Decrypted: "<<decrypted_message <<std::endl;
             }
+            auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
+            cout << "Time taken for receiving: "<< duration.count() << " microseconds" << endl;
+            int sent_bits = Globals::message_.length();
+            float capacity = float(sent_bits)/ (duration.count()*0.001);
+            cout << "Capacity:  "<< capacity<<" b/s"<< endl;
+
             Globals::message_ = "";
         }
         else{
-            if (seq!=1){
+            if (seq != 1) {
                 int i = seq - Globals::last_seq_;
-                if (i==1){
+                if (i == 1) {
                     Globals::message_ = Globals::message_ + '0';
                     Globals::last_seq_ = seq;
-                }
-                else{
-                    std::string s(i-1, '1');
-                    Globals::message_ = Globals::message_ + s+'0';
+                } else {
+                    std::string s(i - 1, '1');
+                    Globals::message_ = Globals::message_ + s + '0';
                     Globals::last_seq_ = Globals::last_seq_ + i;
                 }
+            }
+            else{
+                Globals::start_receiving = high_resolution_clock::now();
             }
         }
     }
     return true;
 }
+
 

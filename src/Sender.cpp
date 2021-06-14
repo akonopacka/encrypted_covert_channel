@@ -269,7 +269,7 @@ void Sender::send_with_loss_method(const string message_to_send){
     else{
         binaryString=message_to_send;
     }
-    cout<<"Message to send: "<<word<<endl<<"Bin: "<<binaryString<<endl;
+    cout<<"Bin: "<<binaryString<<endl;
     string message = binaryString;
     PacketSender sender;
     int seq = 1;
@@ -305,16 +305,21 @@ void Sender::send_message(string message_to_send){
     sleep(2);
     cpu_usage = evaluation.get_CPU_value();
     std::cout<<"CPU usage: "<<cpu_usage<<"\n";
-    sleep(2);
-    cpu_usage = evaluation.get_CPU_value();
-    std::cout<<"CPU usage: "<<cpu_usage<<"\n";
+
     float mem_usage = evaluation.get_mem_value();
     std::cout<<"Men usage: "<<mem_usage<<"\n";
 
     if (is_encrypted){
         Cryptographer cryptographer = Cryptographer(cipher_type);
+        // Get starting timepoint
+        auto start = high_resolution_clock::now();
         message_to_send = cryptographer.encrypt(message_to_send);
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        cout << "Time taken by encrypting function: "<< duration.count() << " microseconds" << endl;
     }
+    // Get starting timepoint
+    auto start = high_resolution_clock::now();
     if (method=="storage"){
         send_with_storage_method(message_to_send);
     }
@@ -336,5 +341,8 @@ void Sender::send_message(string message_to_send){
     else if (method=="timing"){
         send_with_timing_method(message_to_send);
     }
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    cout << "Time taken by sending function: "<< duration.count() << " microseconds" << endl;
 }
 
