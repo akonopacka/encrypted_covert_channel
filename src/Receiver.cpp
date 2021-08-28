@@ -273,7 +273,7 @@ bool Receiver::loss_callback(const PDU &pdu){
 //            std::cout<<"Received message: bin "<<Globals::message_ << std::endl<<"as string: "<< output<<std::endl;
             std::cout<<"Received message: bin "<<Globals::message_ <<" len: "<<Globals::message_.length()<<std::endl;
             if (Globals::is_encrypted){
-                Cryptographer cryptographer = Cryptographer(Globals::cipher_type);
+                Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
                 std::cout<<"Decrypted: "<<decrypted_message <<std::endl;
             }

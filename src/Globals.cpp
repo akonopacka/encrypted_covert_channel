@@ -18,11 +18,24 @@ namespace Globals
     std::string message_ = "";
     std::string interface_ = "lo";
     std::string IPv4_address = "127.0.0.1";
+    int number_of_repeat_ = 1;
     int src_port_ = 1111;
     int dst_port_= 1111;
     int time_interval_1_ms_ = 1100;
     int time_interval_stop_ms_ = 6000;
     bool is_encrypted = false;
     bool is_started_receiving = false;
-    std::string cipher_type = "aes";
+    std::string cipher_type_ = "aes";
+
+    void load_globals(Json::Value config) {
+        Globals::interface_ = config["interface"].asString();
+        Globals::IPv4_address = config["server_IPv4_address"].asString();
+        Globals::dst_port_ = config["dst_port"].asInt();
+        Globals::src_port_ = config["src_port"].asInt();
+        Globals::time_interval_1_ms_ = config["timing_method"]["time_interval_1_ms"].asInt();
+        Globals::time_interval_stop_ms_ = config["timing_method"]["time_interval_stop_ms"].asInt();
+        Globals::is_encrypted = config["cryptography"]["is_encrypted"].asBool();
+        Globals::number_of_repeat_ = config["number_of_repeat"].asInt();
+        Globals::cipher_type_ = config["cryptography"]["method"].asString();
+    }
 }

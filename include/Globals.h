@@ -7,6 +7,8 @@
 
 #include <chrono>
 #include <string>
+#include <jsoncpp/json/json.h>
+#include <jsoncpp/json/value.h>
 
 using std::string;
 namespace Globals
@@ -20,13 +22,17 @@ namespace Globals
     extern std::string message_;
     extern std::string interface_;
     extern std::string IPv4_address;
+    extern int number_of_repeat_;
     extern int src_port_;
     extern int dst_port_;
     extern int time_interval_1_ms_;
     extern int time_interval_stop_ms_;
-    extern bool is_encrypted;
+
     extern bool is_started_receiving;
-    extern std::string cipher_type;
+    extern bool is_encrypted;
+    extern std::string cipher_type_;
+
+    extern void load_globals(Json::Value config);
 
 }
 
