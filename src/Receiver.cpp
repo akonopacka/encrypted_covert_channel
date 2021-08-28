@@ -252,9 +252,9 @@ bool Receiver::loss_callback(const PDU &pdu){
     const TCP &tcp = pdu.rfind_pdu<TCP>();
 
     if (tcp.dport()==Globals::dst_port_){
-        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
-                  << ip.dst_addr() << ':' << tcp.dport() << "    "
-                  << tcp.seq() << endl;
+//        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
+//                  << ip.dst_addr() << ':' << tcp.dport() << "    "
+//                  << tcp.seq() << endl;
         int seq = tcp.seq();
         if (seq == 0){
 

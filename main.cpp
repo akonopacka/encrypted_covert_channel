@@ -12,7 +12,6 @@ using std::string;
 #include <tins/tins.h>
 #include <chrono>
 
-#include <unistd.h>
 #include "include/Sender.h"
 #include "include/Receiver.h"
 
