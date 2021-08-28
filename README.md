@@ -8,3 +8,5 @@ Implementation of encrypted covert channels which are secured with different cip
 - Random Value (PS10)
 - Case Pattern (PS11.a)
 - Least Significant Bit (LSB) Pattern (PS11.b)
+
+// "timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss" <- covert_channel_type

@@ -4,6 +4,54 @@
 Receiver::Receiver() {
     Globals::message_ = "";
     Globals::last_seq_=1;
+    if (Globals::covert_channel_type_ == "storage") {
+        std::cout << "Server! - Storage method\n";
+        Sniffer sniffer(Globals::interface_);
+        sniffer.set_filter("tcp&&port 1234");
+        Sniffer(Globals::interface_).sniff_loop(storage_callback);
+    } else if (Globals::covert_channel_type_ == "IP_id") {
+        std::cout << "Server! - IP_id method\n";
+        Sniffer sniffer(Globals::interface_);
+        sniffer.set_filter("tcp&&port 1234");
+        Sniffer(Globals::interface_).sniff_loop(IP_id_callback);
+    }
+    else if (Globals::covert_channel_type_ == "HTTP") {
+        std::cout << "Server! - HTTP method\n";
+        HTTP_callback();
+    }
+    else if (Globals::covert_channel_type_ == "LSB") {
+        std::cout << "Server! - LSB Hop limit method\n";
+        Sniffer sniffer(Globals::interface_);
+        sniffer.set_filter("tcp&&port 1234");
+        Sniffer(Globals::interface_).sniff_loop(LSB_Hop_callback);
+    }
+    else if (Globals::covert_channel_type_ == "sequence") {
+        std::cout << "Server! - sequence method\n";
+        Globals::message_="";
+        Globals::last_seq_ = 1;
+        Sniffer sniffer(Globals::interface_);
+        sniffer.set_filter("tcp.dstport==1234");
+        sniffer.sniff_loop(sequence_callback);
+    }
+    else if (Globals::covert_channel_type_ == "loss") {
+        std::cout << "Server! - Loss method\n";
+        Globals::message_="";
+        Globals::last_seq_ = 1;
+        Sniffer sniffer(Globals::interface_);
+        sniffer.set_filter("tcp.dstport==1234");
+        sniffer.sniff_loop(loss_callback);
+    }
+    else if (Globals::covert_channel_type_ == "timing") {
+        std::cout << "Server! - Timing method\n";
+        string filter = "udp&&!icmp&&!dns&&udp.dstport=="+Globals::dst_port_;
+        SnifferConfiguration sniffer_configuration = SnifferConfiguration();
+        sniffer_configuration.set_immediate_mode(true);
+        string f = "udp port "+Globals::dst_port_;
+        sniffer_configuration.set_filter("udp port 1234");
+        Sniffer sniffer(Globals::interface_, sniffer_configuration);
+        sniffer.set_filter(filter);
+        sniffer.sniff_loop(timing_callback);
+    }
 }
 
 bool Receiver::timing_callback(const PDU &pdu) {

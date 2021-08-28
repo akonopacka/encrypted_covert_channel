@@ -26,6 +26,7 @@ namespace Globals
     bool is_encrypted = false;
     bool is_started_receiving = false;
     std::string cipher_type_ = "aes";
+    std::string covert_channel_type_ = "loss";
 
     void load_globals(Json::Value config) {
         Globals::interface_ = config["interface"].asString();
@@ -37,5 +38,6 @@ namespace Globals
         Globals::is_encrypted = config["cryptography"]["is_encrypted"].asBool();
         Globals::number_of_repeat_ = config["number_of_repeat"].asInt();
         Globals::cipher_type_ = config["cryptography"]["method"].asString();
+        Globals::covert_channel_type_ = config["covert_channel_type"].asString();
     }
 }
