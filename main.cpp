@@ -38,7 +38,16 @@ int main(int argc, char **argv) {
     Globals::load_globals(config);
 
     if (argc > 1) {
+        if (argc > 2){
+            std::cout << argv[2] << endl<< endl;
+            Globals::covert_channel_type_ = argv[2];
+        }
+        else{
+            std::cout << "Default covert channel type" << endl<< endl;
+        }
+
         if (!strcmp(argv[1], "--server")) {
+            std::cout << "Starting server" << endl<< endl;
             Receiver receiver = Receiver();
         }
         else if (!strcmp(argv[1], "--client")) {

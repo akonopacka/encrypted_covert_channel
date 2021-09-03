@@ -38,6 +38,6 @@ namespace Globals
         Globals::is_encrypted = config["cryptography"]["is_encrypted"].asBool();
         Globals::number_of_repeat_ = config["number_of_repeat"].asInt();
         Globals::cipher_type_ = config["cryptography"]["method"].asString();
-        Globals::covert_channel_type_ = config["covert_channel_type"].asString();
+
     }
 }
