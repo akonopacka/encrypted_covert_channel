@@ -35,7 +35,6 @@ namespace Globals
         Globals::src_port_ = config["src_port"].asInt();
         Globals::time_interval_1_ms_ = config["timing_method"]["time_interval_1_ms"].asInt();
         Globals::time_interval_stop_ms_ = config["timing_method"]["time_interval_stop_ms"].asInt();
-        Globals::is_encrypted = config["cryptography"]["is_encrypted"].asBool();
         Globals::number_of_repeat_ = config["number_of_repeat"].asInt();
         Globals::cipher_type_ = config["cryptography"]["method"].asString();
 

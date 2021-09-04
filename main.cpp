@@ -39,15 +39,15 @@ int main(int argc, char **argv) {
 
     if (argc > 1) {
         if (argc > 2){
-            std::cout << argv[2] << endl<< endl;
             Globals::covert_channel_type_ = argv[2];
         }
-        else{
-            std::cout << "Default covert channel type" << endl<< endl;
+        if (argc > 3){
+            if (!strcmp(argv[3], "--is_encrypted"))
+                Globals::is_encrypted = true;
         }
 
         if (!strcmp(argv[1], "--server")) {
-            std::cout << "Starting server" << endl<< endl;
+            std::cout << "Starting server" << endl;
             Receiver receiver = Receiver();
         }
         else if (!strcmp(argv[1], "--client")) {

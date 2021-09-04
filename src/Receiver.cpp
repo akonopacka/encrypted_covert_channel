@@ -4,6 +4,12 @@
 Receiver::Receiver() {
     Globals::message_ = "";
     Globals::last_seq_=1;
+//    Print configuration of server
+    std::cout << "Server! - "<< Globals::covert_channel_type_ << " method\n";
+    std::cout << "Is encrypted - ";
+    printf(Globals::is_encrypted ? "true" : "false");
+    std::cout << " \n";
+
     if (Globals::covert_channel_type_ == "storage") {
         std::cout << "Server! - Storage method\n";
         Sniffer sniffer(Globals::interface_);
