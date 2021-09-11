@@ -1,23 +1,17 @@
 /*
 	Better description
 */
-#include <string.h>
 #include <string>
-
-using std::string;
-
-#include <vector>
 #include <unistd.h>
 #include <iostream>
 #include <tins/tins.h>
 #include <chrono>
-
-#include "include/Sender.h"
-#include "include/Receiver.h"
-
 #include <jsoncpp/json/json.h>
 #include <jsoncpp/json/value.h>
 #include <fstream>
+
+#include "include/Sender.h"
+#include "include/Receiver.h"
 
 using namespace Tins;
 using namespace std;
@@ -47,13 +41,13 @@ int main(int argc, char **argv) {
         }
 
         if (!strcmp(argv[1], "--server")) {
-            std::cout << "Starting server" << endl;
+            std::cout << "Starting server..." << endl;
             Receiver receiver = Receiver();
         }
         else if (!strcmp(argv[1], "--client")) {
             // Configuring parameters
             bool is_encrypted = config["cryptography"]["is_encrypted"].asBool();
-            Sender sender = Sender(Globals::covert_channel_type_, is_encrypted, Globals::cipher_type_);
+            Sender sender = Sender(Globals::covert_channel_type_, Globals::is_encrypted, Globals::cipher_type_);
             for(int i=0; i<Globals::number_of_repeat_;i++){
                 sender.send_message(message_to_send);
                 sleep(2);

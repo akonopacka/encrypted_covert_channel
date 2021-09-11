@@ -76,3 +76,50 @@ float Evaluation::get_mem_value() {
     return rate_;
 }
 
+// Get current date/time, format is YYYY-MM-DD.HH:mm:ss
+std::string Evaluation::currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
+    return buf;
+}
+
+void Evaluation::save_results_to_file(std::string results, std::string path, std::string method, std::string mode) {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
+    std::string currentDateTime  = buf;
+    //Generate the name of filed
+    std::string filename = mode + "_" + method + "_" + currentDateTime + ".txt";
+    path = path + filename;
+    //Save results to file
+    std::cout<<"Saving results to file in path: "<<path<<std::endl;
+    std::ofstream myfile;
+    myfile.open (path);
+    myfile << results;
+    myfile.close();
+}
+
+float Evaluation::get_BER(std::string original_message, std::string received_message) {
+    int length = received_message.length();
+    int counter = 0;
+    for (int i=0;i<length;i++){
+        if (received_message[i]!= original_message[i]){
+            counter++;
+        }
+    }
+    float ber = 0;
+    if (length > 0){
+        ber = float(counter)/ length;
+    }
+    return ber;
+}
+

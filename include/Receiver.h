@@ -7,15 +7,17 @@
 #include <iostream>
 #include <bitset>
 #include <sstream>
-#include "Globals.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <fstream>
 
+#include "Globals.h"
 #include "Cryptographer.h"
+#include "Evaluation.h"
 
 
 using namespace std;

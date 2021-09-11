@@ -8,7 +8,7 @@ Receiver::Receiver() {
     std::cout << "Server! - "<< Globals::covert_channel_type_ << " method\n";
     std::cout << "Is encrypted - ";
     printf(Globals::is_encrypted ? "true" : "false");
-    std::cout << " \n";
+    std::cout << " \n\n";
 
     if (Globals::covert_channel_type_ == "storage") {
         std::cout << "Server! - Storage method\n";
@@ -325,17 +325,29 @@ bool Receiver::loss_callback(const PDU &pdu){
             }
             Globals::last_seq_=1;
 //            std::cout<<"Received message: bin "<<Globals::message_ << std::endl<<"as string: "<< output<<std::endl;
-            std::cout<<"Received message: bin "<<Globals::message_ <<" len: "<<Globals::message_.length()<<std::endl;
+            std::cout<<"Received message: bin "<<Globals::message_ <<" len: "<<Globals::message_.length()<<std::endl<<output<<endl;
+            std::string received_message = output;
             if (Globals::is_encrypted){
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
                 std::cout<<"Decrypted: "<<decrypted_message <<std::endl;
+                received_message = decrypted_message;
             }
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             cout << "Time taken for receiving: "<< duration.count() << " microseconds" << endl;
             int sent_bits = Globals::message_.length();
             float capacity = float(sent_bits)/ (duration.count()*0.001);
             cout << "Capacity:  "<< capacity<<" b/s"<< endl;
+            std::string results = "Capacity:  " + std::to_string(capacity) +" b/s\n";
+            results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+
+//            Calculate BER
+            std::string original_message = "One1T";
+            float BER = Evaluation::get_BER(original_message, received_message);
+            results += "BER: " + std::to_string(BER) + "\n";
+            std::cout <<"Results: "<<results<<std::endl;
+
+            Evaluation::save_results_to_file(results,"/home/ak/results/","loss", "server");
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
