@@ -199,6 +199,10 @@ void Receiver::HTTP_callback() {
     string message = "";
     bool end = false;
     while (!end) {
+        if (!Globals::is_started_receiving) {
+            Globals::start_receiving = high_resolution_clock::now();
+            Globals::is_started_receiving = true;
+        }
         char buffer[1024] = {0};
         valread = read(new_socket, buffer, 1024);
         if (valread == 0)
@@ -207,6 +211,7 @@ void Receiver::HTTP_callback() {
             string str(buffer);
             memset(buffer, 0, 1024);
             if (str.find("fin.com") != string::npos) {
+                Globals::stop_receiving = high_resolution_clock::now();
                 std::stringstream sstream(message);
                 std::string output;
                 while (sstream.good()) {
@@ -216,6 +221,25 @@ void Receiver::HTTP_callback() {
                     output += c;
                 }
                 std::cout << "Received message: " << output << std::endl;
+                std::string received_message = output;
+
+                auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
+                int sent_bits = received_message.length();
+                float capacity = float(sent_bits) / (duration.count() * 0.001);
+
+                std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
+                results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+//            Calculate BER
+                std::string original_message = Globals::original_message_;
+                float BER = Evaluation::get_BER(original_message, received_message);
+                results += "BER: " + std::to_string(BER) + "\n";
+                std::cout << "Results: " << results << std::endl;
+                Evaluation::save_results_to_file(results, "/home/ak/results/", "HTTP", "server");
+
+                Globals::message_ = "";
+                Globals::is_started_receiving = false;
+
+
                 message = "";
                 str = "";
                 if ((new_socket = accept(server_fd, (struct sockaddr *) &address,
@@ -247,13 +271,18 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
     const IPv6 &ip = pdu.rfind_pdu<IPv6>();
     const TCP &tcp = pdu.rfind_pdu<TCP>();
 
-    std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
-              << ip.dst_addr() << ':' << tcp.dport() << "    "
-              << ip.hop_limit() << endl;
+//    std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
+//              << ip.dst_addr() << ':' << tcp.dport() << "    "
+//              << ip.hop_limit() << endl;
     int a = ip.hop_limit();
+    if (!Globals::is_started_receiving) {
+        Globals::start_receiving = high_resolution_clock::now();
+        Globals::is_started_receiving = true;
+    }
     if (a != 100) {
         Globals::message_ = Globals::message_ + to_string(a & 1);
     } else {
+        Globals::stop_receiving = high_resolution_clock::now();
         std::stringstream sstream(Globals::message_);
         std::string output;
         while (sstream.good()) {
@@ -263,7 +292,23 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
             output += c;
         }
         std::cout << "Received message: " << output << std::endl;
+        std::string received_message = output;
+
+        auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
+        int sent_bits = Globals::message_.length();
+        float capacity = float(sent_bits) / (duration.count() * 0.001);
+
+        std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
+        results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+//            Calculate BER
+        std::string original_message = Globals::original_message_;
+        float BER = Evaluation::get_BER(original_message, received_message);
+        results += "BER: " + std::to_string(BER) + "\n";
+        std::cout << "Results: " << results << std::endl;
+        Evaluation::save_results_to_file(results, "/home/ak/results/", "LSB", "server");
+
         Globals::message_ = "";
+        Globals::is_started_receiving = false;
     }
     return true;
 }

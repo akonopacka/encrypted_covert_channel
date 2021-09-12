@@ -182,7 +182,7 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
 //            tcp.flags(Tins::TCP::RST);
             IPv6 pkt = iPv6 / tcp / RawPDU("");
             sender.send(pkt);
-            std::cout << message[i] << endl;
+//            std::cout << message[i] << endl;
         } else {
             IPv6 iPv6 = IPv6();
             iPv6.dst_addr("::1");
@@ -191,7 +191,7 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
 //            tcp.flags(Tins::TCP::RST);
             IPv6 pkt = iPv6 / tcp / RawPDU("");
             sender.send(pkt);
-            std::cout << message[i] << endl;
+//            std::cout << message[i] << endl;
         }
     }
     IPv6 iPv6 = IPv6();
