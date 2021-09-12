@@ -137,14 +137,35 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
     const IP &ip = pdu.rfind_pdu<IP>();
     const TCP &tcp = pdu.rfind_pdu<TCP>();
     if (tcp.dport() == Globals::dst_port_) {
-        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
-                  << ip.dst_addr() << ':' << tcp.dport() << "    "
-                  << ip.id() << endl;
+        if (!Globals::is_started_receiving) {
+            Globals::start_receiving = high_resolution_clock::now();
+            Globals::is_started_receiving = true;
+        }
+//        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
+//                  << ip.dst_addr() << ':' << tcp.dport() << "    "
+//                  << ip.id() << endl;
         int a = ip.id();
         char c = static_cast<char>(a);
         if (c == '0') {
+            Globals::stop_receiving = high_resolution_clock::now();
             std::cout << "Received message: " << Globals::message_ << endl;
+            std::string received_message = Globals::message_;
+
+            auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
+            int sent_bits = received_message.length();
+            float capacity = float(sent_bits) / (duration.count() * 0.001);
+
+            std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
+            results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+//            Calculate BER
+            std::string original_message = Globals::original_message_;
+            float BER = Evaluation::get_BER(original_message, received_message);
+            results += "BER: " + std::to_string(BER) + "\n";
+            std::cout << "Results: " << results << std::endl;
+            Evaluation::save_results_to_file(results, "/home/ak/results/", "IP_id", "server");
+
             Globals::message_ = "";
+            Globals::is_started_receiving = false;
         } else {
             Globals::message_ = Globals::message_ + c;
         }
