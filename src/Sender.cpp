@@ -306,9 +306,12 @@ void Sender::send_message(string message_to_send){
     cpu_usage = evaluation.get_CPU_value();
     std::cout<<"CPU usage: "<<cpu_usage<<"\n";
 
+    float cpu_usage_of_process = evaluation.get_CPU_value_of_process();
+    std::cout<<"CPU usage of process: "<<cpu_usage_of_process<<"\n";
+
     float mem_usage = evaluation.get_mem_value();
     std::cout<<"Men usage: "<<mem_usage<<"\n";
-
+    std::string duration_of_encryption = "";
     if (is_encrypted){
         Cryptographer cryptographer = Cryptographer(cipher_type);
         // Get starting timepoint
@@ -316,8 +319,17 @@ void Sender::send_message(string message_to_send){
         message_to_send = cryptographer.encrypt(message_to_send);
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
-        cout << "Time taken by encrypting function: "<< duration.count() << " microseconds" << endl;
+        duration_of_encryption = duration.count();
+        cout << "Time taken by encrypting function: "<< duration_of_encryption << " microseconds" << endl;
     }
+    float message_entropy = Evaluation::calculate_entropy(message_to_send);
+    std::cout<<"Calculated message entropy: "<<message_entropy<<"\n";
+    std:string results = "Calculated message entropy: "+std::to_string(message_entropy)+"\n";
+    results += "Time taken by encrypting function: " + duration_of_encryption + " microseconds\n";
+    std::cout <<"Results: "<<results<<std::endl;
+    Evaluation::save_results_to_file(results,"/home/ak/results/","loss", "client");
+
+
     // Get starting timepoint
     auto start = high_resolution_clock::now();
     if (method=="storage"){

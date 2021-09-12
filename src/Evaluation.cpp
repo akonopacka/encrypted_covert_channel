@@ -4,11 +4,15 @@
 
 
 #include <fstream>
+#include <map>
+#include <cmath>
 #include "../include/Evaluation.h"
 
 
 Evaluation::Evaluation() {
 }
+
+
 
 float Evaluation::get_CPU_value() {
     std::ifstream input;
@@ -121,5 +125,70 @@ float Evaluation::get_BER(std::string original_message, std::string received_mes
         ber = float(counter)/ length;
     }
     return ber;
+}
+
+float Evaluation::get_CPU_value_of_process() {
+    static clock_t lastCPU, lastSysCPU, lastUserCPU;
+    static int numProcessors;
+    FILE* file;
+    struct tms timeSample;
+    char line[128];
+
+    lastCPU = times(&timeSample);
+    lastSysCPU = timeSample.tms_stime;
+    lastUserCPU = timeSample.tms_utime;
+
+    file = fopen("/proc/cpuinfo", "r");
+    numProcessors = 0;
+    while(fgets(line, 128, file) != NULL){
+        if (strncmp(line, "processor", 9) == 0) numProcessors++;
+    }
+    fclose(file);
+    clock_t now;
+    double percent;
+
+    now = times(&timeSample);
+    if (now <= lastCPU || timeSample.tms_stime < lastSysCPU ||
+        timeSample.tms_utime < lastUserCPU){
+        //Overflow detection. Just skip this value.
+        percent = -1.0;
+    }
+    else{
+        percent = (timeSample.tms_stime - lastSysCPU) +
+                  (timeSample.tms_utime - lastUserCPU);
+        percent /= (now - lastCPU);
+        percent /= numProcessors;
+        percent *= 100;
+    }
+    lastCPU = now;
+    lastSysCPU = timeSample.tms_stime;
+    lastUserCPU = timeSample.tms_utime;
+    return percent;
+}
+
+float Evaluation::calculate_entropy(std::string message) {
+    int elements = message.length();
+    float entropy=0;
+    std::map<char,long> counts;
+    typename std::map<char,long>::iterator it;
+    for (int dataIndex = 0; dataIndex < elements; ++dataIndex) {
+        const char letter = message[dataIndex];
+        const auto it = counts.find(letter);
+
+        if(it == counts.end()) {
+            counts.insert(std::make_pair(letter, 1));
+        } else {
+            int prev_value = it->second;
+            prev_value++;
+            it->second = prev_value;
+        }
+    }
+    it = counts.begin();
+    while(it != counts.end()){
+        float p_x = (float)it->second/elements;
+        if (p_x>0) entropy-=p_x*log(p_x)/log(2);
+        it++;
+    }
+    return entropy;
 }
 

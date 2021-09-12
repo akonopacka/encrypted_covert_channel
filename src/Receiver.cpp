@@ -324,20 +324,17 @@ bool Receiver::loss_callback(const PDU &pdu){
                 output += c;
             }
             Globals::last_seq_=1;
-//            std::cout<<"Received message: bin "<<Globals::message_ << std::endl<<"as string: "<< output<<std::endl;
             std::cout<<"Received message: bin "<<Globals::message_ <<" len: "<<Globals::message_.length()<<std::endl<<output<<endl;
             std::string received_message = output;
             if (Globals::is_encrypted){
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
-                std::cout<<"Decrypted: "<<decrypted_message <<std::endl;
                 received_message = decrypted_message;
             }
+            std::cout<<"Received message: "<<received_message <<std::endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
-            cout << "Time taken for receiving: "<< duration.count() << " microseconds" << endl;
             int sent_bits = Globals::message_.length();
             float capacity = float(sent_bits)/ (duration.count()*0.001);
-            cout << "Capacity:  "<< capacity<<" b/s"<< endl;
             std::string results = "Capacity:  " + std::to_string(capacity) +" b/s\n";
             results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
 
