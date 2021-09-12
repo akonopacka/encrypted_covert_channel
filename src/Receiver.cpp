@@ -9,7 +9,6 @@ Receiver::Receiver() {
     std::cout << "Is encrypted - ";
     printf(Globals::is_encrypted ? "true" : "false");
     std::cout << " \n\n";
-
     if (Globals::covert_channel_type_ == "storage") {
         std::cout << "Server! - Storage method\n";
         Sniffer sniffer(Globals::interface_);
@@ -64,20 +63,20 @@ bool Receiver::timing_callback(const PDU &pdu) {
     Tins::Packet packet = Tins::Packet(pdu);
     Timestamp ts = packet.timestamp();
     double timestamp = ts.seconds() * 1000000 + ts.microseconds();
-    std::cout << std::fixed << "Seconds: " << ts.seconds() << " microseconds:" << ts.microseconds() << endl;
+//    std::cout << std::fixed << "Seconds: " << ts.seconds() << " microseconds:" << ts.microseconds() << endl;
     double inv = timestamp - Globals::last_packet_timestamp_;
-    std::cout << "Inter: " << inv << " " << "Ts: " << timestamp << std::endl;
+//    std::cout << "Inter: " << inv << " " << "Ts: " << timestamp << std::endl;
     if (udp.dport() == Globals::dst_port_) {
         if (inv < 1000) {
             Globals::message_ = Globals::message_ + "0";
-            std::cout << "0" << endl << endl;
+            std::cout << "0" << endl;
         } else if (inv < 4000000) {
             Globals::message_ = Globals::message_ + "1";
-            std::cout << "1" << endl << endl;
+            std::cout << "1" << endl;
         } else {
             if (Globals::message_ != "") {
+                Globals::stop_receiving = high_resolution_clock::now();
                 Globals::message_.erase(0, 1);
-                std::cout << "Received message: " << Globals::message_ << endl;
                 std::stringstream sstream(Globals::message_);
                 std::string output;
                 while (sstream.good()) {
@@ -86,7 +85,21 @@ bool Receiver::timing_callback(const PDU &pdu) {
                     char c = char(bits.to_ulong());
                     output += c;
                 }
+                std::cout << "Received message: " << Globals::message_ << endl;
                 std::cout << "Encoded message: " << output << endl;
+                std::string original_message = Globals::original_message_;
+                std::string received_message = output;
+                auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
+                int sent_bits = received_message.length();
+                float capacity = float(sent_bits) / (duration.count() * 0.001);
+                std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
+                results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+//            Calculate BER
+                float BER = Evaluation::get_BER(original_message, received_message);
+                results += "BER: " + std::to_string(BER) + "\n";
+                std::cout << "Results: " << results << std::endl;
+                Evaluation::save_results_to_file(results, "/home/ak/results/", "timing", "server");
+                Globals::is_started_receiving = false;
             }
             Globals::message_ = "";
         }
