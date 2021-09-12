@@ -25,12 +25,19 @@ public:
     float encrypting_time, sending_time;
 
     Evaluation();
+
     float get_CPU_value();
+
     float get_CPU_value_of_process();
+
     float get_mem_value();
+
     static void save_results_to_file(std::string results, std::string path, std::string method, std::string mode);
+
     std::string currentDateTime();
+
     static float get_BER(std::string original_message, std::string received_message);
+
     static float calculate_entropy(std::string message);
 };
 

@@ -11,9 +11,8 @@
 #include <jsoncpp/json/value.h>
 
 using std::string;
-namespace Globals
-{
-    extern std::string  covert_channel_type_;
+namespace Globals {
+    extern std::string covert_channel_type_;
     extern std::chrono::high_resolution_clock::time_point time_of_last_packet_;
     extern std::chrono::high_resolution_clock::time_point time_received_;
     extern std::chrono::high_resolution_clock::time_point start_receiving, stop_receiving;

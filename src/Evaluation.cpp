@@ -13,7 +13,6 @@ Evaluation::Evaluation() {
 }
 
 
-
 float Evaluation::get_CPU_value() {
     std::ifstream input;
     input.open("/proc/stat", std::ios_base::in);
@@ -34,9 +33,10 @@ float Evaluation::get_CPU_value() {
             float idle_rate = idle_diff * 1.0 / total_diff;
             float user_rate = user_diff * 1.0 / total_diff;
             float sys_rate = sys_diff * 1.0 / total_diff;
-            percent  = user_rate;
+            percent = user_rate;
 
-            std::cout<<"CPU usage: total_rate: " << total_rate << " idle_rate: "<<idle_rate<< " user_rate: "<<user_rate<< " sys_rate: "<<sys_rate<< "\n";
+            std::cout << "CPU usage: total_rate: " << total_rate << " idle_rate: " << idle_rate << " user_rate: "
+                      << user_rate << " sys_rate: " << sys_rate << "\n";
 
         }
         this->total_cpu_time = total_cpu_time;
@@ -73,7 +73,7 @@ float Evaluation::get_mem_value() {
         swap_free = values[15];
         swap_used = swap_total - swap_free;
         float rate = mem_used * 100.0 / mem_total;
-        std::cout<<"Memory usage: mem_total: " << mem_total << " mem_used: "<<mem_used<< " rate: "<<rate<< "\n";
+        std::cout << "Memory usage: mem_total: " << mem_total << " mem_used: " << mem_used << " rate: " << rate << "\n";
         rate_ = rate;
         input.close();
     }
@@ -82,9 +82,9 @@ float Evaluation::get_mem_value() {
 
 // Get current date/time, format is YYYY-MM-DD.HH:mm:ss
 std::string Evaluation::currentDateTime() {
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
+    time_t now = time(0);
+    struct tm tstruct;
+    char buf[80];
     tstruct = *localtime(&now);
     // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
     // for more information about date/time format
@@ -93,21 +93,21 @@ std::string Evaluation::currentDateTime() {
 }
 
 void Evaluation::save_results_to_file(std::string results, std::string path, std::string method, std::string mode) {
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
+    time_t now = time(0);
+    struct tm tstruct;
+    char buf[80];
     tstruct = *localtime(&now);
     // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
     // for more information about date/time format
     strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
-    std::string currentDateTime  = buf;
+    std::string currentDateTime = buf;
     //Generate the name of filed
     std::string filename = mode + "_" + method + "_" + currentDateTime + ".txt";
     path = path + filename;
     //Save results to file
-    std::cout<<"Saving results to file in path: "<<path<<std::endl;
+    std::cout << "Saving results to file in path: " << path << std::endl;
     std::ofstream myfile;
-    myfile.open (path);
+    myfile.open(path);
     myfile << results;
     myfile.close();
 }
@@ -115,14 +115,14 @@ void Evaluation::save_results_to_file(std::string results, std::string path, std
 float Evaluation::get_BER(std::string original_message, std::string received_message) {
     int length = received_message.length();
     int counter = 0;
-    for (int i=0;i<length;i++){
-        if (received_message[i]!= original_message[i]){
+    for (int i = 0; i < length; i++) {
+        if (received_message[i] != original_message[i]) {
             counter++;
         }
     }
     float ber = 0;
-    if (length > 0){
-        ber = float(counter)/ length;
+    if (length > 0) {
+        ber = float(counter) / length;
     }
     return ber;
 }
@@ -130,7 +130,7 @@ float Evaluation::get_BER(std::string original_message, std::string received_mes
 float Evaluation::get_CPU_value_of_process() {
     static clock_t lastCPU, lastSysCPU, lastUserCPU;
     static int numProcessors;
-    FILE* file;
+    FILE *file;
     struct tms timeSample;
     char line[128];
 
@@ -140,7 +140,7 @@ float Evaluation::get_CPU_value_of_process() {
 
     file = fopen("/proc/cpuinfo", "r");
     numProcessors = 0;
-    while(fgets(line, 128, file) != NULL){
+    while (fgets(line, 128, file) != NULL) {
         if (strncmp(line, "processor", 9) == 0) numProcessors++;
     }
     fclose(file);
@@ -149,11 +149,10 @@ float Evaluation::get_CPU_value_of_process() {
 
     now = times(&timeSample);
     if (now <= lastCPU || timeSample.tms_stime < lastSysCPU ||
-        timeSample.tms_utime < lastUserCPU){
+        timeSample.tms_utime < lastUserCPU) {
         //Overflow detection. Just skip this value.
         percent = -1.0;
-    }
-    else{
+    } else {
         percent = (timeSample.tms_stime - lastSysCPU) +
                   (timeSample.tms_utime - lastUserCPU);
         percent /= (now - lastCPU);
@@ -168,14 +167,14 @@ float Evaluation::get_CPU_value_of_process() {
 
 float Evaluation::calculate_entropy(std::string message) {
     int elements = message.length();
-    float entropy=0;
-    std::map<char,long> counts;
-    typename std::map<char,long>::iterator it;
+    float entropy = 0;
+    std::map<char, long> counts;
+    typename std::map<char, long>::iterator it;
     for (int dataIndex = 0; dataIndex < elements; ++dataIndex) {
         const char letter = message[dataIndex];
         const auto it = counts.find(letter);
 
-        if(it == counts.end()) {
+        if (it == counts.end()) {
             counts.insert(std::make_pair(letter, 1));
         } else {
             int prev_value = it->second;
@@ -184,9 +183,9 @@ float Evaluation::calculate_entropy(std::string message) {
         }
     }
     it = counts.begin();
-    while(it != counts.end()){
-        float p_x = (float)it->second/elements;
-        if (p_x>0) entropy-=p_x*log(p_x)/log(2);
+    while (it != counts.end()) {
+        float p_x = (float) it->second / elements;
+        if (p_x > 0) entropy -= p_x * log(p_x) / log(2);
         it++;
     }
     return entropy;

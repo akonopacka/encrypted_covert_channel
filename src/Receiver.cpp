@@ -3,9 +3,9 @@
 
 Receiver::Receiver() {
     Globals::message_ = "";
-    Globals::last_seq_=1;
+    Globals::last_seq_ = 1;
 //    Print configuration of server
-    std::cout << "Server! - "<< Globals::covert_channel_type_ << " method\n";
+    std::cout << "Server! - " << Globals::covert_channel_type_ << " method\n";
     std::cout << "Is encrypted - ";
     printf(Globals::is_encrypted ? "true" : "false");
     std::cout << " \n\n";
@@ -20,39 +20,34 @@ Receiver::Receiver() {
         Sniffer sniffer(Globals::interface_);
         sniffer.set_filter("tcp&&port 1234");
         Sniffer(Globals::interface_).sniff_loop(IP_id_callback);
-    }
-    else if (Globals::covert_channel_type_ == "HTTP") {
+    } else if (Globals::covert_channel_type_ == "HTTP") {
         std::cout << "Server! - HTTP method\n";
         HTTP_callback();
-    }
-    else if (Globals::covert_channel_type_ == "LSB") {
+    } else if (Globals::covert_channel_type_ == "LSB") {
         std::cout << "Server! - LSB Hop limit method\n";
         Sniffer sniffer(Globals::interface_);
         sniffer.set_filter("tcp&&port 1234");
         Sniffer(Globals::interface_).sniff_loop(LSB_Hop_callback);
-    }
-    else if (Globals::covert_channel_type_ == "sequence") {
+    } else if (Globals::covert_channel_type_ == "sequence") {
         std::cout << "Server! - sequence method\n";
-        Globals::message_="";
+        Globals::message_ = "";
         Globals::last_seq_ = 1;
         Sniffer sniffer(Globals::interface_);
         sniffer.set_filter("tcp.dstport==1234");
         sniffer.sniff_loop(sequence_callback);
-    }
-    else if (Globals::covert_channel_type_ == "loss") {
+    } else if (Globals::covert_channel_type_ == "loss") {
         std::cout << "Server! - Loss method\n";
-        Globals::message_="";
+        Globals::message_ = "";
         Globals::last_seq_ = 1;
         Sniffer sniffer(Globals::interface_);
         sniffer.set_filter("tcp.dstport==1234");
         sniffer.sniff_loop(loss_callback);
-    }
-    else if (Globals::covert_channel_type_ == "timing") {
+    } else if (Globals::covert_channel_type_ == "timing") {
         std::cout << "Server! - Timing method\n";
-        string filter = "udp&&!icmp&&!dns&&udp.dstport=="+Globals::dst_port_;
+        string filter = "udp&&!icmp&&!dns&&udp.dstport==" + Globals::dst_port_;
         SnifferConfiguration sniffer_configuration = SnifferConfiguration();
         sniffer_configuration.set_immediate_mode(true);
-        string f = "udp port "+Globals::dst_port_;
+        string f = "udp port " + Globals::dst_port_;
         sniffer_configuration.set_filter("udp port 1234");
         Sniffer sniffer(Globals::interface_, sniffer_configuration);
         sniffer.set_filter(filter);
@@ -75,10 +70,10 @@ bool Receiver::timing_callback(const PDU &pdu) {
     if (udp.dport() == Globals::dst_port_) {
         if (inv < 1000) {
             Globals::message_ = Globals::message_ + "0";
-            std::cout << "0" << endl<< endl;
+            std::cout << "0" << endl << endl;
         } else if (inv < 4000000) {
             Globals::message_ = Globals::message_ + "1";
-            std::cout << "1" << endl<< endl;
+            std::cout << "1" << endl << endl;
         } else {
             if (Globals::message_ != "") {
                 Globals::message_.erase(0, 1);
@@ -110,7 +105,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
                   << ip.tot_len() << endl;
         int a = ip.tot_len() - 40;
         char c = static_cast<char>(a);
-        if (!Globals::is_started_receiving){
+        if (!Globals::is_started_receiving) {
             Globals::start_receiving = high_resolution_clock::now();
             Globals::is_started_receiving = true;
         }
@@ -119,16 +114,16 @@ bool Receiver::storage_callback(const PDU &pdu) {
             std::cout << "Received message: " << Globals::message_ << endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             int sent_bits = Globals::message_.length();
-            float capacity = float(sent_bits)/ (duration.count()*0.001);
-            std::string results = "Capacity:  " + std::to_string(capacity) +" b/s\n";
+            float capacity = float(sent_bits) / (duration.count() * 0.001);
+            std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
             results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
 //            Calculate BER
             std::string original_message = Globals::original_message_;
             std::string received_message = Globals::message_;
             float BER = Evaluation::get_BER(original_message, received_message);
             results += "BER: " + std::to_string(BER) + "\n";
-            std::cout <<"Results: "<<results<<std::endl;
-            Evaluation::save_results_to_file(results,"/home/ak/results/","storage", "server");
+            std::cout << "Results: " << results << std::endl;
+            Evaluation::save_results_to_file(results, "/home/ak/results/", "storage", "server");
             Globals::message_ = "";
             Globals::is_started_receiving = false;
         } else {
@@ -157,13 +152,12 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
     return true;
 }
 
-template <typename Container>
-bool in_quote(const Container& cont, const std::string& s)
-{
+template<typename Container>
+bool in_quote(const Container &cont, const std::string &s) {
     return std::search(cont.begin(), cont.end(), s.begin(), s.end()) != cont.end();
 }
 
-void Receiver::HTTP_callback(){
+void Receiver::HTTP_callback() {
 
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
@@ -172,52 +166,47 @@ void Receiver::HTTP_callback(){
 
 
 // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-    {
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
 
 // Forcefully attaching socket to the port 8080
     if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-                   &opt, sizeof(opt)))
-    {
+                   &opt, sizeof(opt))) {
         perror("setsockopt");
         exit(EXIT_FAILURE);
     }
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons( Globals::dst_port_ );
+    address.sin_port = htons(Globals::dst_port_);
 
 // Forcefully attaching socket to the port 8080
-    if (bind(server_fd, (struct sockaddr *)&address,
-             sizeof(address))<0)
-    {
+    if (bind(server_fd, (struct sockaddr *) &address,
+             sizeof(address)) < 0) {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
-    if (listen(server_fd, 3) < 0)
-    {
+    if (listen(server_fd, 3) < 0) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
-                             (socklen_t*)&addrlen))<0)
-    {
+    if ((new_socket = accept(server_fd, (struct sockaddr *) &address,
+                             (socklen_t *) &addrlen)) < 0) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
     string message = "";
     bool end = false;
-    while(!end){
+    while (!end) {
         char buffer[1024] = {0};
-        valread=read (new_socket , buffer, 1024);
-        if ( valread== 0)
+        valread = read(new_socket, buffer, 1024);
+        if (valread == 0)
             continue;
-        else{
+        else {
             string str(buffer);
             memset(buffer, 0, 1024);
-            if (str.find("fin.com")!=string::npos){
+            if (str.find("fin.com") != string::npos) {
                 std::stringstream sstream(message);
                 std::string output;
                 while (sstream.good()) {
@@ -226,31 +215,28 @@ void Receiver::HTTP_callback(){
                     char c = char(bits.to_ulong());
                     output += c;
                 }
-                std::cout<<"Received message: "<<output<<std::endl;
+                std::cout << "Received message: " << output << std::endl;
                 message = "";
                 str = "";
-                if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
-                                         (socklen_t*)&addrlen))<0)
-                {
+                if ((new_socket = accept(server_fd, (struct sockaddr *) &address,
+                                         (socklen_t *) &addrlen)) < 0) {
                     perror("accept");
                     exit(EXIT_FAILURE);
                 }
-            }
-            else{
+            } else {
                 string s = "Host:";
-                bool is_Host = in_quote( str, s );
+                bool is_Host = in_quote(str, s);
                 s = "host:";
-                bool is_host = in_quote( str, s );
-                if (is_Host){
-                    message=message+'0';
+                bool is_host = in_quote(str, s);
+                if (is_Host) {
+                    message = message + '0';
                     str = "";
-                }
-                else if (is_host){
-                    message=message+'1';
+                } else if (is_host) {
+                    message = message + '1';
                     str = "";
                 }
                 char *hello = "Hello from server";
-                send(new_socket , hello , strlen(hello) , 0 );
+                send(new_socket, hello, strlen(hello), 0);
             }
             memset(buffer, 0, 1024);
         }
@@ -265,10 +251,9 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
               << ip.dst_addr() << ':' << tcp.dport() << "    "
               << ip.hop_limit() << endl;
     int a = ip.hop_limit();
-    if (a != 100){
+    if (a != 100) {
         Globals::message_ = Globals::message_ + to_string(a & 1);
-    }
-    else{
+    } else {
         std::stringstream sstream(Globals::message_);
         std::string output;
         while (sstream.good()) {
@@ -277,22 +262,22 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
             char c = char(bits.to_ulong());
             output += c;
         }
-        std::cout<<"Received message: "<<output<<std::endl;
+        std::cout << "Received message: " << output << std::endl;
         Globals::message_ = "";
     }
     return true;
 }
 
-bool Receiver::sequence_callback(const PDU &pdu){
+bool Receiver::sequence_callback(const PDU &pdu) {
     const IP &ip = pdu.rfind_pdu<IP>();
     const TCP &tcp = pdu.rfind_pdu<TCP>();
 
-    if (tcp.dport()==Globals::dst_port_){
+    if (tcp.dport() == Globals::dst_port_) {
         std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
                   << ip.dst_addr() << ':' << tcp.dport() << "    "
                   << tcp.seq() << endl;
         int seq = tcp.seq();
-        if (seq == 0){
+        if (seq == 0) {
             Globals::message_.erase(0, 1);
             std::stringstream sstream(Globals::message_);
             std::string output;
@@ -302,16 +287,14 @@ bool Receiver::sequence_callback(const PDU &pdu){
                 char c = char(bits.to_ulong());
                 output += c;
             }
-            Globals::last_seq_=0;
-            std::cout<<"Received message: "<<Globals::message_ << std::endl<< output<<std::endl;
+            Globals::last_seq_ = 0;
+            std::cout << "Received message: " << Globals::message_ << std::endl << output << std::endl;
             Globals::message_ = "";
-        }
-        else{
-            if (seq == Globals::last_seq_ + 1){
+        } else {
+            if (seq == Globals::last_seq_ + 1) {
                 Globals::message_ = Globals::message_ + '0';
                 Globals::last_seq_ = seq;
-            }
-            else{
+            } else {
                 Globals::message_ = Globals::message_ + '1';
             }
         }
@@ -319,13 +302,13 @@ bool Receiver::sequence_callback(const PDU &pdu){
     return true;
 }
 
-bool Receiver::loss_callback(const PDU &pdu){
+bool Receiver::loss_callback(const PDU &pdu) {
     const IP &ip = pdu.rfind_pdu<IP>();
     const TCP &tcp = pdu.rfind_pdu<TCP>();
 
-    if (tcp.dport()==Globals::dst_port_){
+    if (tcp.dport() == Globals::dst_port_) {
         int seq = tcp.seq();
-        if (seq == 0){
+        if (seq == 0) {
 
             Globals::stop_receiving = high_resolution_clock::now();
             Globals::message_.pop_back();
@@ -338,33 +321,33 @@ bool Receiver::loss_callback(const PDU &pdu){
                 char c = char(bits.to_ulong());
                 output += c;
             }
-            Globals::last_seq_=1;
-            std::cout<<"Received message: bin "<<Globals::message_ <<" len: "<<Globals::message_.length()<<std::endl<<output<<endl;
+            Globals::last_seq_ = 1;
+            std::cout << "Received message: bin " << Globals::message_ << " len: " << Globals::message_.length()
+                      << std::endl << output << endl;
             std::string received_message = output;
-            if (Globals::is_encrypted){
+            if (Globals::is_encrypted) {
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
                 received_message = decrypted_message;
             }
-            std::cout<<"Received message: "<<received_message <<std::endl;
+            std::cout << "Received message: " << received_message << std::endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             int sent_bits = Globals::message_.length();
-            float capacity = float(sent_bits)/ (duration.count()*0.001);
+            float capacity = float(sent_bits) / (duration.count() * 0.001);
 
-            std::string results = "Capacity:  " + std::to_string(capacity) +" b/s\n";
+            std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
             results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
 //            Calculate BER
             std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
             results += "BER: " + std::to_string(BER) + "\n";
-            std::cout <<"Results: "<<results<<std::endl;
-            Evaluation::save_results_to_file(results,"/home/ak/results/","loss", "server");
+            std::cout << "Results: " << results << std::endl;
+            Evaluation::save_results_to_file(results, "/home/ak/results/", "loss", "server");
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
-        }
-        else{
-            if (!Globals::is_started_receiving){
+        } else {
+            if (!Globals::is_started_receiving) {
                 Globals::start_receiving = high_resolution_clock::now();
                 Globals::is_started_receiving = true;
             }

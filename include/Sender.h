@@ -7,7 +7,6 @@
 
 
 #include <string>
-//#include <bitset>
 #include <iostream>
 #include <tins/tins.h>
 #include <chrono>
@@ -40,10 +39,7 @@
 
 
 using namespace std;
-
 using namespace std::chrono;
-
-using namespace std;
 using namespace Tins;
 
 
