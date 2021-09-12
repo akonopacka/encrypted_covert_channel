@@ -10,3 +10,7 @@ Implementation of encrypted covert channels which are secured with different cip
 - Least Significant Bit (LSB) Pattern (PS11.b)
 
 // "timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss" <- covert_channel_type
+
+## Usage
+### Server
+--server loss

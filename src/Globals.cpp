@@ -6,8 +6,7 @@
 #include "../include/Globals.h"
 
 using std::string;
-namespace Globals
-{
+namespace Globals{
     std::chrono::high_resolution_clock::time_point time_of_last_packet_ = std::chrono::high_resolution_clock::now();
     std::chrono::high_resolution_clock::time_point time_received_= std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> time_span_= Globals::time_received_ - Globals::time_of_last_packet_;
@@ -16,6 +15,7 @@ namespace Globals
     double last_packet_timestamp_ = 0;
     int last_seq_ = 0;
     std::string message_ = "";
+    std::string original_message_ = "";
     std::string interface_ = "lo";
     std::string IPv4_address = "127.0.0.1";
     int number_of_repeat_ = 1;
@@ -37,6 +37,6 @@ namespace Globals
         Globals::time_interval_stop_ms_ = config["timing_method"]["time_interval_stop_ms"].asInt();
         Globals::number_of_repeat_ = config["number_of_repeat"].asInt();
         Globals::cipher_type_ = config["cryptography"]["method"].asString();
-
+        Globals::original_message_ = config["message_to_send"].asString();
     }
 }

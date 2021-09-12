@@ -65,7 +65,6 @@ void Sender::send_with_storage_method(const string message_to_send){
     IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
     sender.send(pkt);
     std::cout << '0' << ' '<<ia<<endl;
-
 }
 
 void Sender::send_with_storage_method_IP_id(const string message_to_send){
@@ -357,7 +356,7 @@ void Sender::send_message(string message_to_send){
     results += "Time taken by encrypting function: " + duration_of_encryption + " microseconds\n";
     results +="Time taken by sending function: " + time_of_sending + " microseconds\n";
     std::cout <<"Results: "<<results<<std::endl;
-    Evaluation::save_results_to_file(results,"/home/ak/results/","loss", "client");
+    Evaluation::save_results_to_file(results,"/home/ak/results/",method, "client");
 
 }
 

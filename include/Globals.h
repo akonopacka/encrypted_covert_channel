@@ -21,6 +21,7 @@ namespace Globals
     extern double last_packet_timestamp_;
     extern int last_seq_;
     extern std::string message_;
+    extern std::string original_message_;
     extern std::string interface_;
     extern std::string IPv4_address;
     extern int number_of_repeat_;
@@ -28,7 +29,6 @@ namespace Globals
     extern int dst_port_;
     extern int time_interval_1_ms_;
     extern int time_interval_stop_ms_;
-
     extern bool is_started_receiving;
     extern bool is_encrypted;
     extern std::string cipher_type_;

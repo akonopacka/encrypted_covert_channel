@@ -110,9 +110,27 @@ bool Receiver::storage_callback(const PDU &pdu) {
                   << ip.tot_len() << endl;
         int a = ip.tot_len() - 40;
         char c = static_cast<char>(a);
+        if (!Globals::is_started_receiving){
+            Globals::start_receiving = high_resolution_clock::now();
+            Globals::is_started_receiving = true;
+        }
         if (c == '0') {
+            Globals::stop_receiving = high_resolution_clock::now();
             std::cout << "Received message: " << Globals::message_ << endl;
+            auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
+            int sent_bits = Globals::message_.length();
+            float capacity = float(sent_bits)/ (duration.count()*0.001);
+            std::string results = "Capacity:  " + std::to_string(capacity) +" b/s\n";
+            results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+//            Calculate BER
+            std::string original_message = Globals::original_message_;
+            std::string received_message = Globals::message_;
+            float BER = Evaluation::get_BER(original_message, received_message);
+            results += "BER: " + std::to_string(BER) + "\n";
+            std::cout <<"Results: "<<results<<std::endl;
+            Evaluation::save_results_to_file(results,"/home/ak/results/","storage", "server");
             Globals::message_ = "";
+            Globals::is_started_receiving = false;
         } else {
             Globals::message_ = Globals::message_ + c;
         }
@@ -306,9 +324,6 @@ bool Receiver::loss_callback(const PDU &pdu){
     const TCP &tcp = pdu.rfind_pdu<TCP>();
 
     if (tcp.dport()==Globals::dst_port_){
-//        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
-//                  << ip.dst_addr() << ':' << tcp.dport() << "    "
-//                  << tcp.seq() << endl;
         int seq = tcp.seq();
         if (seq == 0){
 
@@ -335,15 +350,14 @@ bool Receiver::loss_callback(const PDU &pdu){
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             int sent_bits = Globals::message_.length();
             float capacity = float(sent_bits)/ (duration.count()*0.001);
+
             std::string results = "Capacity:  " + std::to_string(capacity) +" b/s\n";
             results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
-
 //            Calculate BER
-            std::string original_message = "One1T";
+            std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
             results += "BER: " + std::to_string(BER) + "\n";
             std::cout <<"Results: "<<results<<std::endl;
-
             Evaluation::save_results_to_file(results,"/home/ak/results/","loss", "server");
 
             Globals::message_ = "";

@@ -32,10 +32,10 @@ int main(int argc, char **argv) {
     Globals::load_globals(config);
 
     if (argc > 1) {
-        if (argc > 2){
+        if (argc > 2) {
             Globals::covert_channel_type_ = argv[2];
         }
-        if (argc > 3){
+        if (argc > 3) {
             if (!strcmp(argv[3], "--is_encrypted"))
                 Globals::is_encrypted = true;
         }
@@ -43,19 +43,17 @@ int main(int argc, char **argv) {
         if (!strcmp(argv[1], "--server")) {
             std::cout << "Starting server..." << endl;
             Receiver receiver = Receiver();
-        }
-        else if (!strcmp(argv[1], "--client")) {
+        } else if (!strcmp(argv[1], "--client")) {
             // Configuring parameters
             bool is_encrypted = config["cryptography"]["is_encrypted"].asBool();
             Sender sender = Sender(Globals::covert_channel_type_, Globals::is_encrypted, Globals::cipher_type_);
-            for(int i=0; i<Globals::number_of_repeat_;i++){
+            for (int i = 0; i < Globals::number_of_repeat_; i++) {
                 sender.send_message(message_to_send);
                 sleep(2);
             }
             return 0;
         }
-    }
-    else {
+    } else {
         std::cerr << "Bad usage";
         return 1;
     }
