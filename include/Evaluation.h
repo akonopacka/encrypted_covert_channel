@@ -15,6 +15,7 @@
 #include "string.h"
 #include "sys/times.h"
 #include "sys/vtimes.h"
+#include "Globals.h"
 
 class Evaluation {
 public:
