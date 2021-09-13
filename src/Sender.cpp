@@ -56,14 +56,14 @@ void Sender::send_with_storage_method(const string message_to_send) {
         std::string s(ia, 'a');
         IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
         sender.send(pkt);
-        std::cout << message[i] << ' ' << ia << endl;
+//        std::cout << message[i] << ' ' << ia << endl;
     }
     PacketSender sender;
     int ia = (int) '0';
     std::string s(ia, 'a');
     IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
     sender.send(pkt);
-    std::cout << '0' << ' ' << ia << endl;
+//    std::cout << '0' << ' ' << ia << endl;
 }
 
 void Sender::send_with_storage_method_IP_id(const string message_to_send) {
@@ -290,6 +290,7 @@ void Sender::send_with_loss_method(const string message_to_send) {
 
 void Sender::send_message(string message_to_send) {
     std::cout << "Sending method: " << method << ", Message is encrypted: " << std::boolalpha << is_encrypted << endl;
+    message_to_send +=char(0);
 
 //    float cpu_usage = evaluation.get_CPU_value();
 //    sleep(2);

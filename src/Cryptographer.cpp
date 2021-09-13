@@ -404,9 +404,9 @@ string Cryptographer::decrypt_present(string ciphertext_bin){
     strcpy(cstr, ciphertext_hex.c_str());
     char * s = decrypt_present_(cstr, key_);
     string s_(s);
-    cout<<hex_to_string(s_)<<endl;
-
-    return hex_to_string(s_);
+    string deciphered = hex_to_string(s_);
+    cout<<"Deciphered: " << s <<endl;
+    return deciphered;
 }
 
 string Cryptographer::encrypt_rsa(string plaintext_){

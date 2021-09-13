@@ -428,7 +428,15 @@ bool Receiver::loss_callback(const PDU &pdu) {
             if (Globals::is_encrypted) {
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
-                received_message = decrypted_message;
+                //                remove padding
+                std::size_t pos = decrypted_message.find( char(0) );
+                if ( pos != string::npos ) {
+                    int len = decrypted_message.length();
+                    received_message = decrypted_message.erase(pos, len);
+                }
+                else{
+                    received_message = decrypted_message;
+                }
             }
             std::cout << "Received message: " << received_message << std::endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);

@@ -39,6 +39,9 @@ int main(int argc, char **argv) {
             if (!strcmp(argv[3], "--is_encrypted"))
                 Globals::is_encrypted = true;
         }
+        if (argc > 4) {
+            Globals::cipher_type_ = argv[4];
+        }
 
         if (!strcmp(argv[1], "--server")) {
             std::cout << "Starting server..." << endl;

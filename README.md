@@ -14,3 +14,6 @@ Implementation of encrypted covert channels which are secured with different cip
 ## Usage
 ### Server
 --server loss
+
+Encryption methods:
+aes, des, present, rsa, clefia, grain
