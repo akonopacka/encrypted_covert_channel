@@ -21,6 +21,7 @@ namespace Globals {
     extern int last_seq_;
     extern std::string message_;
     extern std::string original_message_;
+    extern std::string results_path;
     extern std::string interface_;
     extern std::string IPv4_address;
     extern int number_of_repeat_;

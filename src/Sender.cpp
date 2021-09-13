@@ -342,7 +342,7 @@ void Sender::send_message(string message_to_send) {
     results += "Time taken by encrypting function: " + duration_of_encryption + " microseconds\n";
     results += "Time taken by sending function: " + time_of_sending + " microseconds\n";
     std::cout << "Results: " << results << std::endl;
-    Evaluation::save_results_to_file(results, "/home/ak/results/", method, "client");
+    Evaluation::save_results_to_file(results, Globals::results_path, method, "client");
 
 }
 

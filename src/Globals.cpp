@@ -15,6 +15,7 @@ namespace Globals{
     double last_packet_timestamp_ = 0;
     int last_seq_ = 0;
     std::string message_ = "";
+    std::string results_path = "";
     std::string original_message_ = "";
     std::string interface_ = "lo";
     std::string IPv4_address = "127.0.0.1";
@@ -38,5 +39,6 @@ namespace Globals{
         Globals::number_of_repeat_ = config["number_of_repeat"].asInt();
         Globals::cipher_type_ = config["cryptography"]["method"].asString();
         Globals::original_message_ = config["message_to_send"].asString();
+        Globals::results_path = config["results_path"].asString();
     }
 }

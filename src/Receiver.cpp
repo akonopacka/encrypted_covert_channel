@@ -98,7 +98,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 float BER = Evaluation::get_BER(original_message, received_message);
                 results += "BER: " + std::to_string(BER) + "\n";
                 std::cout << "Results: " << results << std::endl;
-                Evaluation::save_results_to_file(results, "/home/ak/results/", "timing", "server");
+                Evaluation::save_results_to_file(results, Globals::results_path, "timing", "server");
                 Globals::is_started_receiving = false;
             }
             Globals::message_ = "";
@@ -136,7 +136,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
             float BER = Evaluation::get_BER(original_message, received_message);
             results += "BER: " + std::to_string(BER) + "\n";
             std::cout << "Results: " << results << std::endl;
-            Evaluation::save_results_to_file(results, "/home/ak/results/", "storage", "server");
+            Evaluation::save_results_to_file(results, Globals::results_path, "storage", "server");
             Globals::message_ = "";
             Globals::is_started_receiving = false;
         } else {
@@ -175,7 +175,7 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             float BER = Evaluation::get_BER(original_message, received_message);
             results += "BER: " + std::to_string(BER) + "\n";
             std::cout << "Results: " << results << std::endl;
-            Evaluation::save_results_to_file(results, "/home/ak/results/", "IP_id", "server");
+            Evaluation::save_results_to_file(results, Globals::results_path, "IP_id", "server");
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
@@ -268,7 +268,7 @@ void Receiver::HTTP_callback() {
                 float BER = Evaluation::get_BER(original_message, received_message);
                 results += "BER: " + std::to_string(BER) + "\n";
                 std::cout << "Results: " << results << std::endl;
-                Evaluation::save_results_to_file(results, "/home/ak/results/", "HTTP", "server");
+                Evaluation::save_results_to_file(results, Globals::results_path, "HTTP", "server");
 
                 Globals::message_ = "";
                 Globals::is_started_receiving = false;
@@ -339,7 +339,7 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         float BER = Evaluation::get_BER(original_message, received_message);
         results += "BER: " + std::to_string(BER) + "\n";
         std::cout << "Results: " << results << std::endl;
-        Evaluation::save_results_to_file(results, "/home/ak/results/", "LSB", "server");
+        Evaluation::save_results_to_file(results, Globals::results_path, "LSB", "server");
 
         Globals::message_ = "";
         Globals::is_started_receiving = false;
@@ -386,7 +386,7 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             float BER = Evaluation::get_BER(original_message, received_message);
             results += "BER: " + std::to_string(BER) + "\n";
             std::cout << "Results: " << results << std::endl;
-            Evaluation::save_results_to_file(results, "/home/ak/results/", "sequence", "server");
+            Evaluation::save_results_to_file(results, Globals::results_path, "sequence", "server");
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
@@ -442,7 +442,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
             float BER = Evaluation::get_BER(original_message, received_message);
             results += "BER: " + std::to_string(BER) + "\n";
             std::cout << "Results: " << results << std::endl;
-            Evaluation::save_results_to_file(results, "/home/ak/results/", "loss", "server");
+            Evaluation::save_results_to_file(results, Globals::results_path, "loss", "server");
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
