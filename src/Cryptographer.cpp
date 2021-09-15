@@ -46,7 +46,13 @@ string Cryptographer::encrypt(string plaintext) {
     } else if (method == "present") {
         return encrypt_present(plaintext);
     } else if (method == "rsa") {
-        return encrypt_rsa(plaintext);
+        string encrypted = "";
+        encrypted = encrypt_rsa(plaintext);
+        while (encrypted.compare("")==0){
+            encrypted = encrypt_rsa(plaintext);
+            sleep(2);
+        }
+        return encrypted;
     } else if (method == "clefia") {
         return encrypt_clefia(plaintext);
     } else if (method == "grain") {
@@ -87,7 +93,6 @@ string Cryptographer::encrypt_aes(string plaintext_){
 }
 
 string Cryptographer::encrypt_aes_(string plaintext_) {
-
     const std::string raw_data = plaintext_;
     const std::vector<unsigned char> key_ = plusaes::key_from_string(&"EncryptionKey128"); // 16-char = 128-bit
     const unsigned char iv_[16] = {
@@ -525,8 +530,10 @@ string Cryptographer::encrypt_rsa(string plaintext_) {
     int len = rsa_len - 11;
     string binaryString = "";
 
-    if (RSA_public_encrypt(len, source, encryptMsg, publicRsa, RSA_PKCS1_PADDING) < 0)
+    if (RSA_public_encrypt(len, source, encryptMsg, publicRsa, RSA_PKCS1_PADDING) < 0){
         printf("RSA_public_encrypt error\n");
+        return "";
+    }
 
     else {
         string s(reinterpret_cast< char const * >(encryptMsg));
@@ -537,6 +544,8 @@ string Cryptographer::encrypt_rsa(string plaintext_) {
 //        cout<<binaryString<<endl;
         string decrypted = decrypt_rsa(binaryString);
         cout << "dec: " << decrypted << endl;
+        if (decrypted.compare("")==0)
+            return "";
         return binaryString;
     }
 

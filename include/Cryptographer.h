@@ -30,6 +30,11 @@ extern "C" {
 #include <openssl/err.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
+#include <string>
+#include <unistd.h>
+#include <iostream>
+#include <chrono>
 
 #include "../src/Clefia.hpp"
 #include "../src/trivium.hpp"
