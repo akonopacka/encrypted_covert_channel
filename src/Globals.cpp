@@ -26,7 +26,7 @@ namespace Globals{
     int time_interval_stop_ms_ = 6000;
     bool is_encrypted = false;
     bool is_started_receiving = false;
-    std::string cipher_type_ = "aes";
+    std::string cipher_type_ = "";
     std::string covert_channel_type_ = "loss";
 
     void load_globals(Json::Value config) {

@@ -29,8 +29,8 @@ extern "C" {
 #include <openssl/pem.h>
 #include <openssl/err.h>
 #include <stdio.h>
+#include <math.h>
 
-#include <stdlib.h>
 #include "../src/Clefia.hpp"
 #include "../src/trivium.hpp"
 //#include "../C_language/grain.h"
@@ -51,6 +51,8 @@ public:
     string decrypt_aes(string ciphertext_bin);
     string encrypt_clefia(string plaintext_);
     string decrypt_clefia(string ciphertext_bin);
+    string encrypt_clefia_(string plaintext_);
+    string decrypt_clefia_(string ciphertext_bin);
     string encrypt_des(string plaintext_);
     string decrypt_des(string ciphertext_bin);
     string encrypt_present(string plaintext_);

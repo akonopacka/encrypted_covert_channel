@@ -182,9 +182,18 @@ int32_t fsize(FILE *fp){
     fseek(fp, prev, SEEK_SET); //go back to where we were
     return sz;
 }
-
-
 string Cryptographer::encrypt_clefia(string plaintext_){
+    int counter = ceil((float)plaintext_.length() / 16);
+    string ciphertext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = plaintext_.substr (i*16,16);
+        string encrypted_part = encrypt_clefia_(part_of_message);
+        ciphertext_complete += encrypted_part;
+    }
+    return ciphertext_complete;
+    }
+
+string Cryptographer::encrypt_clefia_(string plaintext_){
     unsigned char rs[384];
     unsigned char *lookupTables[576];
     const unsigned char skey[32] = {
@@ -224,6 +233,16 @@ string Cryptographer::encrypt_clefia(string plaintext_){
 }
 
 string Cryptographer::decrypt_clefia(string ciphertext_bin){
+    int counter = ceil(ciphertext_bin.length() / 128);
+    string plaintext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = ciphertext_bin.substr (i*128,128);
+        string decrypted_part = decrypt_clefia_(part_of_message);
+        plaintext_complete += decrypted_part;
+    }
+    return plaintext_complete;
+}
+string Cryptographer::decrypt_clefia_(string ciphertext_bin){
     const unsigned char skey[32] = {
             0xffU,0xeeU,0xddU,0xccU,0xbbU,0xaaU,0x99U,0x88U,
             0x77U,0x66U,0x55U,0x44U,0x33U,0x22U,0x11U,0x00U,
@@ -374,8 +393,6 @@ string Cryptographer::encrypt_present(string plaintext_){
     char *ciphertext;
 
     ciphertext = encrypt_present_(p_, key_);
-
-
     printf("The ciphertext is: ");
     puts(ciphertext);
 

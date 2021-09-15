@@ -311,6 +311,7 @@ void Sender::send_message(string message_to_send) {
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
         duration_of_encryption = std::to_string(duration.count());
+        std::cout << "Encrypted message: " << message_to_send <<  endl;
     }
     float message_entropy = Evaluation::calculate_entropy(message_to_send);
 
