@@ -494,7 +494,22 @@ string Cryptographer::decrypt_present__(string ciphertext_bin) {
     return deciphered;
 }
 
-string Cryptographer::encrypt_rsa(string plaintext_) {
+string Cryptographer::encrypt_rsa(string plaintext_){
+    int block_size = 128;
+    int counter = ceil((float) plaintext_.length() / block_size);
+    string ciphertext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = plaintext_.substr(i * block_size, block_size);
+        if (part_of_message.length()!=block_size){
+            part_of_message.resize(block_size, char(0));
+        }
+        string encrypted_part = encrypt_rsa_(part_of_message);
+        ciphertext_complete += encrypted_part;
+    }
+    return ciphertext_complete;
+}
+
+string Cryptographer::encrypt_rsa_(string plaintext_) {
     FILE *fp = NULL;
     RSA *publicRsa = NULL;
     RSA *privateRsa = NULL;
@@ -555,7 +570,19 @@ string Cryptographer::encrypt_rsa(string plaintext_) {
 
 }
 
-string Cryptographer::decrypt_rsa(string ciphertext_bin) {
+string Cryptographer::decrypt_rsa(string ciphertext_bin){
+    int block_size = 1024;
+    int counter = ceil((float) ciphertext_bin.length() / block_size);
+    string plaintext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = ciphertext_bin.substr(i * block_size, block_size);
+        string decrypted_part = decrypt_rsa_(part_of_message);
+        plaintext_complete += decrypted_part;
+    }
+    return plaintext_complete;
+}
+
+string Cryptographer::decrypt_rsa_(string ciphertext_bin) {
     FILE *fp = NULL;
     RSA *publicRsa = NULL;
     RSA *privateRsa = NULL;
@@ -600,10 +627,7 @@ string Cryptographer::decrypt_rsa(string ciphertext_bin) {
     unsigned char *val = new unsigned char[output.length() + 1];
     strcpy((char *) val, output.c_str());
     encryptMsg = val;
-
     int mun = RSA_private_decrypt(rsa_len, encryptMsg, decryptMsg, privateRsa, RSA_PKCS1_PADDING);
-
-
     if (mun < 0) {
         printf("RSA_private_decrypt error\n");
         return "";
@@ -681,10 +705,7 @@ string Cryptographer::decrypt_grain(string ciphertext_bin){
 string Cryptographer::decrypt_grain_(string ciphertext_bin) {
     int encrypted_text[10];
     int decrypted_text[10];
-
-
     int ks[10];
-
     int key2[10] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0x12, 0x34},
             IV2[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
     grain mygrain;
@@ -697,7 +718,6 @@ string Cryptographer::decrypt_grain_(string ciphertext_bin) {
     int encrypted_text_[10];
     memset(encrypted_text_, 0, sizeof(encrypted_text_));
     int j = 0;
-    cout << endl;
     while (sstream.good()) {
         std::bitset<8> bits;
         sstream >> bits;
@@ -713,7 +733,6 @@ string Cryptographer::decrypt_grain_(string ciphertext_bin) {
     for (int k: decrypted_text) {
         text = text + (char) k;
     }
-
 //    cout<<endl<<"message:"<<text<<endl;
     return text;
 }

@@ -68,6 +68,8 @@ public:
     string decrypt_present__(string ciphertext_bin);
     string encrypt_rsa(string plaintext_);
     string decrypt_rsa(string ciphertext_bin);
+    string encrypt_rsa_(string plaintext_);
+    string decrypt_rsa_(string ciphertext_bin);
     string encrypt_grain(string plaintext_);
     string decrypt_grain(string ciphertext_bin);
     string encrypt_grain_(string plaintext_);
