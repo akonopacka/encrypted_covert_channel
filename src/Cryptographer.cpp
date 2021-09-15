@@ -388,7 +388,22 @@ string Cryptographer::decrypt_des(string ciphertext_bin) {
     return decrypted_message;
 }
 
-string Cryptographer::encrypt_present(string plaintext_) {
+string Cryptographer::encrypt_present(string plaintext_){
+    int block_size = 8;
+    int counter = ceil((float) plaintext_.length() / block_size);
+    string ciphertext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = plaintext_.substr(i * block_size, block_size);
+        if (part_of_message.length()!=block_size){
+            part_of_message.resize(block_size, char(0));
+        }
+        string encrypted_part = encrypt_present__(part_of_message);
+        ciphertext_complete += encrypted_part;
+    }
+    return ciphertext_complete;
+}
+
+string Cryptographer::encrypt_present__(string plaintext_) {
     string p = string_to_hex(plaintext_);
 
 // the plaintext (64 bits) in hexadecimal format
@@ -401,8 +416,7 @@ string Cryptographer::encrypt_present(string plaintext_) {
     char *ciphertext;
 
     ciphertext = encrypt_present_(p_, key_);
-    printf("The ciphertext is: ");
-    puts(ciphertext);
+//    puts(ciphertext);
 
     string binaryString = "";
     string hex(ciphertext);
@@ -414,8 +428,18 @@ string Cryptographer::encrypt_present(string plaintext_) {
 // return hex string as bin
     return binaryString;
 }
-
-string Cryptographer::decrypt_present(string ciphertext_bin) {
+string Cryptographer::decrypt_present(string ciphertext_bin){
+    int block_size = 128  ;
+    int counter = ceil((float) ciphertext_bin.length() / block_size);
+    string plaintext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = ciphertext_bin.substr(i * block_size, block_size);
+        string decrypted_part = decrypt_present__(part_of_message);
+        plaintext_complete += decrypted_part;
+    }
+    return plaintext_complete;
+}
+string Cryptographer::decrypt_present__(string ciphertext_bin) {
     char *key_ = "1f1f1ffa90e329231f1f1ffa90e32923";
     std::stringstream sstream(ciphertext_bin);
     std::string ciphertext_hex;
@@ -431,7 +455,6 @@ string Cryptographer::decrypt_present(string ciphertext_bin) {
     char *s = decrypt_present_(cstr, key_);
     string s_(s);
     string deciphered = hex_to_string(s_);
-    cout << "Deciphered: " << s << endl;
     return deciphered;
 }
 
