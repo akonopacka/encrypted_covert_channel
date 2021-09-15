@@ -71,8 +71,22 @@ string Cryptographer::decrypt(string ciphertext) {
     }
     return "OK";
 }
+string Cryptographer::encrypt_aes(string plaintext_){
+    int block_size = 16;
+    int counter = ceil((float) plaintext_.length() / block_size);
+    string ciphertext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = plaintext_.substr(i * block_size, block_size);
+        if (part_of_message.length()!=block_size){
+            part_of_message.resize(block_size, char(0));
+        }
+        string encrypted_part = encrypt_aes_(part_of_message);
+        ciphertext_complete += encrypted_part;
+    }
+    return ciphertext_complete;
+}
 
-string Cryptographer::encrypt_aes(string plaintext_) {
+string Cryptographer::encrypt_aes_(string plaintext_) {
 
     const std::string raw_data = plaintext_;
     const std::vector<unsigned char> key_ = plusaes::key_from_string(&"EncryptionKey128"); // 16-char = 128-bit
@@ -89,12 +103,12 @@ string Cryptographer::encrypt_aes(string plaintext_) {
                          encrypted.size(), true);
     // fb 7b ae 95 d5 0f c5 6f 43 7d 14 6b 6a 29 15 70
 
-    cout << "Message: " << plaintext_ << " \nEncrypted: ";
-
-    for (int i = 0; i < encrypted.size(); ++i) {
-        cout << encrypted[i];
-    }
-    cout << endl;
+//    cout << "Message: " << plaintext_ << " \nEncrypted: ";
+//
+//    for (int i = 0; i < encrypted.size(); ++i) {
+//        cout << encrypted[i];
+//    }
+//    cout << endl;
     string binaryString = "";
 
     for (int i = 0; i < encrypted.size(); ++i) {
@@ -123,8 +137,25 @@ string bintohex(const string &s) {
 
     return out;
 }
+string Cryptographer::decrypt_aes(string ciphertext_bin){
+    int block_size = 256;
+    int counter = ceil((float) ciphertext_bin.length() / block_size);
+    string plaintext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = ciphertext_bin.substr(i * block_size, block_size);
+        string decrypted_part = decrypt_aes_(part_of_message);
+        string decrypted_part_;
+        std::size_t pos = decrypted_part.find( char(0) );
+        if ( pos != string::npos ) {
+            int len = decrypted_part.length();
+            decrypted_part = decrypted_part.erase(pos, len);
+        }
+        plaintext_complete += decrypted_part;
+    }
+    return plaintext_complete;
+}
 
-string Cryptographer::decrypt_aes(string ciphertext_bin) {
+string Cryptographer::decrypt_aes_(string ciphertext_bin) {
 
     const std::vector<unsigned char> key_1 = plusaes::key_from_string(&"EncryptionKey128"); // 16-char = 128-bit
     const unsigned char iv_1[16] = {

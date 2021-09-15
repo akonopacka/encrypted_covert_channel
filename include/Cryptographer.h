@@ -49,6 +49,8 @@ public:
     string decrypt(string ciphertext);
     string encrypt_aes(string plaintext_);
     string decrypt_aes(string ciphertext_bin);
+    string encrypt_aes_(string plaintext_);
+    string decrypt_aes_(string ciphertext_bin);
     string encrypt_clefia(string plaintext_);
     string decrypt_clefia(string ciphertext_bin);
     string encrypt_clefia_(string plaintext_);
