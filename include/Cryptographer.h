@@ -61,6 +61,8 @@ public:
     string decrypt_rsa(string ciphertext_bin);
     string encrypt_grain(string plaintext_);
     string decrypt_grain(string ciphertext_bin);
+    string encrypt_grain_(string plaintext_);
+    string decrypt_grain_(string ciphertext_bin);
 };
 
 

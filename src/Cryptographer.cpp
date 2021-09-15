@@ -177,10 +177,11 @@ int32_t fsize(FILE *fp) {
 }
 
 string Cryptographer::encrypt_clefia(string plaintext_) {
-    int counter = ceil((float) plaintext_.length() / 16);
+    int block_size = 16;
+    int counter = ceil((float) plaintext_.length() / block_size);
     string ciphertext_complete;
     for (int i = 0; i < counter; i++) {
-        string part_of_message = plaintext_.substr(i * 16, 16);
+        string part_of_message = plaintext_.substr(i * block_size, block_size);
         string encrypted_part = encrypt_clefia_(part_of_message);
         ciphertext_complete += encrypted_part;
     }
@@ -227,10 +228,11 @@ string Cryptographer::encrypt_clefia_(string plaintext_) {
 }
 
 string Cryptographer::decrypt_clefia(string ciphertext_bin) {
-    int counter = ceil((float) ciphertext_bin.length() / 128);
+    int block_size = 128;
+    int counter = ceil((float) ciphertext_bin.length() / block_size);
     string plaintext_complete;
     for (int i = 0; i < counter; i++) {
-        string part_of_message = ciphertext_bin.substr(i * 128, 128);
+        string part_of_message = ciphertext_bin.substr(i * block_size, block_size);
         string decrypted_part = decrypt_clefia_(part_of_message);
         plaintext_complete += decrypted_part;
     }
@@ -550,8 +552,19 @@ string Cryptographer::decrypt_rsa(string ciphertext_bin) {
     }
 }
 
-string Cryptographer::encrypt_grain(string plaintext_) {
+string Cryptographer::encrypt_grain(string plaintext_){
+    int block_size = 10;
+    int counter = ceil((float) plaintext_.length() / block_size);
+    string ciphertext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = plaintext_.substr(i * block_size, block_size);
+        string encrypted_part = encrypt_grain_(part_of_message);
+        ciphertext_complete += encrypted_part;
+    }
+    return ciphertext_complete;
+}
 
+string Cryptographer::encrypt_grain_(string plaintext_) {
     int i = 0;
     int plaintext[10];
     for (i = 0; i < 10; i++) {
@@ -590,7 +603,19 @@ string Cryptographer::encrypt_grain(string plaintext_) {
     return ciphertext_bin;
 }
 
-string Cryptographer::decrypt_grain(string ciphertext_bin) {
+string Cryptographer::decrypt_grain(string ciphertext_bin){
+    int block_size = 80;
+    int counter = ceil((float) ciphertext_bin.length() / block_size);
+    string plaintext_complete;
+    for (int i = 0; i < counter; i++) {
+        string part_of_message = ciphertext_bin.substr(i * block_size, block_size);
+        string decrypted_part = decrypt_grain_(part_of_message);
+        plaintext_complete += decrypted_part;
+    }
+    return plaintext_complete;
+}
+
+string Cryptographer::decrypt_grain_(string ciphertext_bin) {
     int encrypted_text[10];
     int decrypted_text[10];
 
