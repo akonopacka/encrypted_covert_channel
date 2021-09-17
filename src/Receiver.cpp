@@ -338,8 +338,24 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
             char c = char(bits.to_ulong());
             output += c;
         }
+        std::string received_message = "";
+        if (Globals::is_encrypted) {
+            Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+            string decrypted_message = cryptographer.decrypt(Globals::message_);
+            //                remove padding
+            std::size_t pos = decrypted_message.find( char(0) );
+            if ( pos != string::npos ) {
+                int len = decrypted_message.length();
+                received_message = decrypted_message.erase(pos, len);
+            }
+            else{
+                received_message = decrypted_message;
+            }
+        }
+        std::cout << "Received message: " << received_message << std::endl;
+
         std::cout << "Received message: " << output << std::endl;
-        std::string received_message = output;
+
 
         auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
         int sent_bits = Globals::message_.length();
@@ -365,9 +381,9 @@ bool Receiver::sequence_callback(const PDU &pdu) {
     const TCP &tcp = pdu.rfind_pdu<TCP>();
 
     if (tcp.dport() == Globals::dst_port_) {
-        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
-                  << ip.dst_addr() << ':' << tcp.dport() << "    "
-                  << tcp.seq() << endl;
+//        std::cout << ip.src_addr() << ':' << tcp.sport() << " -> "
+//                  << ip.dst_addr() << ':' << tcp.dport() << "    "
+//                  << tcp.seq() << endl;
         int seq = tcp.seq();
         if (!Globals::is_started_receiving) {
             Globals::start_receiving = high_resolution_clock::now();
