@@ -454,7 +454,7 @@ namespace clefia {
             } else if (i == 17) {
                 WBF0Xor(tables, fout, fin, rk, zero, rs, skey + 8);
                 WBF1Xor(tables + 16, fout + 8, fin + 8, rk + 4, zero, rs + 4, skey + 12);
-                BytePut(fout, 16);
+//                BytePut(fout, 16);
                 break;
 
             } else {

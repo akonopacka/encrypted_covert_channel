@@ -205,12 +205,10 @@ bool in_quote(const Container &cont, const std::string &s) {
 }
 
 void Receiver::HTTP_callback() {
-
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-
 
 // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
@@ -243,7 +241,6 @@ void Receiver::HTTP_callback() {
         perror("accept");
         exit(EXIT_FAILURE);
     }
-    string message = "";
     bool end = false;
     while (!end) {
         if (!Globals::is_started_receiving) {
@@ -259,7 +256,7 @@ void Receiver::HTTP_callback() {
             memset(buffer, 0, 1024);
             if (str.find("fin.com") != string::npos) {
                 Globals::stop_receiving = high_resolution_clock::now();
-                std::stringstream sstream(message);
+                std::stringstream sstream(Globals::message_);
                 std::string output;
                 while (sstream.good()) {
                     std::bitset<8> bits;
@@ -267,8 +264,23 @@ void Receiver::HTTP_callback() {
                     char c = char(bits.to_ulong());
                     output += c;
                 }
-                std::cout << "Received message: " << output << std::endl;
-                std::string received_message = output;
+                string received_message = "";
+                if (Globals::is_encrypted) {
+                    Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                    string decrypted_message = cryptographer.decrypt(Globals::message_);
+                    //                remove padding
+                    std::size_t pos = decrypted_message.find( char(0) );
+                    if ( pos != string::npos ) {
+                        int len = decrypted_message.length();
+                        received_message = decrypted_message.erase(pos, len);
+                    }
+                    else{
+                        received_message = decrypted_message;
+                    }
+                }
+                std::cout << "Received message: " << received_message << std::endl;
+                std::cout << "Output: " << output << std::endl;
+//                std::string received_message = output;
 
                 auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
                 int sent_bits = received_message.length();
@@ -285,9 +297,6 @@ void Receiver::HTTP_callback() {
 
                 Globals::message_ = "";
                 Globals::is_started_receiving = false;
-
-
-                message = "";
                 str = "";
                 if ((new_socket = accept(server_fd, (struct sockaddr *) &address,
                                          (socklen_t *) &addrlen)) < 0) {
@@ -300,10 +309,10 @@ void Receiver::HTTP_callback() {
                 s = "host:";
                 bool is_host = in_quote(str, s);
                 if (is_Host) {
-                    message = message + '0';
+                    Globals::message_ = Globals::message_ + '0';
                     str = "";
                 } else if (is_host) {
-                    message = message + '1';
+                    Globals::message_ = Globals::message_ + '1';
                     str = "";
                 }
                 char *hello = "Hello from server";
@@ -353,7 +362,6 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
             }
         }
         std::cout << "Received message: " << received_message << std::endl;
-
         std::cout << "Received message: " << output << std::endl;
 
 
@@ -454,7 +462,6 @@ bool Receiver::loss_callback(const PDU &pdu) {
     if (tcp.dport() == Globals::dst_port_) {
         int seq = tcp.seq();
         if (seq == 0) {
-
             Globals::stop_receiving = high_resolution_clock::now();
             Globals::message_.pop_back();
             std::stringstream sstream(Globals::message_);

@@ -73,7 +73,7 @@ inline byte_* fromLongToBytes (uint64_t block){
 inline char* fromLongToHexString (uint64_t block){
     char* hexString = (char*)malloc (17 * sizeof(char));
     //we print the integer in a String in hexadecimal format
-    sprintf(hexString, "%016llx", block);
+//    sprintf(hexString, "%016llx", block);
     return hexString;
 }
 // function for converting a nibble using the SBox

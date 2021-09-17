@@ -115,13 +115,17 @@ void Sender::send_with_HTTP_case_method(const string message_to_send) {
     if (connect(sock, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
         printf("\nConnection Failed \n");
     }
-
     string word = message_to_send;
     string binaryString = "";
-    for (char &_char: word) {
-        binaryString += bitset<8>(_char).to_string();
+    if (!is_encrypted) {
+        for (char &_char: word) {
+            binaryString += bitset<8>(_char).to_string();
+        }
+    } else {
+        binaryString = message_to_send;
     }
-    cout << "Message to send: " << word << endl << "Bin: " << binaryString << endl;
+
+    cout << "Message to send: " << message_to_send << endl;
     string message = binaryString;
     PacketSender sender;
     stringstream ss;
@@ -153,9 +157,6 @@ void Sender::send_with_HTTP_case_method(const string message_to_send) {
     string request = ss.str();
     send(sock, request.c_str(), request.length(), 0);
     ss.str("");
-
-    printf("Finished");
-
 }
 
 void Sender::send_with_LSB_Hop_method(const string message_to_send) {

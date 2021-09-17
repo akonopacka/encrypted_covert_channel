@@ -324,17 +324,17 @@ void key_scheduling_192(unsigned int *k, unsigned int *wk, unsigned int* rk) {
     lr[2] = y[6];
     lr[3] = y[7];
 
-    printf("LL: \n");
-    for (i = 0; i < 4; i++) {
-        printf("%08x ", ll[i]);
-    }
-    printf("\n");
-
-    printf("LR: \n");
-    for (i = 0; i < 4; i++) {
-        printf("%08x ", lr[i]);
-    }
-    printf("\n");
+//    printf("LL: \n");
+//    for (i = 0; i < 4; i++) {
+//        printf("%08x ", ll[i]);
+//    }
+//    printf("\n");
+//
+//    printf("LR: \n");
+//    for (i = 0; i < 4; i++) {
+//        printf("%08x ", lr[i]);
+//    }
+//    printf("\n");
 
     /* step 4 */
     wk[0] = kl[0] ^ kr[0];
@@ -384,7 +384,6 @@ void key_scheduling_192(unsigned int *k, unsigned int *wk, unsigned int* rk) {
         rk[4*i+3] = t[3];
     }
 }
-
 
 void encryption_192(unsigned int *p, unsigned int *c, unsigned int *k) {
 
