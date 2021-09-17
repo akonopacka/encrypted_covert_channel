@@ -1,0 +1,6 @@
+Time taken for sending :
+    Start counting from the first message, stop when last message is sent
+
+BER:
+    BER_sent <- errors compared send received
+    BER_encryption <- compared message before and after encryption
