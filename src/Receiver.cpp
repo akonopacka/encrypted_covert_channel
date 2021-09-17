@@ -172,7 +172,8 @@ bool Receiver::storage_callback(const PDU &pdu) {
             Globals::is_started_receiving = false;
         } else {
             if (Globals::is_encrypted) {
-                Globals::message_ = Globals::message_ + bitset<8>(a).to_string();
+                string bin_string = bitset<8>(a).to_string();
+                Globals::message_ = Globals::message_ + bin_string;
 //                cout<<"Received : "<< a << " " <<  bitset<8>(a).to_string() << endl;
             }
             else
@@ -195,7 +196,7 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
 //                  << ip.id() << endl;
         int a = ip.id();
         char c = static_cast<char>(a);
-        if (c == '0') {
+        if (a  == 1 ) {
             Globals::stop_receiving = high_resolution_clock::now();
             string received_message = "";
             std::cout << "Original received message: " << Globals::message_ << std::endl;
@@ -230,7 +231,15 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             Globals::message_ = "";
             Globals::is_started_receiving = false;
         } else {
-            Globals::message_ = Globals::message_ + c;
+            if (Globals::is_encrypted) {
+                string bin_string = bitset<8>(a).to_string();
+                if (a > 255)
+                    bin_string = "00000000";
+                Globals::message_ = Globals::message_ + bin_string;
+//                cout<<"Received : "<< a << " " <<  bin_string << endl;
+            }
+            else
+                Globals::message_ = Globals::message_ + c;
         }
     }
     return true;

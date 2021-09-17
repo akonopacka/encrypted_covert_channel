@@ -89,29 +89,24 @@ void Sender::send_with_storage_method(const string message_to_send) {
 
 void Sender::send_with_storage_method_IP_id(const string message_to_send) {
     std::cout << "Storage IP_id method" << endl;
-    string word = message_to_send;
     string binaryString = "";
-
-    string message = "";
-
+    string message = message_to_send;
     if (!is_encrypted) {
-        message = message_to_send;
-    } else {
-        std::stringstream sstream(message_to_send);
-        std::string output;
-        while (sstream.good()) {
-            std::bitset<8> bits;
-            sstream >> bits;
-            char c = char(bits.to_ulong());
-            message += c;
+        cout << "Message to send: " << message << endl;
+        PacketSender sender;
+        for (std::string::size_type i = 0; i < message.size(); i++) {
+            char a = message[i];
+            int ia = (int) a;
+            IP ip = IP(Globals::IPv4_address);
+            ip.id(ia);
+            ip.ttl(100);
+            TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
+            tcp.flags(Tins::TCP::RST);
+            IP pkt = ip / tcp / RawPDU("");
+            sender.send(pkt);
+//            std::cout << message[i] << ' ' << ia << endl;
         }
-    }
-
-    cout << "Message to send: " << message << endl;
-    PacketSender sender;
-    for (std::string::size_type i = 0; i < message.size(); i++) {
-        char a = message[i];
-        int ia = (int) a;
+        int ia = 1;
         IP ip = IP(Globals::IPv4_address);
         ip.id(ia);
         ip.ttl(100);
@@ -119,18 +114,33 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
         tcp.flags(Tins::TCP::RST);
         IP pkt = ip / tcp / RawPDU("");
         sender.send(pkt);
-        std::cout << message[i] << ' ' << ia << endl;
+//        std::cout << ia << endl;
+    } else {
+        int block_size = 8;
+        int counter = ceil((float) message.length() / block_size);
+        string ciphertext_complete;
+        PacketSender sender;
+        IP ip = IP(Globals::IPv4_address);
+        for (int i = 0; i < counter; i++) {
+            string bin_string = message.substr(i * block_size, block_size);
+            int number = stoi(bin_string, 0, 2);
+            ip.id(number);
+            ip.ttl(100);
+            TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
+            tcp.flags(Tins::TCP::RST);
+            IP pkt = ip / tcp / RawPDU("");
+            sender.send(pkt);
+//            std::cout << number << ' ' << bin_string << endl;
+        }
+        int ia = 1;
+        ip.id(ia);
+        ip.ttl(100);
+        TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
+        tcp.flags(Tins::TCP::RST);
+        IP pkt = ip / tcp / RawPDU("");
+        sender.send(pkt);
+//        std::cout << ia << endl;
     }
-    char a = '0';
-    int ia = (int) a;
-    IP ip = IP(Globals::IPv4_address);
-    ip.id(ia);
-    ip.ttl(100);
-    TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
-    tcp.flags(Tins::TCP::RST);
-    IP pkt = ip / tcp / RawPDU("");
-    sender.send(pkt);
-    std::cout << '0' << ' ' << ia << endl;
 }
 
 void Sender::send_with_HTTP_case_method(const string message_to_send) {
@@ -339,6 +349,8 @@ void Sender::send_message(string message_to_send) {
         auto duration = duration_cast<microseconds>(stop - start);
         duration_of_encryption = std::to_string(duration.count());
         std::cout << "Encrypted message: " << message_to_send <<  endl;
+        string decrypted = cryptographer.decrypt(message_to_send);
+        std::cout << "Decrypt check: " << decrypted <<  endl;
     }
     float message_entropy = Evaluation::calculate_entropy(message_to_send);
 
