@@ -85,6 +85,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
                     char c = char(bits.to_ulong());
                     output += c;
                 }
+
                 std::cout << "Received message: " << Globals::message_ << endl;
                 std::cout << "Encoded message: " << output << endl;
                 std::string original_message = Globals::original_message_;
@@ -135,8 +136,25 @@ bool Receiver::storage_callback(const PDU &pdu) {
             Globals::start_receiving = high_resolution_clock::now();
             Globals::is_started_receiving = true;
         }
-        if (c == '0') {
+        if (a == 1) {
             Globals::stop_receiving = high_resolution_clock::now();
+            std::string received_message = Globals::message_;
+            std::cout << "Original received message: " << Globals::message_ << std::endl;
+            if (Globals::is_encrypted) {
+                Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                string decrypted_message = cryptographer.decrypt(Globals::message_);
+                //                remove padding
+                std::size_t pos = decrypted_message.find( char(0) );
+                if ( pos != string::npos ) {
+                    int len = decrypted_message.length();
+                    received_message = decrypted_message.erase(pos, len);
+                }
+                else{
+                    received_message = decrypted_message;
+                }
+            }
+            std::cout << "Received message: " << received_message << std::endl;
+
             std::cout << "Received message: " << Globals::message_ << endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             int sent_bits = Globals::message_.length();
@@ -145,7 +163,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
             results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
 //            Calculate BER
             std::string original_message = Globals::original_message_;
-            std::string received_message = Globals::message_;
+
             float BER = Evaluation::get_BER(original_message, received_message);
             results += "BER: " + std::to_string(BER) + "\n";
             std::cout << "Results: " << results << std::endl;
@@ -153,7 +171,12 @@ bool Receiver::storage_callback(const PDU &pdu) {
             Globals::message_ = "";
             Globals::is_started_receiving = false;
         } else {
-            Globals::message_ = Globals::message_ + c;
+            if (Globals::is_encrypted) {
+                Globals::message_ = Globals::message_ + bitset<8>(a).to_string();
+//                cout<<"Received : "<< a << " " <<  bitset<8>(a).to_string() << endl;
+            }
+            else
+                Globals::message_ = Globals::message_ + c;
         }
     }
     return true;
@@ -174,8 +197,22 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
         char c = static_cast<char>(a);
         if (c == '0') {
             Globals::stop_receiving = high_resolution_clock::now();
-            std::cout << "Received message: " << Globals::message_ << endl;
-            std::string received_message = Globals::message_;
+            string received_message = "";
+            std::cout << "Original received message: " << Globals::message_ << std::endl;
+            if (Globals::is_encrypted) {
+                Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                string decrypted_message = cryptographer.decrypt(Globals::message_);
+                //                remove padding
+                std::size_t pos = decrypted_message.find( char(0) );
+                if ( pos != string::npos ) {
+                    int len = decrypted_message.length();
+                    received_message = decrypted_message.erase(pos, len);
+                }
+                else{
+                    received_message = decrypted_message;
+                }
+            }
+            std::cout << "Received message: " << received_message << std::endl;
 
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             int sent_bits = received_message.length();
