@@ -85,7 +85,6 @@ bool Receiver::timing_callback(const PDU &pdu) {
                     char c = char(bits.to_ulong());
                     output += c;
                 }
-
                 std::cout << "Received message: " << Globals::message_ << endl;
                 std::cout << "Encoded message: " << output << endl;
                 std::string original_message = Globals::original_message_;
