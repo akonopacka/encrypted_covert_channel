@@ -271,7 +271,6 @@ void Sender::send_with_loss_method(const string message_to_send) {
     sender.send(pkt);
     seq = seq + 1;
     for (std::string::size_type i = 0; i < message.size(); i++) {
-
         if (message[i] == '0') {
             tcp.seq(seq);
             IP pkt = ip / tcp / RawPDU("");
@@ -291,17 +290,6 @@ void Sender::send_with_loss_method(const string message_to_send) {
 void Sender::send_message(string message_to_send) {
     std::cout << "Sending method: " << method << ", Message is encrypted: " << std::boolalpha << is_encrypted << endl;
     message_to_send +=char(0);
-
-//    float cpu_usage = evaluation.get_CPU_value();
-//    sleep(2);
-//    cpu_usage = evaluation.get_CPU_value();
-//    std::cout<<"CPU usage: "<<cpu_usage<<"\n";
-//
-//    float cpu_usage_of_process = evaluation.get_CPU_value_of_process();
-//    std::cout<<"CPU usage of process: "<<cpu_usage_of_process<<"\n";
-//
-//    float mem_usage = evaluation.get_mem_value();
-//    std::cout<<"Men usage: "<<mem_usage<<"\n";
     std::string duration_of_encryption = "----";
     if (is_encrypted) {
         Cryptographer cryptographer = Cryptographer(cipher_type);
@@ -339,12 +327,10 @@ void Sender::send_message(string message_to_send) {
     cout << "Time taken by sending function: " << time_of_sending << " microseconds" << endl;
 
 //    Save results to file
-    std:
-    string results = "Calculated message entropy: " + std::to_string(message_entropy) + "\n";
+    std:string results = "Calculated message entropy: " + std::to_string(message_entropy) + "\n";
     results += "Time taken by encrypting function: " + duration_of_encryption + " microseconds\n";
     results += "Time taken by sending function: " + time_of_sending + " microseconds\n";
     std::cout << "Results: " << results << std::endl;
     Evaluation::save_results_to_file(results, Globals::results_path, method, "client");
-
 }
 

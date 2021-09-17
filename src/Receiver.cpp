@@ -94,6 +94,19 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 float capacity = float(sent_bits) / (duration.count() * 0.001);
                 std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
                 results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+                if (Globals::is_encrypted) {
+                    Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                    string decrypted_message = cryptographer.decrypt(Globals::message_);
+                    //                remove padding
+                    std::size_t pos = decrypted_message.find( char(0) );
+                    if ( pos != string::npos ) {
+                        int len = decrypted_message.length();
+                        received_message = decrypted_message.erase(pos, len);
+                    }
+                    else{
+                        received_message = decrypted_message;
+                    }
+                }
 //            Calculate BER
                 float BER = Evaluation::get_BER(original_message, received_message);
                 results += "BER: " + std::to_string(BER) + "\n";
@@ -372,8 +385,24 @@ bool Receiver::sequence_callback(const PDU &pdu) {
                 output += c;
             }
             Globals::last_seq_ = 0;
-            std::cout << "Received message: " << Globals::message_ << std::endl << output << std::endl;
-            std::string received_message = output;
+            std::string received_message = "";
+            if (Globals::is_encrypted) {
+                Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                string decrypted_message = cryptographer.decrypt(Globals::message_);
+                //                remove padding
+                std::size_t pos = decrypted_message.find( char(0) );
+                if ( pos != string::npos ) {
+                    int len = decrypted_message.length();
+                    received_message = decrypted_message.erase(pos, len);
+                }
+                else{
+                    received_message = decrypted_message;
+                }
+            }
+            std::cout << "Received message: " << received_message << std::endl;
+
+            std::cout << "Global message: " << Globals::message_ << std::endl << output << std::endl;
+
 
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             int sent_bits = Globals::message_.length();
