@@ -17,6 +17,11 @@ printf "cd encrypted_covert_channel/cmake-build-debug; ./encrypted_covert_channe
 
 for covert_channel_type in timing storage IP_id HTTP LSB sequence loss
 do
+#  Test without encryption
+#printf "cd encrypted_covert_channel/cmake-build-debug; ./encrypted_covert_channel --server  loss --is_encrypted des \n" | nc  0.0.0.0 5000 &
+#./encrypted_covert_channel --client $covert_channel_method
+#printf "export pid=`ps aux | grep "encrypted_covert_channel" | awk 'NR==1{print $2}' | cut -d' ' -f1`; sudo kill -9 $pid \n" | nc  0.0.0.0 5000 &
+
   for cipher_type in aes des present rsa clefia grain
   do
     echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
@@ -29,5 +34,6 @@ do
    ./encrypted_covert_channel --client $covert_channel_method --is_encrypted $cipher_method
    sleep 2
 done
+printf "export pid=`ps aux | grep "encrypted_covert_channel" | awk 'NR==1{print $2}' | cut -d' ' -f1`; sudo kill -9 $pid \n" | nc  0.0.0.0 5000 &
 
 echo "-------------------------------- Tests finished --------------------------------"

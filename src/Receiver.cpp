@@ -112,6 +112,12 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 results += "BER: " + std::to_string(BER) + "\n";
                 std::cout << "Results: " << results << std::endl;
                 Evaluation::save_results_to_file(results, Globals::results_path, "timing", "server");
+                //            Saving to general file
+                std::string combined_results_path = "/home/ak/results/";
+                combined_results_path += "_server_timing_" + Globals::cipher_type_+ ".csv";
+                std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
+                log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+                std::cout << "General results saved to : " << combined_results_path << std::endl;
                 Globals::is_started_receiving = false;
             }
             Globals::message_ = "";
@@ -167,6 +173,12 @@ bool Receiver::storage_callback(const PDU &pdu) {
             results += "BER: " + std::to_string(BER) + "\n";
             std::cout << "Results: " << results << std::endl;
             Evaluation::save_results_to_file(results, Globals::results_path, "storage", "server");
+            //            Saving to general file
+            std::string combined_results_path = "/home/ak/results/";
+            combined_results_path += "_server_storage_" + Globals::cipher_type_+ ".csv";
+            std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
+            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+            std::cout << "General results saved to : " << combined_results_path << std::endl;
             Globals::message_ = "";
             Globals::is_started_receiving = false;
         } else {
@@ -226,6 +238,12 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             results += "BER: " + std::to_string(BER) + "\n";
             std::cout << "Results: " << results << std::endl;
             Evaluation::save_results_to_file(results, Globals::results_path, "IP_id", "server");
+            //            Saving to general file
+            std::string combined_results_path = "/home/ak/results/";
+            combined_results_path += "_server_IP_id_" + Globals::cipher_type_+ ".csv";
+            std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
+            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+            std::cout << "General results saved to : " << combined_results_path << std::endl;
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
@@ -339,6 +357,12 @@ void Receiver::HTTP_callback() {
                 results += "BER: " + std::to_string(BER) + "\n";
                 std::cout << "Results: " << results << std::endl;
                 Evaluation::save_results_to_file(results, Globals::results_path, "HTTP", "server");
+                //            Saving to general file
+                std::string combined_results_path = "/home/ak/results/";
+                combined_results_path += "_server_HTTP_" + Globals::cipher_type_+ ".csv";
+                std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
+                log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+                std::cout << "General results saved to : " << combined_results_path << std::endl;
 
                 Globals::message_ = "";
                 Globals::is_started_receiving = false;
@@ -422,6 +446,12 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         results += "BER: " + std::to_string(BER) + "\n";
         std::cout << "Results: " << results << std::endl;
         Evaluation::save_results_to_file(results, Globals::results_path, "LSB", "server");
+        //            Saving to general file
+        std::string combined_results_path = "/home/ak/results/";
+        combined_results_path += "_server_LSB_" + Globals::cipher_type_+ ".csv";
+        std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
+        log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+        std::cout << "General results saved to : " << combined_results_path << std::endl;
 
         Globals::message_ = "";
         Globals::is_started_receiving = false;
@@ -485,6 +515,12 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             results += "BER: " + std::to_string(BER) + "\n";
             std::cout << "Results: " << results << std::endl;
             Evaluation::save_results_to_file(results, Globals::results_path, "sequence", "server");
+            //            Saving to general file
+            std::string combined_results_path = "/home/ak/results/";
+            combined_results_path += "_server_sequence_" + Globals::cipher_type_+ ".csv";
+            std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
+            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+            std::cout << "General results saved to : " << combined_results_path << std::endl;
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
