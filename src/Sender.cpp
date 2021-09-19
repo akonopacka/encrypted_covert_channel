@@ -338,9 +338,10 @@ void Sender::send_with_loss_method(const string message_to_send) {
 
 void Sender::send_message(string message_to_send) {
     std::cout << "Sending method: " << method << ", Message is encrypted: " << std::boolalpha << is_encrypted << endl;
-    message_to_send +=char(0);
+
     std::string duration_of_encryption = "----";
     if (is_encrypted) {
+        message_to_send +=char(0);
         Cryptographer cryptographer = Cryptographer(cipher_type);
         // Get starting timepoint
         auto start = high_resolution_clock::now();
@@ -385,7 +386,7 @@ void Sender::send_message(string message_to_send) {
     Evaluation::save_results_to_file(results, Globals::results_path, method, "client");
 
     //            Saving to general file
-    std::string combined_results_path = "/home/ak/results/";
+    std::string combined_results_path = "/home/ak/results/general/";
     combined_results_path += "_client_"+ Globals::covert_channel_type_ + "_" + Globals::cipher_type_+ ".csv";
     std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
     log << std::to_string(message_entropy) +";"+ duration_of_encryption+";"+time_of_sending+"\n";

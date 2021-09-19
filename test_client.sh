@@ -12,28 +12,32 @@ ip_address=127.0.0.1
 echo "Path $project_path"
 cd $project_path
 
-printf "cd encrypted_covert_channel/cmake-build-debug; ./encrypted_covert_channel --server  loss --is_encrypted des \n" | nc  0.0.0.0 5000 &
-#./encrypted_covert_channel --server $covert_channel_method --is_encrypted $cipher_method
-
-for covert_channel_type in timing storage IP_id HTTP LSB sequence loss
-do
-#  Test without encryption
 #printf "cd encrypted_covert_channel/cmake-build-debug; ./encrypted_covert_channel --server  loss --is_encrypted des \n" | nc  0.0.0.0 5000 &
-#./encrypted_covert_channel --client $covert_channel_method
-#printf "export pid=`ps aux | grep "encrypted_covert_channel" | awk 'NR==1{print $2}' | cut -d' ' -f1`; sudo kill -9 $pid \n" | nc  0.0.0.0 5000 &
-
-  for cipher_type in aes des present rsa clefia grain
-  do
-    echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
-  done
-done
-
-for i in $(seq 1 1 $repeat_number)
+#./encrypted_covert_channel --server $covert_channel_method --is_encrypted $cipher_method
+#timing storage IP_id HTTP LSB sequence loss
+for covert_channel_type in storage IP_id HTTP LSB sequence loss
 do
-   echo ""
-   ./encrypted_covert_channel --client $covert_channel_method --is_encrypted $cipher_method
-   sleep 2
+  cct=$covert_channel_type
+  echo "Testing covert channel type : $covert_channel_type"
+#  Test without encryption
+  printf "./encrypted_covert_channel --server  $cct \n" | nc  0.0.0.0 5000 &
+  echo "./encrypted_covert_channel --client $cct"
+  for i in $(seq 1 1 $repeat_number)
+  do
+     echo ""
+     ./encrypted_covert_channel --client $cct
+     sleep 2
+  done
+  sleep 5
+  echo "pkill -f encrypted_covert_channel" | nc  0.0.0.0 5000 &
+  sleep 2
+
+#  for cipher_type in aes des present rsa clefia grain
+#  do
+#    echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
+#  done
 done
-printf "export pid=`ps aux | grep "encrypted_covert_channel" | awk 'NR==1{print $2}' | cut -d' ' -f1`; sudo kill -9 $pid \n" | nc  0.0.0.0 5000 &
+
+
 
 echo "-------------------------------- Tests finished --------------------------------"

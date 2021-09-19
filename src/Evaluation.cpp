@@ -105,7 +105,7 @@ void Evaluation::save_results_to_file(std::string results, std::string path, std
     std::string filename = mode + "_" + Globals::covert_channel_type_ + "_" + Globals::cipher_type_ + "_" + currentDateTime + ".txt";
     path = path + filename;
     //Save results to file
-    std::cout << "Saving results to file in path: " << path << std::endl;
+    std::cout << "Saving results to file in path: " << path << std::endl<< std::endl;
     std::ofstream myfile;
     myfile.open(path);
     myfile << results;
