@@ -48,7 +48,6 @@ int main(int argc, char **argv) {
             Receiver receiver = Receiver();
         } else if (!strcmp(argv[1], "--client")) {
             // Configuring parameters
-            bool is_encrypted = config["cryptography"]["is_encrypted"].asBool();
             Sender sender = Sender(Globals::covert_channel_type_, Globals::is_encrypted, Globals::cipher_type_);
             for (int i = 0; i < Globals::number_of_repeat_; i++) {
                 sender.send_message(message_to_send);

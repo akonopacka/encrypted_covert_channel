@@ -22,3 +22,7 @@ aes, des, present, rsa, clefia, grain
 Start server:
 sudo ncat -lkv 5000 -c "sh"
 
+
+TODO
+Read cpu, mem
+
