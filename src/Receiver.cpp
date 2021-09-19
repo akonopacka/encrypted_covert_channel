@@ -549,10 +549,12 @@ bool Receiver::loss_callback(const PDU &pdu) {
             std::cout << "Results: " << results << std::endl;
             Evaluation::save_results_to_file(results, Globals::results_path, "loss", "server");
 
+//            Saving to general file
             std::string combined_results_path = "/home/ak/results/";
             combined_results_path += "_server_loss_" + Globals::cipher_type_+ ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
             log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+            std::cout << "General results saved to : " << combined_results_path << std::endl;
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
