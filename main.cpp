@@ -16,10 +16,10 @@
 using namespace Tins;
 using namespace std;
 
-std::chrono::high_resolution_clock::time_point time_of_last_packet_;
-std::chrono::high_resolution_clock::time_point time_received_;
-std::chrono::duration<double, std::milli> time_span_;
-double last_packet_timestamp_;
+//std::chrono::high_resolution_clock::time_point time_of_last_packet_;
+//std::chrono::high_resolution_clock::time_point time_received_;
+//std::chrono::duration<double, std::milli> time_span_;
+//double last_packet_timestamp_;
 string message_to_send = "";
 
 
@@ -42,7 +42,6 @@ int main(int argc, char **argv) {
         if (argc > 4) {
             Globals::cipher_type_ = argv[4];
         }
-
         if (!strcmp(argv[1], "--server")) {
             std::cout << "Starting server..." << endl;
             Receiver receiver = Receiver();

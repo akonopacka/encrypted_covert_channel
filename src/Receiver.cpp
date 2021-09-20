@@ -29,26 +29,20 @@ Receiver::Receiver() {
         Sniffer(Globals::interface_).sniff_loop(LSB_Hop_callback);
     } else if (Globals::covert_channel_type_ == "sequence") {
         std::cout << "Server! - sequence method\n";
-        Globals::message_ = "";
-        Globals::last_seq_ = 1;
         Sniffer sniffer(Globals::interface_);
         sniffer.set_filter("tcp.dstport==1234");
         sniffer.sniff_loop(sequence_callback);
     } else if (Globals::covert_channel_type_ == "loss") {
         std::cout << "Server! - Loss method\n";
-        Globals::message_ = "";
-        Globals::last_seq_ = 1;
         Sniffer sniffer(Globals::interface_);
         sniffer.set_filter("tcp.dstport==1234");
         sniffer.sniff_loop(loss_callback);
     } else if (Globals::covert_channel_type_ == "timing") {
         std::cout << "Server! - Timing method\n";
-        string filter = "udp&&!icmp&&!dns&&udp.dstport==" + Globals::dst_port_;
         SnifferConfiguration sniffer_configuration = SnifferConfiguration();
         sniffer_configuration.set_immediate_mode(true);
-        string f = "udp port " + Globals::dst_port_;
-        sniffer_configuration.set_filter("udp port 1234");
         Sniffer sniffer(Globals::interface_, sniffer_configuration);
+        string filter = "udp&&!icmp&&!dns&&udp.dstport==" + Globals::dst_port_;
         sniffer.set_filter(filter);
         sniffer.sniff_loop(timing_callback);
     }
@@ -67,6 +61,10 @@ bool Receiver::timing_callback(const PDU &pdu) {
     double inv = timestamp - Globals::last_packet_timestamp_;
 //    std::cout << "Inter: " << inv << " " << "Ts: " << timestamp << std::endl;
     if (udp.dport() == Globals::dst_port_) {
+        if (!Globals::is_started_receiving) {
+            Globals::start_receiving = high_resolution_clock::now();
+            Globals::is_started_receiving = true;
+        }
         if (inv < 1000) {
             Globals::message_ = Globals::message_ + "0";
             std::cout << "0" << endl;
@@ -94,9 +92,14 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 float capacity = float(sent_bits) / (duration.count() * 0.001);
                 std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
                 results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+                string duration_of_decryption;
                 if (Globals::is_encrypted) {
                     Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                    auto start_decryption = high_resolution_clock::now();
                     string decrypted_message = cryptographer.decrypt(Globals::message_);
+                    auto stop_decryption = high_resolution_clock::now();
+                    auto decryption_duration = duration_cast<microseconds>(stop_decryption - start_decryption);
+                    duration_of_decryption = std::to_string(decryption_duration.count());
                     //                remove padding
                     std::size_t pos = decrypted_message.find( char(0) );
                     if ( pos != string::npos ) {
@@ -116,7 +119,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 std::string combined_results_path = "/home/ak/results/general/";
                 combined_results_path += "_server_timing_" + Globals::cipher_type_+ ".csv";
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+                log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
                 Globals::is_started_receiving = false;
             }
@@ -145,9 +148,14 @@ bool Receiver::storage_callback(const PDU &pdu) {
             Globals::stop_receiving = high_resolution_clock::now();
             std::string received_message = Globals::message_;
             std::cout << "Original received message: " << Globals::message_ << std::endl;
+            string duration_of_decryption;
             if (Globals::is_encrypted) {
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                auto start_decryption = high_resolution_clock::now();
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
+                auto stop_decryption = high_resolution_clock::now();
+                auto decryption_duration = duration_cast<microseconds>(stop_decryption - start_decryption);
+                duration_of_decryption = std::to_string(decryption_duration.count());
                 //                remove padding
                 std::size_t pos = decrypted_message.find( char(0) );
                 if ( pos != string::npos ) {
@@ -177,7 +185,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
             std::string combined_results_path = "/home/ak/results/general/";
             combined_results_path += "_server_storage_" + Globals::cipher_type_+ ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
             std::cout << "General results saved to : " << combined_results_path << std::endl;
             Globals::message_ = "";
             Globals::is_started_receiving = false;
@@ -211,9 +219,14 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             Globals::stop_receiving = high_resolution_clock::now();
             string received_message = "";
             std::cout << "Original received message: " << Globals::message_ << std::endl;
+            string duration_of_decryption;
             if (Globals::is_encrypted) {
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                auto start_decryption = high_resolution_clock::now();
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
+                auto stop_decryption = high_resolution_clock::now();
+                auto decryption_duration = duration_cast<microseconds>(stop_decryption - start_decryption);
+                duration_of_decryption = std::to_string(decryption_duration.count());
                 //                remove padding
                 std::size_t pos = decrypted_message.find( char(0) );
                 if ( pos != string::npos ) {
@@ -242,6 +255,7 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
 
             std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
             results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+            results += "Time taken for decryption: " + duration_of_decryption + " microseconds\n";
 //            Calculate BER
             std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
@@ -252,7 +266,9 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             std::string combined_results_path = "/home/ak/results/general/";
             combined_results_path += "_server_IP_id_" + Globals::cipher_type_+ ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+            string log_ = std::to_string(BER);
+            log_ += ";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
+            log << log_;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
 
             Globals::message_ = "";
@@ -338,9 +354,14 @@ void Receiver::HTTP_callback() {
                     output += c;
                 }
                 string received_message = "";
+                string duration_of_decryption;
                 if (Globals::is_encrypted) {
                     Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                    auto start_decryption = high_resolution_clock::now();
                     string decrypted_message = cryptographer.decrypt(Globals::message_);
+                    auto stop_decryption = high_resolution_clock::now();
+                    auto decryption_duration = duration_cast<microseconds>(stop_decryption - start_decryption);
+                    duration_of_decryption = std::to_string(decryption_duration.count());
                     //                remove padding
                     std::size_t pos = decrypted_message.find( char(0) );
                     if ( pos != string::npos ) {
@@ -363,6 +384,7 @@ void Receiver::HTTP_callback() {
 
                 std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
                 results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+                results += "Time taken for decryption: " + duration_of_decryption + " microseconds\n";
 //            Calculate BER
                 std::string original_message = Globals::original_message_;
                 float BER = Evaluation::get_BER(original_message, received_message);
@@ -373,7 +395,9 @@ void Receiver::HTTP_callback() {
                 std::string combined_results_path = "/home/ak/results/general/";
                 combined_results_path += "_server_HTTP_" + Globals::cipher_type_+ ".csv";
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+                string log_ = std::to_string(BER);
+                log_ += ";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
+                log << log_;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
 
                 Globals::message_ = "";
@@ -412,11 +436,12 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
 //              << ip.dst_addr() << ':' << tcp.dport() << "    "
 //              << ip.hop_limit() << endl;
     int a = ip.hop_limit();
-    if (!Globals::is_started_receiving) {
-        Globals::start_receiving = high_resolution_clock::now();
-        Globals::is_started_receiving = true;
-    }
+
     if (a != 100) {
+        if (!Globals::is_started_receiving) {
+            Globals::start_receiving = high_resolution_clock::now();
+            Globals::is_started_receiving = true;
+        }
         Globals::message_ = Globals::message_ + to_string(a & 1);
     } else {
         Globals::stop_receiving = high_resolution_clock::now();
@@ -429,9 +454,14 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
             output += c;
         }
         std::string received_message = "";
+        string duration_of_decryption;
         if (Globals::is_encrypted) {
             Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+            auto start_decryption = high_resolution_clock::now();
             string decrypted_message = cryptographer.decrypt(Globals::message_);
+            auto stop_decryption = high_resolution_clock::now();
+            auto decryption_duration = duration_cast<microseconds>(stop_decryption - start_decryption);
+            duration_of_decryption = std::to_string(decryption_duration.count());
             //                remove padding
             std::size_t pos = decrypted_message.find( char(0) );
             if ( pos != string::npos ) {
@@ -461,7 +491,7 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         std::string combined_results_path = "/home/ak/results/general/";
         combined_results_path += "_server_LSB_" + Globals::cipher_type_+ ".csv";
         std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-        log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+        log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
         std::cout << "General results saved to : " << combined_results_path << std::endl;
 
         Globals::message_ = "";
@@ -496,9 +526,15 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             }
             Globals::last_seq_ = 0;
             std::string received_message = "";
+            string duration_of_decryption;
+
             if (Globals::is_encrypted) {
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                auto start_decryption = high_resolution_clock::now();
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
+                auto stop_decryption = high_resolution_clock::now();
+                auto decryption_duration = duration_cast<microseconds>(stop_decryption - start_decryption);
+                duration_of_decryption = std::to_string(decryption_duration.count());
                 //                remove padding
                 std::size_t pos = decrypted_message.find( char(0) );
                 if ( pos != string::npos ) {
@@ -529,7 +565,7 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             std::string combined_results_path = "/home/ak/results/general/";
             combined_results_path += "_server_sequence_" + Globals::cipher_type_+ ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
             std::cout << "General results saved to : " << combined_results_path << std::endl;
 
             Globals::message_ = "";
@@ -568,9 +604,15 @@ bool Receiver::loss_callback(const PDU &pdu) {
             std::cout << "Received message: bin " << Globals::message_ << " len: " << Globals::message_.length()
                       << std::endl << output << endl;
             std::string received_message = output;
+            string duration_of_decryption;
+
             if (Globals::is_encrypted) {
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+                auto start_decryption = high_resolution_clock::now();
                 string decrypted_message = cryptographer.decrypt(Globals::message_);
+                auto stop_decryption = high_resolution_clock::now();
+                auto decryption_duration = duration_cast<microseconds>(stop_decryption - start_decryption);
+                duration_of_decryption = std::to_string(decryption_duration.count());
                 //                remove padding
                 std::size_t pos = decrypted_message.find( char(0) );
                 if ( pos != string::npos ) {
@@ -599,7 +641,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
             std::string combined_results_path = "/home/ak/results/general/";
             combined_results_path += "_server_loss_" + Globals::cipher_type_+ ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+"\n";
+            log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
             std::cout << "General results saved to : " << combined_results_path << std::endl;
 
             Globals::message_ = "";
@@ -625,5 +667,4 @@ bool Receiver::loss_callback(const PDU &pdu) {
     }
     return true;
 }
-
 

@@ -36,7 +36,7 @@ void Sender::send_with_timing_method(const string message_to_send) {
             std::cout << i << ". " << message[i] << endl;
             IP pkt = IP(Globals::IPv4_address) / UDP(Globals::dst_port_, Globals::src_port_) / RawPDU("s");
             sender.send(pkt);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1100));
         }
     }
     sender.send(pkt);
@@ -211,7 +211,6 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
     std::cout << "Storage LSB Hop Limit method" << endl;
     string word = message_to_send;
     string binaryString = "";
-
     if (!is_encrypted) {
         for (char &_char: word) {
             binaryString += bitset<8>(_char).to_string();
@@ -219,7 +218,6 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
     } else {
         binaryString = message_to_send;
     }
-
     cout << "Message to send: " << word << endl << "Bin: " << binaryString << endl;
     string message = binaryString;
     PacketSender sender;
