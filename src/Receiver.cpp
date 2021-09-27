@@ -144,7 +144,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
             Globals::start_receiving = high_resolution_clock::now();
             Globals::is_started_receiving = true;
         }
-        if (a == 1) {
+        if (a == 500) {
             Globals::stop_receiving = high_resolution_clock::now();
             std::string received_message = Globals::message_;
             std::cout << "Original received message: " << Globals::message_ << std::endl;
@@ -171,7 +171,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
             std::cout << "Received message: " << Globals::message_ << endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             int sent_bits = Globals::message_.length();
-            float capacity = float(sent_bits) / (duration.count() * 0.001);
+            float capacity = float(sent_bits) / (duration.count() * 0.001)*8;
             std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
             results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
 //            Calculate BER
@@ -251,7 +251,7 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
 
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             int sent_bits = received_message.length();
-            float capacity = float(sent_bits) / (duration.count() * 0.001);
+            float capacity = float(sent_bits) / (duration.count() * 0.001)*8;
 
             std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
             results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
@@ -615,6 +615,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
                 duration_of_decryption = std::to_string(decryption_duration.count());
                 //                remove padding
                 std::size_t pos = decrypted_message.find( char(0) );
+                std::cout << "Decrypted message: " << decrypted_message << std::endl;
                 if ( pos != string::npos ) {
                     int len = decrypted_message.length();
                     received_message = decrypted_message.erase(pos, len);

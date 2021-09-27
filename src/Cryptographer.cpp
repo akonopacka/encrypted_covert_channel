@@ -434,8 +434,10 @@ string Cryptographer::encrypt_present(string plaintext_){
             part_of_message.resize(block_size, char(0));
         }
         string encrypted_part = encrypt_present__(part_of_message);
+        string decrypted_check = decrypt_present__(encrypted_part);
         ciphertext_complete += encrypted_part;
     }
+    string decrypted_check = decrypt_present(ciphertext_complete);
     return ciphertext_complete;
 }
 
@@ -450,10 +452,11 @@ string Cryptographer::encrypt_present__(string plaintext_) {
 
     //declare a pointer for the ciphertext
     char *ciphertext;
+    char *ciphertext1;
+    char *ciphertext2;
 
     ciphertext = encrypt_present_(p_, key_);
 //    puts(ciphertext);
-
     string binaryString = "";
     string hex(ciphertext);
 

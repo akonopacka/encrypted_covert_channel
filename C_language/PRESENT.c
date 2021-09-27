@@ -73,7 +73,7 @@ inline byte_* fromLongToBytes (uint64_t block){
 inline char* fromLongToHexString (uint64_t block){
     char* hexString = (char*)malloc (17 * sizeof(char));
     //we print the integer in a String in hexadecimal format
-//    sprintf(hexString, "%016llx", block);
+    sprintf(hexString, "%016llx", block);
     return hexString;
 }
 // function for converting a nibble using the SBox
@@ -192,6 +192,8 @@ inline char* encrypt_present_(char* plaintext, char* key){
     state = state ^ subkeys[31];
     //free the memory of the subkeys (they are not needed anymore)
     free(subkeys);
+    char* hex_output;
+    hex_output = fromLongToHexString(state);
     return fromLongToHexString(state);
 }
 // function for decrypting a block using a key

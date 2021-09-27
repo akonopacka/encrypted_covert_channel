@@ -61,7 +61,7 @@ void Sender::send_with_storage_method(const string message_to_send) {
             sender.send(pkt);
         }
         PacketSender sender;
-        int ia = 1;
+        int ia = 500;
         std::string s(ia, 'a');
         IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
         sender.send(pkt);
@@ -80,7 +80,7 @@ void Sender::send_with_storage_method(const string message_to_send) {
 //            cout<<"Send : "<< number << " " <<  bin_string << endl;
         }
         PacketSender sender;
-        int ia = 1;
+        int ia = 500;
         std::string s(ia, 'a');
         IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
         sender.send(pkt);

@@ -113,7 +113,7 @@ void Evaluation::save_results_to_file(std::string results, std::string path, std
 }
 
 float Evaluation::get_BER(std::string original_message, std::string received_message) {
-    int length = received_message.length();
+    int length = std::max(received_message.length(),original_message.length());
     int counter = 0;
     for (int i = 0; i < length; i++) {
         if (received_message[i] != original_message[i]) {

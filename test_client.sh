@@ -4,7 +4,7 @@ echo "-------------------------------- Performing tests ------------------------
 
 # Variables
 project_path="/home/ak/encrypted_covert_channel/cmake-build-debug"
-repeat_number=20
+repeat_number=1
 ip_address=0.0.0.0
 
 echo "Path $project_path"
@@ -13,7 +13,8 @@ cd $project_path
 #printf "cd encrypted_covert_channel/cmake-build-debug; ./encrypted_covert_channel --server  loss --is_encrypted des \n" | nc  0.0.0.0 5000 &
 #./encrypted_covert_channel --server $covert_channel_method --is_encrypted $cipher_method
 #timing storage IP_id HTTP LSB sequence loss
-for covert_channel_type in IP_id HTTP storage LSB sequence loss timing
+# aes des present rsa clefia grain
+for covert_channel_type in  storage IP_id HTTP LSB sequence loss timing
 do
   cct=$covert_channel_type
   echo "Testing covert channel type : $cct "
@@ -43,7 +44,7 @@ do
 		for i in $(seq 1 1 $repeat_number)
 		do
 			 echo ""
-			 ./encrypted_covert_channel --client $cct --is_encrypted $cipher_type
+			 sudo ./encrypted_covert_channel --client $cct --is_encrypted $cipher_type
 		 sleep 2
 	  done
     sleep 5
