@@ -21,20 +21,18 @@ void Sender::send_with_timing_method(const string message_to_send) {
     } else {
         binaryString = message_to_send;
     }
-
+    Globals::channel_message = binaryString;
     cout << "Bin: " << binaryString << endl;
     message = binaryString;
     PacketSender sender;
-    IP pkt = IP(Globals::IPv4_address) / UDP(Globals::dst_port_, Globals::src_port_) / RawPDU("s");
+    IP pkt = IP(Globals::IPv4_address) / UDP(Globals::dst_port_, Globals::src_port_) ;
     sender.send(pkt);
     for (std::string::size_type i = 0; i < message.size(); i++) {
         if (message[i] == '0') {
             std::cout << i << ". " << message[i] << endl;
-            IP pkt = IP(Globals::IPv4_address) / UDP(Globals::dst_port_, Globals::src_port_) / RawPDU("s");
             sender.send(pkt);
         } else {
             std::cout << i << ". " << message[i] << endl;
-            IP pkt = IP(Globals::IPv4_address) / UDP(Globals::dst_port_, Globals::src_port_) / RawPDU("s");
             sender.send(pkt);
             std::this_thread::sleep_for(std::chrono::milliseconds(1100));
         }
@@ -51,6 +49,7 @@ void Sender::send_with_storage_method(const string message_to_send) {
     std::cout << "Sending message:" << message_to_send << endl;
     string message = "";
     if (!is_encrypted) {
+        Globals::channel_message = message_to_send;
         message = message_to_send;
         for (std::string::size_type i = 0; i < message.size(); i++) {
             char a = message[i];
@@ -75,6 +74,7 @@ void Sender::send_with_storage_method(const string message_to_send) {
             int number = stoi(bin_string, 0, 2);
             PacketSender sender;
             std::string s(number, 'a');
+            Globals::channel_message += std::to_string(number);
             IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
             sender.send(pkt);
 //            cout<<"Send : "<< number << " " <<  bin_string << endl;
@@ -92,6 +92,7 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
     string binaryString = "";
     string message = message_to_send;
     if (!is_encrypted) {
+        Globals::channel_message = message_to_send;
         cout << "Message to send: " << message << endl;
         PacketSender sender;
         for (std::string::size_type i = 0; i < message.size(); i++) {
@@ -124,6 +125,7 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
         for (int i = 0; i < counter; i++) {
             string bin_string = message.substr(i * block_size, block_size);
             int number = stoi(bin_string, 0, 2);
+            Globals::channel_message += std::to_string(number);
             ip.id(number);
             ip.ttl(100);
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
@@ -173,6 +175,7 @@ void Sender::send_with_HTTP_case_method(const string message_to_send) {
         binaryString = message_to_send;
     }
 
+    Globals::channel_message = binaryString;
     cout << "Message to send: " << message_to_send << endl;
     string message = binaryString;
     PacketSender sender;
@@ -218,6 +221,7 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
     } else {
         binaryString = message_to_send;
     }
+    Globals::channel_message = binaryString;
     cout << "Message to send: " << word << endl << "Bin: " << binaryString << endl;
     string message = binaryString;
     PacketSender sender;
@@ -262,6 +266,7 @@ void Sender::send_with_sequence_method(const string message_to_send) {
     } else {
         binaryString = message_to_send;
     }
+    Globals::channel_message = binaryString;
     cout << "Message to send: " << word << endl << "Bin: " << binaryString << endl;
     string message = binaryString;
     PacketSender sender;
@@ -306,6 +311,7 @@ void Sender::send_with_loss_method(const string message_to_send) {
     } else {
         binaryString = message_to_send;
     }
+    Globals::channel_message = binaryString;
     cout << "Bin: " << binaryString << endl;
     string message = binaryString;
     PacketSender sender;
@@ -351,7 +357,7 @@ void Sender::send_message(string message_to_send) {
         string decrypted = cryptographer.decrypt(message_to_send);
         std::cout << "Decrypt check: " << decrypted <<  endl;
     }
-    float message_entropy = Evaluation::calculate_entropy(message_to_send);
+
 
     // Get starting timepoint
     auto start = high_resolution_clock::now();
@@ -375,6 +381,8 @@ void Sender::send_message(string message_to_send) {
     std::string time_of_sending = "";
     time_of_sending = std::to_string(duration.count());
     cout << "Time taken by sending function: " << time_of_sending << " microseconds" << endl;
+    string channel_message = Globals::channel_message;
+    float message_entropy = Evaluation::calculate_entropy(Globals::channel_message);
 
 //    Save results to file
     std:string results = "Calculated message entropy: " + std::to_string(message_entropy) + "\n";

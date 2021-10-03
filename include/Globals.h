@@ -32,6 +32,7 @@ namespace Globals {
     extern bool is_started_receiving;
     extern bool is_encrypted;
     extern std::string cipher_type_;
+    extern std::string channel_message;
 
     extern void load_globals(Json::Value config);
 

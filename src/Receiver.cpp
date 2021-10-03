@@ -42,7 +42,8 @@ Receiver::Receiver() {
         SnifferConfiguration sniffer_configuration = SnifferConfiguration();
         sniffer_configuration.set_immediate_mode(true);
         Sniffer sniffer(Globals::interface_, sniffer_configuration);
-        string filter = "udp&&!icmp&&!dns&&udp.dstport==" + Globals::dst_port_;
+        string filter = "udp&&!icmp&&!dns&&udp.dstport==" + to_string(Globals::dst_port_) +"&&ip.addr==127.0.0.1";
+        std::cout << "Filter : " << filter << "\n";
         sniffer.set_filter(filter);
         sniffer.sniff_loop(timing_callback);
     }
@@ -57,9 +58,9 @@ bool Receiver::timing_callback(const PDU &pdu) {
     Tins::Packet packet = Tins::Packet(pdu);
     Timestamp ts = packet.timestamp();
     double timestamp = ts.seconds() * 1000000 + ts.microseconds();
-//    std::cout << std::fixed << "Seconds: " << ts.seconds() << " microseconds:" << ts.microseconds() << endl;
+    std::cout << std::fixed << "Timestamp: " << timestamp <<" Seconds: " << ts.seconds() << " microseconds:" << ts.microseconds() << endl;
     double inv = timestamp - Globals::last_packet_timestamp_;
-//    std::cout << "Inter: " << inv << " " << "Ts: " << timestamp << std::endl;
+    std::cout << "Inter: " << inv << " " << "Ts: " << timestamp << std::endl;
     if (udp.dport() == Globals::dst_port_) {
         if (!Globals::is_started_receiving) {
             Globals::start_receiving = high_resolution_clock::now();
@@ -545,6 +546,9 @@ bool Receiver::sequence_callback(const PDU &pdu) {
                     received_message = decrypted_message;
                 }
             }
+            else{
+                received_message = output;
+            }
             std::cout << "Received message: " << received_message << std::endl;
 
             std::cout << "Global message: " << Globals::message_ << std::endl << output << std::endl;
@@ -641,6 +645,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
 //            Saving to general file
             std::string combined_results_path = "/home/ak/results/general/";
             combined_results_path += "_server_loss_" + Globals::cipher_type_+ ".csv";
+
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
             log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
             std::cout << "General results saved to : " << combined_results_path << std::endl;
