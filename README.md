@@ -9,20 +9,21 @@ Implementation of encrypted covert channels which are secured with different cip
 - Case Pattern (PS11.a)
 - Least Significant Bit (LSB) Pattern (PS11.b)
 
-// "timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss" <- covert_channel_type
+
 
 ## Usage
 ### Server
 --server loss
 --client loss
 --is_encrypted
+
 Encryption methods:
 aes, des, present, rsa, clefia, grain
 
+Covert channels types:
+"timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss"
+
+
 Start server:
 sudo ncat -lkv 5000 -c "sh"
-
-
-TODO
-Read cpu, mem
 
