@@ -14,7 +14,7 @@ cd $project_path
 #./encrypted_covert_channel --server $covert_channel_method --is_encrypted $cipher_method
 #timing storage IP_id HTTP LSB sequence loss
 # aes des present rsa clefia grain
-for covert_channel_type in  timing
+for covert_channel_type in  storage IP_id HTTP LSB sequence loss
 do
   cct=$covert_channel_type
   echo "Testing covert channel type : $cct "

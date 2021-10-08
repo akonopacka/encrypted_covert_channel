@@ -91,8 +91,8 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
                 int sent_bits = received_message.length();
                 float capacity = float(sent_bits) / (duration.count() * 0.001);
-                std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
-                results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
+//                std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
+//                results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
                 string duration_of_decryption;
                 if (Globals::is_encrypted) {
                     Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
@@ -113,9 +113,9 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 }
 //            Calculate BER
                 float BER = Evaluation::get_BER(original_message, received_message);
-                results += "BER: " + std::to_string(BER) + "\n";
-                std::cout << "Results: " << results << std::endl;
-                Evaluation::save_results_to_file(results, Globals::results_path, "timing", "server");
+//                results += "BER: " + std::to_string(BER) + "\n";
+//                std::cout << "Results: " << results << std::endl;
+//                Evaluation::save_results_to_file(results, Globals::results_path, "timing", "server");
                 //            Saving to general file
                 std::string combined_results_path = "/home/ak/results/general/";
                 combined_results_path += "_server_timing_" + Globals::cipher_type_+ ".csv";
@@ -168,20 +168,13 @@ bool Receiver::storage_callback(const PDU &pdu) {
                 }
             }
             std::cout << "Received message: " << received_message << std::endl;
-
             std::cout << "Received message: " << Globals::message_ << endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
             int sent_bits = Globals::message_.length();
             float capacity = float(sent_bits) / (duration.count() * 0.001)*8;
-            std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
-            results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
 //            Calculate BER
             std::string original_message = Globals::original_message_;
-
             float BER = Evaluation::get_BER(original_message, received_message);
-            results += "BER: " + std::to_string(BER) + "\n";
-            std::cout << "Results: " << results << std::endl;
-            Evaluation::save_results_to_file(results, Globals::results_path, "storage", "server");
             //            Saving to general file
             std::string combined_results_path = "/home/ak/results/general/";
             combined_results_path += "_server_storage_" + Globals::cipher_type_+ ".csv";
@@ -254,15 +247,10 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             int sent_bits = received_message.length();
             float capacity = float(sent_bits) / (duration.count() * 0.001)*8;
 
-            std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
-            results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
-            results += "Time taken for decryption: " + duration_of_decryption + " microseconds\n";
 //            Calculate BER
             std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
-            results += "BER: " + std::to_string(BER) + "\n";
-            std::cout << "Results: " << results << std::endl;
-            Evaluation::save_results_to_file(results, Globals::results_path, "IP_id", "server");
+
             //            Saving to general file
             std::string combined_results_path = "/home/ak/results/general/";
             combined_results_path += "_server_IP_id_" + Globals::cipher_type_+ ".csv";
@@ -383,15 +371,9 @@ void Receiver::HTTP_callback() {
                 int sent_bits = received_message.length();
                 float capacity = float(sent_bits) / (duration.count() * 0.001);
 
-                std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
-                results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
-                results += "Time taken for decryption: " + duration_of_decryption + " microseconds\n";
 //            Calculate BER
                 std::string original_message = Globals::original_message_;
                 float BER = Evaluation::get_BER(original_message, received_message);
-                results += "BER: " + std::to_string(BER) + "\n";
-                std::cout << "Results: " << results << std::endl;
-                Evaluation::save_results_to_file(results, Globals::results_path, "HTTP", "server");
                 //            Saving to general file
                 std::string combined_results_path = "/home/ak/results/general/";
                 combined_results_path += "_server_HTTP_" + Globals::cipher_type_+ ".csv";
@@ -473,6 +455,9 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
                 received_message = decrypted_message;
             }
         }
+        else{
+            received_message = output;
+        }
         std::cout << "Received message: " << received_message << std::endl;
         std::cout << "Received message: " << output << std::endl;
 
@@ -480,14 +465,10 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         int sent_bits = Globals::message_.length();
         float capacity = float(sent_bits) / (duration.count() * 0.001);
 
-        std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
-        results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
 //            Calculate BER
         std::string original_message = Globals::original_message_;
         float BER = Evaluation::get_BER(original_message, received_message);
-        results += "BER: " + std::to_string(BER) + "\n";
-        std::cout << "Results: " << results << std::endl;
-        Evaluation::save_results_to_file(results, Globals::results_path, "LSB", "server");
+
         //            Saving to general file
         std::string combined_results_path = "/home/ak/results/general/";
         combined_results_path += "_server_LSB_" + Globals::cipher_type_+ ".csv";
@@ -557,14 +538,10 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             int sent_bits = Globals::message_.length();
             float capacity = float(sent_bits) / (duration.count() * 0.001);
 
-            std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
-            results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
 //            Calculate BER
             std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
-            results += "BER: " + std::to_string(BER) + "\n";
-            std::cout << "Results: " << results << std::endl;
-            Evaluation::save_results_to_file(results, Globals::results_path, "sequence", "server");
+
             //            Saving to general file
             std::string combined_results_path = "/home/ak/results/general/";
             combined_results_path += "_server_sequence_" + Globals::cipher_type_+ ".csv";
@@ -633,14 +610,9 @@ bool Receiver::loss_callback(const PDU &pdu) {
             int sent_bits = Globals::message_.length();
             float capacity = float(sent_bits) / (duration.count() * 0.001);
 
-            std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
-            results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
 //            Calculate BER
             std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
-            results += "BER: " + std::to_string(BER) + "\n";
-            std::cout << "Results: " << results << std::endl;
-            Evaluation::save_results_to_file(results, Globals::results_path, "loss", "server");
 
 //            Saving to general file
             std::string combined_results_path = "/home/ak/results/general/";

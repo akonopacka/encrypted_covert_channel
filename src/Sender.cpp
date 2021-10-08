@@ -384,13 +384,6 @@ void Sender::send_message(string message_to_send) {
     string channel_message = Globals::channel_message;
     float message_entropy = Evaluation::calculate_entropy(Globals::channel_message);
 
-//    Save results to file
-    std:string results = "Calculated message entropy: " + std::to_string(message_entropy) + "\n";
-    results += "Time taken by encrypting function: " + duration_of_encryption + " microseconds\n";
-    results += "Time taken by sending function: " + time_of_sending + " microseconds\n";
-    std::cout << "Results: " << results << std::endl;
-    Evaluation::save_results_to_file(results, Globals::results_path, method, "client");
-
     //            Saving to general file
     std::string combined_results_path = "/home/ak/results/general/";
     combined_results_path += "_client_"+ Globals::covert_channel_type_ + "_" + Globals::cipher_type_+ ".csv";
