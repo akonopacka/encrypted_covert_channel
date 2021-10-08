@@ -16,6 +16,7 @@ Implementation of encrypted covert channels which are secured with different cip
 --server loss
 --client loss
 --is_encrypted
+
 Encryption methods:
 aes, des, present, rsa, clefia, grain
 
