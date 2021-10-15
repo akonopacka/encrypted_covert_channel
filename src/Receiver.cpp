@@ -52,26 +52,27 @@ Receiver::Receiver() {
 bool Receiver::timing_callback(const PDU &pdu) {
     Globals::time_received_ = std::chrono::high_resolution_clock::now();
     Globals::time_span_ = Globals::time_received_ - Globals::time_of_last_packet_;
-    double interval = Globals::time_span_.count();
     const IP &ip = pdu.rfind_pdu<IP>();
     const UDP &udp = pdu.rfind_pdu<UDP>();
-    Tins::Packet packet = Tins::Packet(pdu);
-    Timestamp ts = packet.timestamp();
-    double timestamp = ts.seconds() * 1000000 + ts.microseconds();
-    std::cout << std::fixed << "Timestamp: " << timestamp <<" Seconds: " << ts.seconds() << " microseconds:" << ts.microseconds() << endl;
-    double inv = timestamp - Globals::last_packet_timestamp_;
-    std::cout << "Inter: " << inv << " " << "Ts: " << timestamp << std::endl;
     if (udp.dport() == Globals::dst_port_) {
+        Tins::Packet packet = Tins::Packet(pdu);
+        Timestamp ts = packet.timestamp();
+        double timestamp = ts.seconds() * 1000000 + ts.microseconds();
+        std::cout << std::fixed << "Timestamp: " << timestamp <<" Seconds: " << ts.seconds() << " microseconds:" << ts.microseconds() << endl;
+        double interval = timestamp - Globals::last_packet_timestamp_;
+        std::cout << "Inter: " << interval << " " << "Ts: " << timestamp << std::endl;
         if (!Globals::is_started_receiving) {
             Globals::start_receiving = high_resolution_clock::now();
             Globals::is_started_receiving = true;
         }
-        if (inv < 1000) {
+        if (interval < 1000) {
             Globals::message_ = Globals::message_ + "0";
-            std::cout << "0" << endl;
-        } else if (inv < 4000000) {
+            std::cout << Globals::timing_counter << ". 0" << endl;
+            Globals::timing_counter += 1;
+        } else if (interval < 4000000) {
             Globals::message_ = Globals::message_ + "1";
-            std::cout << "1" << endl;
+            std::cout << Globals::timing_counter << ". 1" << endl;
+            Globals::timing_counter += 1;
         } else {
             if (Globals::message_ != "") {
                 Globals::stop_receiving = high_resolution_clock::now();
@@ -123,6 +124,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
                 Globals::is_started_receiving = false;
+                Globals::timing_counter = 0;
             }
             Globals::message_ = "";
         }

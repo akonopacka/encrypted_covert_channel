@@ -29,6 +29,7 @@ namespace Globals{
     std::string cipher_type_ = "";
     std::string covert_channel_type_ = "loss";
     std::string channel_message = "";
+    int timing_counter = 0;
 
     void load_globals(Json::Value config) {
         Globals::interface_ = config["interface"].asString();

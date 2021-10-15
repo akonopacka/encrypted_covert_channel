@@ -19,6 +19,7 @@ namespace Globals {
     extern std::chrono::duration<double, std::milli> time_span_;
     extern double last_packet_timestamp_;
     extern int last_seq_;
+    extern int timing_counter;
     extern std::string message_;
     extern std::string original_message_;
     extern std::string results_path;
