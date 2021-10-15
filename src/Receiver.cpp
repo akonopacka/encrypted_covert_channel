@@ -117,7 +117,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
 //                std::cout << "Results: " << results << std::endl;
 //                Evaluation::save_results_to_file(results, Globals::results_path, "timing", "server");
                 //            Saving to general file
-                std::string combined_results_path = "/home/ak/results/general/";
+                std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_timing_" + Globals::cipher_type_+ ".csv";
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
                 log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
@@ -176,7 +176,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
             std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
             //            Saving to general file
-            std::string combined_results_path = "/home/ak/results/general/";
+            std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_storage_" + Globals::cipher_type_+ ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
             log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
@@ -252,7 +252,7 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             float BER = Evaluation::get_BER(original_message, received_message);
 
             //            Saving to general file
-            std::string combined_results_path = "/home/ak/results/general/";
+            std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_IP_id_" + Globals::cipher_type_+ ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
             string log_ = std::to_string(BER);
@@ -375,7 +375,7 @@ void Receiver::HTTP_callback() {
                 std::string original_message = Globals::original_message_;
                 float BER = Evaluation::get_BER(original_message, received_message);
                 //            Saving to general file
-                std::string combined_results_path = "/home/ak/results/general/";
+                std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_HTTP_" + Globals::cipher_type_+ ".csv";
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
                 string log_ = std::to_string(BER);
@@ -470,7 +470,7 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         float BER = Evaluation::get_BER(original_message, received_message);
 
         //            Saving to general file
-        std::string combined_results_path = "/home/ak/results/general/";
+        std::string combined_results_path = Globals::results_path;
         combined_results_path += "_server_LSB_" + Globals::cipher_type_+ ".csv";
         std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
         log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
@@ -543,7 +543,7 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             float BER = Evaluation::get_BER(original_message, received_message);
 
             //            Saving to general file
-            std::string combined_results_path = "/home/ak/results/general/";
+            std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_sequence_" + Globals::cipher_type_+ ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
             log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
@@ -615,7 +615,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
             float BER = Evaluation::get_BER(original_message, received_message);
 
 //            Saving to general file
-            std::string combined_results_path = "/home/ak/results/general/";
+            std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_loss_" + Globals::cipher_type_+ ".csv";
 
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);

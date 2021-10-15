@@ -385,7 +385,7 @@ void Sender::send_message(string message_to_send) {
     float message_entropy = Evaluation::calculate_entropy(Globals::channel_message);
 
     //            Saving to general file
-    std::string combined_results_path = "/home/ak/results/general/";
+    std::string combined_results_path = Globals::results_path;
     combined_results_path += "_client_"+ Globals::covert_channel_type_ + "_" + Globals::cipher_type_+ ".csv";
     std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
     log << std::to_string(message_entropy) +";"+ duration_of_encryption+";"+time_of_sending+"\n";
