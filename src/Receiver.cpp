@@ -41,10 +41,11 @@ Receiver::Receiver() {
         std::cout << "Server! - Timing method\n";
         SnifferConfiguration sniffer_configuration = SnifferConfiguration();
         sniffer_configuration.set_immediate_mode(true);
-        Sniffer sniffer(Globals::interface_, sniffer_configuration);
-        string filter = "udp&&!icmp&&!dns&&udp.dstport==" + to_string(Globals::dst_port_) +"&&ip.addr==127.0.0.1";
+        sniffer_configuration.set_promisc_mode(true);
+        string filter = "udp and dst port " + to_string(Globals::dst_port_) +" and ip src 127.0.0.1";
         std::cout << "Filter : " << filter << "\n";
-        sniffer.set_filter(filter);
+        sniffer_configuration.set_filter(filter);
+        Sniffer sniffer(Globals::interface_, sniffer_configuration);
         sniffer.sniff_loop(timing_callback);
     }
 }
@@ -57,9 +58,9 @@ bool Receiver::timing_callback(const PDU &pdu) {
     if (udp.dport() == Globals::dst_port_) {
         Tins::Packet packet = Tins::Packet(pdu);
         Timestamp ts = packet.timestamp();
-        double timestamp = ts.seconds() * 1000000 + ts.microseconds();
+        long timestamp = ts.seconds() * 1000000 + ts.microseconds();
         std::cout << std::fixed << "Timestamp: " << timestamp <<" Seconds: " << ts.seconds() << " microseconds:" << ts.microseconds() << endl;
-        double interval = timestamp - Globals::last_packet_timestamp_;
+        long interval = timestamp - Globals::last_packet_timestamp_;
         std::cout << "Inter: " << interval << " " << "Ts: " << timestamp << std::endl;
         if (!Globals::is_started_receiving) {
             Globals::start_receiving = high_resolution_clock::now();
@@ -85,8 +86,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
                     char c = char(bits.to_ulong());
                     output += c;
                 }
-                std::cout << "Received message: " << Globals::message_ << endl;
-                std::cout << "Encoded message: " << output << endl;
+
                 std::string original_message = Globals::original_message_;
                 std::string received_message = output;
                 auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
@@ -112,10 +112,12 @@ bool Receiver::timing_callback(const PDU &pdu) {
                         received_message = decrypted_message;
                     }
                 }
+                std::cout << "Encoded message: " << output << endl;
+                std::cout << "Received message: " << received_message << endl;
+
 //            Calculate BER
                 float BER = Evaluation::get_BER(original_message, received_message);
-//                results += "BER: " + std::to_string(BER) + "\n";
-//                std::cout << "Results: " << results << std::endl;
+
 //                Evaluation::save_results_to_file(results, Globals::results_path, "timing", "server");
                 //            Saving to general file
                 std::string combined_results_path = Globals::results_path;
@@ -123,6 +125,10 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
                 log << std::to_string(BER)+";"+std::to_string(capacity)+";"+std::to_string(duration.count())+";"+duration_of_decryption+"\n";
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
+                std::cout << "BER : " << std::to_string(BER) << std::endl;
+                std::cout << "capacity : " << std::to_string(capacity) << std::endl;
+                std::cout << "duration : " << std::to_string(duration.count()) << std::endl;
+                std::cout << "duration_of_decryption : " << duration_of_decryption << std::endl;
                 Globals::is_started_receiving = false;
                 Globals::timing_counter = 0;
             }
