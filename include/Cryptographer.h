@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "../src/aes.hpp"
-//#include "../clefia/clefia.h"
 #include "../src/des.hpp"
 #include <sstream>
 #include <iostream>

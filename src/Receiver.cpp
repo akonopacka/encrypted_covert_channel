@@ -363,9 +363,9 @@ void Receiver::HTTP_callback() {
                 }
                 else
                     received_message = output;
+
+                std::cout << "Received unencrypted message: " << output << std::endl;
                 std::cout << "Received message: " << received_message << std::endl;
-                std::cout << "Output: " << output << std::endl;
-//                std::string received_message = output;
 
                 auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
                 int sent_bits = received_message.length();
@@ -458,8 +458,9 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         else{
             received_message = output;
         }
+        std::cout << "Received unencrypted message: " << output << std::endl;
         std::cout << "Received message: " << received_message << std::endl;
-        std::cout << "Received message: " << output << std::endl;
+
 
         auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
         int sent_bits = Globals::message_.length();
