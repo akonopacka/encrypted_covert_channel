@@ -20,7 +20,7 @@
 //#include "Present.h"
 extern "C" {
 // Get declaration for f(int i, char c, float x)
-#include "../C_language/PRESENT.c"
+#include "../src/PRESENT.c"
 
 }
 //#include "../include/openssl_rsa.h"
@@ -38,7 +38,7 @@ extern "C" {
 #include "../src/Clefia.hpp"
 #include "../src/trivium.hpp"
 //#include "../C_language/grain.h"
-#include "../C_language/grain.c"
+#include "../src/grain.c"
 #include "../include/openssl_rsa.h"
 
 using namespace std;

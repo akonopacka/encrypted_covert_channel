@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "grain.h"
+#include "../include/grain.h"
 
 inline void init(void){}
 /*
