@@ -157,7 +157,7 @@ void Sender::send_with_HTTP_case_method(const string message_to_send) {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(Globals::dst_port_);
 
-    // Convert IPv4 and IPv6 addresses from text to binary form
+//     Convert IPv4 and IPv6 addresses from text to binary form
     if (inet_pton(AF_INET, Globals::IPv4_address.c_str(), &serv_addr.sin_addr) <= 0) {
         printf("\nInvalid address/ Address not supported \n");
     }

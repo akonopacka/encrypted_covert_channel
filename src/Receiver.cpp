@@ -408,8 +408,7 @@ void Receiver::HTTP_callback() {
                     Globals::message_ = Globals::message_ + '1';
                     str = "";
                 }
-                char *hello = "Hello from server";
-                send(new_socket, hello, strlen(hello), 0);
+                send(new_socket, "Hello from server", strlen("Hello from server"), 0);
             }
             memset(buffer, 0, 1024);
         }
