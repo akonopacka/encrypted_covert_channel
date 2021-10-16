@@ -49,29 +49,53 @@ class Cryptographer {
 
 public:
     Cryptographer(const string &method);
+
     string encrypt(string plaintext);
+
     string decrypt(string ciphertext);
+
     string encrypt_aes(string plaintext_);
+
     string decrypt_aes(string ciphertext_bin);
+
     string encrypt_aes_(string plaintext_);
+
     string decrypt_aes_(string ciphertext_bin);
+
     string encrypt_clefia(string plaintext_);
+
     string decrypt_clefia(string ciphertext_bin);
+
     string encrypt_clefia_(string plaintext_);
+
     string decrypt_clefia_(string ciphertext_bin);
+
     string encrypt_des(string plaintext_);
+
     string decrypt_des(string ciphertext_bin);
+
     string encrypt_present(string plaintext_);
+
     string decrypt_present(string ciphertext_bin);
+
     string encrypt_present__(string plaintext_);
+
     string decrypt_present__(string ciphertext_bin);
+
     string encrypt_rsa(string plaintext_);
+
     string decrypt_rsa(string ciphertext_bin);
+
     string encrypt_rsa_(string plaintext_);
+
     string decrypt_rsa_(string ciphertext_bin);
+
     string encrypt_grain(string plaintext_);
+
     string decrypt_grain(string ciphertext_bin);
+
     string encrypt_grain_(string plaintext_);
+
     string decrypt_grain_(string ciphertext_bin);
 };
 

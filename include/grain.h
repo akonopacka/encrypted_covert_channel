@@ -1,6 +1,6 @@
 #ifndef GRAIN_H
 #define GRAIN_H
- 
+
 #define INITCLOCKS 160
 #define N(i) (mygrain->NFSR[80-i])
 #define L(i) (mygrain->LFSR[80-i])
@@ -9,42 +9,41 @@
 #define X2 (mygrain->LFSR[46])
 #define X3 (mygrain->LFSR[64])
 #define X4 (mygrain->NFSR[63])
- 
-typedef struct
-{
-	int LFSR[80];
-	int NFSR[80];
-	const int* p_key;
-	int keysize;
-	int ivsize;
- 
+
+typedef struct {
+    int LFSR[80];
+    int NFSR[80];
+    const int *p_key;
+    int keysize;
+    int ivsize;
+
 } grain;
 
 inline void keysetup(
-  grain* mygrain, 
-  const int* key, 
-  int keysize,                /* Key size in bits. */ 
-  int ivsize);                /* IV size in bits. */
+        grain *mygrain,
+        const int *key,
+        int keysize,                /* Key size in bits. */
+        int ivsize);                /* IV size in bits. */
 
 inline void ivsetup(
-  grain* mygrain, 
-  const int* iv);
+        grain *mygrain,
+        const int *iv);
 
 inline void keystream_bytes(
-  grain* mygrain,
-  int* keystream,
-  int length);
+        grain *mygrain,
+        int *keystream,
+        int length);
 
 inline void encrypt_bytes(
-  grain* mygrain, 
-  const int* plaintext, 
-  int* ciphertext, 
-  int msglen);                /* Message length in bytes. */
+        grain *mygrain,
+        const int *plaintext,
+        int *ciphertext,
+        int msglen);                /* Message length in bytes. */
 
 inline void decrypt_bytes(
-  grain* mygrain, 
-  const int* ciphertext, 
-  int* plaintext, 
-  int msglen);  
- 
+        grain *mygrain,
+        const int *ciphertext,
+        int *plaintext,
+        int msglen);
+
 #endif

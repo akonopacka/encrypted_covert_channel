@@ -1,9 +1,11 @@
 #ifndef DES_H
 #define DES_H
+
 #include <bitset>
 #include <string.h>
 #include <string>
 #include "tables.h"
+
 using namespace std;
 
 #define bs_64 bitset<64>

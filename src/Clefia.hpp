@@ -59,13 +59,14 @@ namespace clefia {
     inline void ClefiaRandomSet(unsigned char *r);
 
     inline void WBF0Xor(unsigned char **tables, unsigned char *y, const unsigned char *x, const unsigned char *rk,
-                 const unsigned char *r1, const unsigned char *r2, const unsigned char *r3);
+                        const unsigned char *r1, const unsigned char *r2, const unsigned char *r3);
 
     inline void WBF1Xor(unsigned char **tables, unsigned char *y, const unsigned char *x, const unsigned char *rk,
-                 const unsigned char *r1, const unsigned char *r2, const unsigned char *r3);
+                        const unsigned char *r1, const unsigned char *r2, const unsigned char *r3);
 
-    inline void WBtableSet128(unsigned char **tables, unsigned char *x, const unsigned char *rk, const unsigned char *rs,
-                       const unsigned char *skey);
+    inline void
+    WBtableSet128(unsigned char **tables, unsigned char *x, const unsigned char *rk, const unsigned char *rs,
+                  const unsigned char *skey);
 
     inline void WBInterEnc128(unsigned char *ct, const unsigned char *pt, unsigned char **tables);
 
@@ -432,8 +433,9 @@ namespace clefia {
         ByteCpy(y, fout, 16);
     }
 
-    inline void WBtableSet128(unsigned char **tables, const unsigned char *x, unsigned char *rk, const unsigned char *rs,
-                       const unsigned char *skey) {
+    inline void
+    WBtableSet128(unsigned char **tables, const unsigned char *x, unsigned char *rk, const unsigned char *rs,
+                  const unsigned char *skey) {
         unsigned char fin[16], fout[16];
         unsigned char zero[4] = {0, 0, 0, 0};
         rk += 8;

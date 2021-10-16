@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <iomanip>
 #include <type_traits>
@@ -7,35 +8,32 @@
 
 namespace util {
 
-	template <class T>
-	class HexPrint
-	{
-		static_assert(std::is_integral<T>::value, "T must be integral");
+    template<class T>
+    class HexPrint {
+        static_assert(std::is_integral<T>::value, "T must be integral");
 
-	private:
-		const T& value_;
-		const std::size_t size_;
+    private:
+        const T &value_;
+        const std::size_t size_;
 
-	public:
-		HexPrint() = delete;
-		HexPrint(const T& value, std::size_t size = BitUtil<T>::digits) : value_(value), size_(size)
-		{
-		}
+    public:
+        HexPrint() = delete;
 
-		friend std::ostream& operator <<(std::ostream& ros, HexPrint<T> manip)
-		{
-			return manip(ros);
-		}
+        HexPrint(const T &value, std::size_t size = BitUtil<T>::digits) : value_(value), size_(size) {
+        }
 
-		std::ostream& operator()(std::ostream& os)
-		{
-			std::ios::fmtflags f(os.flags());
-			os << std::hex;
-			os << std::setfill('0') << std::setw(size_ / 4) << value_;
-			os.flags(f);
+        friend std::ostream &operator<<(std::ostream &ros, HexPrint<T> manip) {
+            return manip(ros);
+        }
 
-			return os;
-		}
-	};
+        std::ostream &operator()(std::ostream &os) {
+            std::ios::fmtflags f(os.flags());
+            os << std::hex;
+            os << std::setfill('0') << std::setw(size_ / 4) << value_;
+            os.flags(f);
+
+            return os;
+        }
+    };
 
 }

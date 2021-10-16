@@ -102,10 +102,11 @@ void Evaluation::save_results_to_file(std::string results, std::string path, std
     strftime(buf, sizeof(buf), "%Y-%m-%d_%X", &tstruct);
     std::string currentDateTime = buf;
     //Generate the name of filed
-    std::string filename = mode + "_" + Globals::covert_channel_type_ + "_" + Globals::cipher_type_ + "_" + currentDateTime + ".txt";
+    std::string filename =
+            mode + "_" + Globals::covert_channel_type_ + "_" + Globals::cipher_type_ + "_" + currentDateTime + ".txt";
     path = path + filename;
     //Save results to file
-    std::cout << "Saving results to file in path: " << path << std::endl<< std::endl;
+    std::cout << "Saving results to file in path: " << path << std::endl << std::endl;
     std::ofstream myfile;
     myfile.open(path);
     myfile << results;
@@ -113,7 +114,7 @@ void Evaluation::save_results_to_file(std::string results, std::string path, std
 }
 
 float Evaluation::get_BER(std::string original_message, std::string received_message) {
-    int length = std::max(received_message.length(),original_message.length());
+    int length = std::max(received_message.length(), original_message.length());
     int counter = 0;
     for (int i = 0; i < length; i++) {
         if (received_message[i] != original_message[i]) {

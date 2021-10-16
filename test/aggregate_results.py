@@ -3,7 +3,6 @@ import csv
 import pandas as pd
 import glob
 
-
 folder_path = "/home/ak/results/general/"
 # files = os.listdir(folder_path)
 files = glob.glob("/home/ak/results/general/*.csv")
@@ -17,20 +16,20 @@ for file in files:
     print("Processing file", file)
     # file_path = folder_path + file
     try:
-        df = pd.read_csv (file, sep=';', header=None)
+        df = pd.read_csv(file, sep=';', header=None)
         # print (df)
-        mean = df.mean(axis = 0)
+        mean = df.mean(axis=0)
         is_client = file.startswith('/home/ak/results/general/_client')
         is_server = file.startswith('/home/ak/results/general/_server')
 
         if is_client:
-            configuration = file.replace('/home/ak/results/general/_client_','')
-            configuration = configuration.replace('.csv','')
+            configuration = file.replace('/home/ak/results/general/_client_', '')
+            configuration = configuration.replace('.csv', '')
             mean.name = configuration
             results_client = results_server.append(mean)
         if is_server:
-            configuration = file.replace('/home/ak/results/general/_server_','')
-            configuration = configuration.replace('.csv','')
+            configuration = file.replace('/home/ak/results/general/_server_', '')
+            configuration = configuration.replace('.csv', '')
             mean.name = configuration
             results_server = results_server.append(mean)
 

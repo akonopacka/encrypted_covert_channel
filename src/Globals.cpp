@@ -6,10 +6,10 @@
 #include "../include/Globals.h"
 
 using std::string;
-namespace Globals{
+namespace Globals {
     std::chrono::high_resolution_clock::time_point time_of_last_packet_ = std::chrono::system_clock::from_time_t(0);
-    std::chrono::high_resolution_clock::time_point time_received_= std::chrono::system_clock::from_time_t(0);
-    std::chrono::duration<double, std::milli> time_span_= Globals::time_received_ - Globals::time_of_last_packet_;
+    std::chrono::high_resolution_clock::time_point time_received_ = std::chrono::system_clock::from_time_t(0);
+    std::chrono::duration<double, std::milli> time_span_ = Globals::time_received_ - Globals::time_of_last_packet_;
     std::chrono::high_resolution_clock::time_point start_receiving = std::chrono::system_clock::from_time_t(0);
     std::chrono::high_resolution_clock::time_point stop_receiving = std::chrono::system_clock::from_time_t(0);
     long last_packet_timestamp_ = 0;
@@ -21,7 +21,7 @@ namespace Globals{
     std::string IPv4_address = "127.0.0.1";
     int number_of_repeat_ = 1;
     int src_port_ = 1111;
-    int dst_port_= 1111;
+    int dst_port_ = 1111;
     int time_interval_1_ms_ = 1100;
     int time_interval_stop_ms_ = 6000;
     bool is_encrypted = false;
