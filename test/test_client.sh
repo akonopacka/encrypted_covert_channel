@@ -15,6 +15,7 @@ cd $project_path
 
 for covert_channel_type in  storage IP_id HTTP LSB sequence loss
 do
+
   cct=$covert_channel_type
   echo "Testing covert channel type : $cct "
   #  Test without encryption
@@ -32,25 +33,25 @@ do
   echo "sudo pkill -f encrypted_covert_channel" | nc  $ip_address 5000 &
   sleep 2
 
-	for cipher_type in aes des present rsa clefia grain
-	do
-		echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
-		echo "./encrypted_covert_channel --server  $cct --is_encrypted $cipher_type " | nc  $ip_address 5000 &
-		sleep 2
-		echo "./encrypted_covert_channel --client $cct --is_encrypted"
-		for i in $(seq 1 1 $repeat_number)
-		do
-			 echo ""
-			 sudo ./encrypted_covert_channel --client $cct --is_encrypted $cipher_type
-		 sleep 2
-	  done
+  for cipher_type in aes des present rsa clefia grain
+  do
+    echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
+    echo "./encrypted_covert_channel --server  $cct --is_encrypted $cipher_type " | nc  $ip_address 5000 &
+    sleep 2
+    for i in $(seq 1 1 $repeat_number)
+    do
+       echo ""
+       sudo ./encrypted_covert_channel --client $cct --is_encrypted $cipher_type
+     sleep 2
+    done
     sleep 6
     echo "sudo pkill -f encrypted_covert_channel" | nc  $ip_address 5000 &
     echo "sudo pkill -f encrypted_covert_channel" | nc  $ip_address 5000 &
     sleep 2
     sudo pkill -f encrypted_covert_channel
     sleep 2
-	done
+  done
+
 done
 
 echo ""

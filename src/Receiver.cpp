@@ -42,7 +42,7 @@ Receiver::Receiver() {
         SnifferConfiguration sniffer_configuration = SnifferConfiguration();
         sniffer_configuration.set_immediate_mode(true);
         sniffer_configuration.set_promisc_mode(true);
-        string filter = "udp and dst port " + to_string(Globals::dst_port_) +" and ip src 127.0.0.1";
+        string filter = "udp and dst port " + to_string(Globals::dst_port_) +" and ip src " + Globals::IPv4_address;
         std::cout << "Filter : " << filter << "\n";
         sniffer_configuration.set_filter(filter);
         Sniffer sniffer(Globals::interface_, sniffer_configuration);
