@@ -2,10 +2,8 @@
 #define DES_H
 
 #include <bitset>
-#include <string.h>
-#include <string>
 #include "tables.h"
-
+#include "string.h"
 using namespace std;
 
 #define bs_64 bitset<64>
@@ -259,6 +257,7 @@ namespace des {
 
     inline string des(char me[], char ke[], char mo[]) {
         solvekey(ke);
+        printf("DES");
         string ss;
         if (mo[0] == 'D') {
             int len = strlen(me);

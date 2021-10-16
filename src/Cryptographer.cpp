@@ -354,7 +354,6 @@ const char *hex_char_to_bin(char c) {
 }
 
 string Cryptographer::encrypt_des(string plaintext_) {
-
     char message[plaintext_.size() + 1];
     strcpy(message, plaintext_.c_str());
     string cipher;

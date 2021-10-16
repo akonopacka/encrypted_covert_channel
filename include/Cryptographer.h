@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "../src/aes.hpp"
-#include "../src/des.hpp"
+#include "../src/des.cpp"
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
