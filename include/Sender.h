@@ -33,6 +33,7 @@
 #include <sys/socket.h> /* socket, connect */
 #include <netinet/in.h> /* struct sockaddr_in, struct sockaddr */
 #include <netdb.h> /* struct hostent, gethostbyname */
+#include "/usr/include/arpa/inet.h"
 
 #include "Cryptographer.h"
 #include "Evaluation.h"

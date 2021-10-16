@@ -48,7 +48,7 @@ string Cryptographer::encrypt(string plaintext) {
     } else if (method == "rsa") {
         string encrypted = "";
         encrypted = encrypt_rsa(plaintext);
-        while (encrypted.compare("")==0){
+        while (encrypted.compare("") == 0) {
             encrypted = encrypt_rsa(plaintext);
             sleep(2);
         }
@@ -77,13 +77,14 @@ string Cryptographer::decrypt(string ciphertext) {
     }
     return "OK";
 }
-string Cryptographer::encrypt_aes(string plaintext_){
+
+string Cryptographer::encrypt_aes(string plaintext_) {
     int block_size = 16;
     int counter = ceil((float) plaintext_.length() / block_size);
     string ciphertext_complete;
     for (int i = 0; i < counter; i++) {
         string part_of_message = plaintext_.substr(i * block_size, block_size);
-        if (part_of_message.length()!=block_size){
+        if (part_of_message.length() != block_size) {
             part_of_message.resize(block_size, char(0));
         }
         string encrypted_part = encrypt_aes_(part_of_message);
@@ -142,7 +143,8 @@ string bintohex(const string &s) {
 
     return out;
 }
-string Cryptographer::decrypt_aes(string ciphertext_bin){
+
+string Cryptographer::decrypt_aes(string ciphertext_bin) {
     int block_size = 256;
     int counter = ceil((float) ciphertext_bin.length() / block_size);
     string plaintext_complete;
@@ -150,8 +152,8 @@ string Cryptographer::decrypt_aes(string ciphertext_bin){
         string part_of_message = ciphertext_bin.substr(i * block_size, block_size);
         string decrypted_part = decrypt_aes_(part_of_message);
         string decrypted_part_;
-        std::size_t pos = decrypted_part.find( char(0) );
-        if ( pos != string::npos ) {
+        std::size_t pos = decrypted_part.find(char(0));
+        if (pos != string::npos) {
             int len = decrypted_part.length();
             decrypted_part = decrypted_part.erase(pos, len);
         }
@@ -424,13 +426,13 @@ string Cryptographer::decrypt_des(string ciphertext_bin) {
     return decrypted_message;
 }
 
-string Cryptographer::encrypt_present(string plaintext_){
+string Cryptographer::encrypt_present(string plaintext_) {
     int block_size = 8;
     int counter = ceil((float) plaintext_.length() / block_size);
     string ciphertext_complete;
     for (int i = 0; i < counter; i++) {
         string part_of_message = plaintext_.substr(i * block_size, block_size);
-        if (part_of_message.length()!=block_size){
+        if (part_of_message.length() != block_size) {
             part_of_message.resize(block_size, char(0));
         }
         string encrypted_part = encrypt_present__(part_of_message);
@@ -467,8 +469,9 @@ string Cryptographer::encrypt_present__(string plaintext_) {
 // return hex string as bin
     return binaryString;
 }
-string Cryptographer::decrypt_present(string ciphertext_bin){
-    int block_size = 128  ;
+
+string Cryptographer::decrypt_present(string ciphertext_bin) {
+    int block_size = 128;
     int counter = ceil((float) ciphertext_bin.length() / block_size);
     string plaintext_complete;
     for (int i = 0; i < counter; i++) {
@@ -478,6 +481,7 @@ string Cryptographer::decrypt_present(string ciphertext_bin){
     }
     return plaintext_complete;
 }
+
 string Cryptographer::decrypt_present__(string ciphertext_bin) {
     char *key_ = "1f1f1ffa90e329231f1f1ffa90e32923";
     std::stringstream sstream(ciphertext_bin);
@@ -497,13 +501,13 @@ string Cryptographer::decrypt_present__(string ciphertext_bin) {
     return deciphered;
 }
 
-string Cryptographer::encrypt_rsa(string plaintext_){
+string Cryptographer::encrypt_rsa(string plaintext_) {
     int block_size = 128;
     int counter = ceil((float) plaintext_.length() / block_size);
     string ciphertext_complete;
     for (int i = 0; i < counter; i++) {
         string part_of_message = plaintext_.substr(i * block_size, block_size);
-        if (part_of_message.length()!=block_size){
+        if (part_of_message.length() != block_size) {
             part_of_message.resize(block_size, char(0));
         }
         string encrypted_part = encrypt_rsa_(part_of_message);
@@ -548,12 +552,10 @@ string Cryptographer::encrypt_rsa_(string plaintext_) {
     int len = rsa_len - 11;
     string binaryString = "";
 
-    if (RSA_public_encrypt(len, source, encryptMsg, publicRsa, RSA_PKCS1_PADDING) < 0){
+    if (RSA_public_encrypt(len, source, encryptMsg, publicRsa, RSA_PKCS1_PADDING) < 0) {
         printf("RSA_public_encrypt error\n");
         return "";
-    }
-
-    else {
+    } else {
         string s(reinterpret_cast< char const * >(encryptMsg));
 
         for (char &_char: s) {
@@ -562,7 +564,7 @@ string Cryptographer::encrypt_rsa_(string plaintext_) {
 //        cout<<binaryString<<endl;
         string decrypted = decrypt_rsa(binaryString);
         cout << "dec: " << decrypted << endl;
-        if (decrypted.compare("")==0)
+        if (decrypted.compare("") == 0)
             return "";
         return binaryString;
     }
@@ -573,7 +575,7 @@ string Cryptographer::encrypt_rsa_(string plaintext_) {
 
 }
 
-string Cryptographer::decrypt_rsa(string ciphertext_bin){
+string Cryptographer::decrypt_rsa(string ciphertext_bin) {
     int block_size = 1024;
     int counter = ceil((float) ciphertext_bin.length() / block_size);
     string plaintext_complete;
@@ -642,7 +644,7 @@ string Cryptographer::decrypt_rsa_(string ciphertext_bin) {
     }
 }
 
-string Cryptographer::encrypt_grain(string plaintext_){
+string Cryptographer::encrypt_grain(string plaintext_) {
     int block_size = 10;
     int counter = ceil((float) plaintext_.length() / block_size);
     string ciphertext_complete;
@@ -693,7 +695,7 @@ string Cryptographer::encrypt_grain_(string plaintext_) {
     return ciphertext_bin;
 }
 
-string Cryptographer::decrypt_grain(string ciphertext_bin){
+string Cryptographer::decrypt_grain(string ciphertext_bin) {
     int block_size = 80;
     int counter = ceil((float) ciphertext_bin.length() / block_size);
     string plaintext_complete;

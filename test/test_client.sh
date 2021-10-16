@@ -15,7 +15,6 @@ cd $project_path
 
 for covert_channel_type in  storage IP_id HTTP LSB sequence loss
 do
-
   cct=$covert_channel_type
   echo "Testing covert channel type : $cct "
   #  Test without encryption

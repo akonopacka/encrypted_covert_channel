@@ -1,7 +1,6 @@
-import os
-import csv
-import pandas as pd
 import glob
+
+import pandas as pd
 
 folder_path = "/home/ak/results/general/"
 # files = os.listdir(folder_path)
