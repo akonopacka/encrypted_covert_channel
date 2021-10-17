@@ -359,7 +359,8 @@ string Cryptographer::encrypt_des(string plaintext_) {
     string cipher;
 
     char key[32] = {"0E329232EA6D0D73"}, mode[3] = {"En"};
-    cipher = des::des(message, key, mode);
+    DES des;
+    cipher = des.des(message, key, mode);
 
 //    cout<< "EN: " << cipher << endl;
 
@@ -419,8 +420,8 @@ string Cryptographer::decrypt_des(string ciphertext_bin) {
     strcpy(cstr, cipher_hex.c_str());
 
     char key_[32] = {"0E329232EA6D0D73"}, mode_[3] = {"De"};
-
-    string decrypted_message = des::des(cstr, key_, mode_);
+    DES des;
+    string decrypted_message = des.des(cstr, key_, mode_);
     cout << "Decrypted message: " << decrypted_message << endl;
     return decrypted_message;
 }

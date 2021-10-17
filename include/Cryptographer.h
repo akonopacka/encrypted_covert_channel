@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "../src/aes.hpp"
-#include "../src/des.cpp"
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
@@ -40,6 +39,8 @@ extern "C" {
 //#include "../C_language/grain.h"
 #include "../src/grain.c"
 #include "../include/openssl_rsa.h"
+#include "../include/DES.h"
+
 
 using namespace std;
 
