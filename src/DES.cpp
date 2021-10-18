@@ -45,7 +45,7 @@ bs_56 DES::getpc1(bs_64 k) {
 bs_64 DES::_8char_to_bit64(char str[]) {
     bs_64 b;
     int num = 0;
-    for (char i = 7; i >= 0; --i) {
+    for (int i = 7; i >= 0; --i) {
         int x = str[i];
         do {
             b[num++] = x % 2;
@@ -242,9 +242,7 @@ bs_64 DES::solveD_(bs_64 x) {
     return en;
 }
 
-
 string DES::des(char me[], char ke[], char mo[]) {
-    cout<<"Entering des: "<<me<<endl<<ke<<endl<<mo<<endl;
     solvekey(ke);
     string ss;
     if (mo[0] == 'D') {
