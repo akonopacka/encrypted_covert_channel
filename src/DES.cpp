@@ -2,6 +2,7 @@
 // Created by ak on 17.10.2021.
 //
 
+
 #include "../include/DES.h"
 
 string DES::bit64_to_H(bs_64 x) {
@@ -243,8 +244,8 @@ bs_64 DES::solveD_(bs_64 x) {
 
 
 string DES::des(char me[], char ke[], char mo[]) {
+    cout<<"Entering des: "<<me<<endl<<ke<<endl<<mo<<endl;
     solvekey(ke);
-    printf("DES");
     string ss;
     if (mo[0] == 'D') {
         int len = strlen(me);

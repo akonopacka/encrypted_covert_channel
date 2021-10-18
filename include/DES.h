@@ -8,6 +8,7 @@
 #include <bitset>
 #include "tables.h"
 #include "string.h"
+#include <iostream>
 
 #define bs_24 bitset<24>
 #define bs_28 bitset<28>

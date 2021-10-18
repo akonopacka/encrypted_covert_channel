@@ -23,4 +23,3 @@ target_link_libraries(encrypted_covert_channel ${JSONCPP_LIBRARIES})
 
 find_package(OpenSSL REQUIRED)
 target_link_libraries(encrypted_covert_channel OpenSSL::SSL)
-
