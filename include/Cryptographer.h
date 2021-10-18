@@ -40,7 +40,7 @@ extern "C" {
 #include "../src/grain.c"
 #include "../include/openssl_rsa.h"
 #include "../include/DES.h"
-
+#include "../include/Clefia.h"
 
 using namespace std;
 

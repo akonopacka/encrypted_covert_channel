@@ -244,18 +244,20 @@ string Cryptographer::encrypt_clefia_(string plaintext_) {
     unsigned char ct[16];
     unsigned char dst[16];
     unsigned char rk[8 * 26 + 16]; /* 8 bytes x 26 rounds(max) + whitening keys */
-    clefia::ClefiaRandomSet(rs);
-    clefia::ClefiaKeySet(rk, skey, 128);
 
-    clefia::WBtableSet128(lookupTables, pt, rk, rs, skey);
+    Clefia clefia;
+    clefia.ClefiaRandomSet(rs);
+    clefia.ClefiaKeySet(rk, skey, 128);
 
-    clefia::WBInterEnc128(ct, pt, lookupTables);
+    clefia.WBtableSet128(lookupTables, pt, rk, rs, skey);
+
+    clefia.WBInterEnc128(ct, pt, lookupTables);
 //    printf("ciphertext: "); clefia::BytePut(ct, 16);
 
     int r;
     /* encryption */
-    r = clefia::ClefiaKeySet(rk, skey, 128);
-    clefia::ClefiaEncrypt(dst, pt, rk, r);
+    r = clefia.ClefiaKeySet(rk, skey, 128);
+    clefia.ClefiaEncrypt(dst, pt, rk, r);
 //    printf("ciphertext: "); clefia::BytePut(dst, 16);
     string binaryString = "";
     for (unsigned char _char: dst) {
@@ -287,6 +289,7 @@ string Cryptographer::decrypt_clefia_(string ciphertext_bin) {
     unsigned char ct[16];
     unsigned char rk[8 * 26 + 16];
     int r;
+    Clefia clefia;
 
     std::stringstream sstream(ciphertext_bin);
     std::string output;
@@ -303,9 +306,9 @@ string Cryptographer::decrypt_clefia_(string ciphertext_bin) {
 
     /* decryption */
     unsigned char decrypted[16];
-    clefia::ByteCpy(ct, encrypted, 16);
-    r = clefia::ClefiaKeySet(rk, skey, 128);
-    clefia::ClefiaDecrypt(decrypted, encrypted, rk, r);
+    clefia.ByteCpy(ct, encrypted, 16);
+    r = clefia.ClefiaKeySet(rk, skey, 128);
+    clefia.ClefiaDecrypt(decrypted, encrypted, rk, r);
 
     std::string s = "";
     for (unsigned char c: decrypted) {
