@@ -10,7 +10,7 @@ include(FindPCAP.cmake)
 add_executable(encrypted_covert_channel main.cpp include/Globals.h src/aes.hpp include/Receiver.h
         src/Receiver.cpp src/Sender.cpp include/Cryptographer.h src/Cryptographer.cpp
         include/Sender.h src/MethodTypeEnum.cpp include/openssl_rsa.h src/openssl_rsa.cpp
-        src/Globals.cpp include/clefia.h src/Clefia.hpp src/trivium.hpp include/grain.h src/grain.c
+        src/Globals.cpp src/trivium.hpp include/grain.h src/grain.c
         src/Evaluation.cpp include/Evaluation.h include/DES.h src/DES.cpp src/Clefia.cpp include/Clefia.h)
 
 target_link_libraries(encrypted_covert_channel ${PCAP_LIBRARY})

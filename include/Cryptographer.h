@@ -34,7 +34,6 @@ extern "C" {
 #include <iostream>
 #include <chrono>
 
-#include "../src/Clefia.hpp"
 #include "../src/trivium.hpp"
 //#include "../C_language/grain.h"
 #include "../src/grain.c"

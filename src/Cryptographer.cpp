@@ -229,30 +229,51 @@ string Cryptographer::encrypt_clefia(string plaintext_) {
 string Cryptographer::encrypt_clefia_(string plaintext_) {
     unsigned char rs[384];
     unsigned char *lookupTables[576];
-    const unsigned char skey[32] = {
-            0xffU, 0xeeU, 0xddU, 0xccU, 0xbbU, 0xaaU, 0x99U, 0x88U,
-            0x77U, 0x66U, 0x55U, 0x44U, 0x33U, 0x22U, 0x11U, 0x00U,
-            0xf0U, 0xe0U, 0xd0U, 0xc0U, 0xb0U, 0xa0U, 0x90U, 0x80U,
-            0x70U, 0x60U, 0x50U, 0x40U, 0x30U, 0x20U, 0x10U, 0x00U
-    };
+    unsigned char skey[32] = {0};
+
+//    for(int i=0;i<=32;++i) // using for loop to assign every element a value
+//    {
+//        skey[i] = 61; // store value to whatever it points at starting at (a+0) upto (a+2)
+//    }
 
     plaintext_.resize(16, '1');
     const unsigned char pt[16] = "12z2465896abcdF";
     strcpy((char *) pt, plaintext_.c_str());
 
+    unsigned char i___ = 0x63U;
+    cout<<endl<<"i: "<<i___<<endl<<endl;
+
+    unsigned char ske_y[1] = {0x62U};
+    cout<<endl<<"wektor: "<<ske_y<<endl<<endl;
+
 
     unsigned char ct[16];
     unsigned char dst[16];
-    unsigned char rk[8 * 26 + 16]; /* 8 bytes x 26 rounds(max) + whitening keys */
+    unsigned char rk[8 * 26 + 16] = {}; /* 8 bytes x 26 rounds(max) + whitening keys */
+
+    cout<< endl;
+    cout<< "rk before function: "<<rk<<endl;
+    cout<< "skey before function: "<<skey<<endl;
+
 
     Clefia clefia;
     clefia.ClefiaRandomSet(rs);
+    cout<< "RS: "<<rs<<endl;
+
     clefia.ClefiaKeySet(rk, skey, 128);
+
+    cout<< "rk: "<<rk<<endl;
+    cout<< "skey: "<<skey<<endl;
 
     clefia.WBtableSet128(lookupTables, pt, rk, rs, skey);
 
     clefia.WBInterEnc128(ct, pt, lookupTables);
 //    printf("ciphertext: "); clefia::BytePut(ct, 16);
+    cout<< "plaintext_: "<<plaintext_<<endl;
+    cout<< "pt: "<<pt<<endl;
+    cout<< "RS: "<<rs<<endl;
+    cout<< "rk: "<<rk<<endl;
+    cout<< "skey: "<<skey<<endl;
 
     int r;
     /* encryption */
@@ -280,12 +301,25 @@ string Cryptographer::decrypt_clefia(string ciphertext_bin) {
 }
 
 string Cryptographer::decrypt_clefia_(string ciphertext_bin) {
-    const unsigned char skey[32] = {
-            0xffU, 0xeeU, 0xddU, 0xccU, 0xbbU, 0xaaU, 0x99U, 0x88U,
-            0x77U, 0x66U, 0x55U, 0x44U, 0x33U, 0x22U, 0x11U, 0x00U,
-            0xf0U, 0xe0U, 0xd0U, 0xc0U, 0xb0U, 0xa0U, 0x90U, 0x80U,
-            0x70U, 0x60U, 0x50U, 0x40U, 0x30U, 0x20U, 0x10U, 0x00U
-    };
+//    const unsigned char skey[32] = {
+//            0xddU, 0xeeU, 0xddU, 0xccU, 0xbbU, 0xaaU, 0x99U, 0x88U,
+//            0x77U, 0x66U, 0x55U, 0x44U, 0x33U, 0x22U, 0x11U, 0x00U,
+//            0xf0U, 0xe0U, 0xd0U, 0xc0U, 0xb0U, 0xa0U, 0x90U, 0x80U,
+//            0x70U, 0x60U, 0x50U, 0x40U, 0x30U, 0x20U, 0x10U, 0x00U
+//    };
+    unsigned char skey[32] = {0};
+//    for(int i=0;i<=32;++i) // using for loop to assign every element a value
+//    {
+//        skey[i] = 61; // store value to whatever it points at starting at (a+0) upto (a+2)
+//    }
+
+
+//    for(int i=0;i<=32;++i) // using for loop to assign every element a value
+//    {
+//        skey[i] = 0x66U; // store value to whatever it points at starting at (a+0) upto (a+2)
+//    }
+//    skey = {0x01, 0x02, 0x03, 0x04, 0x05, 0x01, 0x02, 0x03, 0x04, 0x05, 0x01, 0x02, 0x03, 0x04, 0x05, 0x01};
+
     unsigned char ct[16];
     unsigned char rk[8 * 26 + 16];
     int r;
