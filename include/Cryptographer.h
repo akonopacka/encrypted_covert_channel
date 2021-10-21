@@ -8,13 +8,28 @@
 #include <string>
 #include <vector>
 
-#include "../src/aes.hpp"
+
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
 #include <iomanip>
-#include <string>
 #include <cstdint>
+
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <chrono>
+
+#include "../src/aes.hpp"
+#include "../src/trivium.hpp"
+#include "../src/grain.c"
+#include "../include/openssl_rsa.h"
+#include "../include/DES.h"
+#include "../include/Clefia.h"
 
 //#include "Present.h"
 extern "C" {
@@ -22,24 +37,6 @@ extern "C" {
 #include "../src/PRESENT.c"
 
 }
-//#include "../include/openssl_rsa.h"
-#include <openssl/rsa.h>
-#include <openssl/pem.h>
-#include <openssl/err.h>
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#include <string>
-#include <unistd.h>
-#include <iostream>
-#include <chrono>
-
-#include "../src/trivium.hpp"
-//#include "../C_language/grain.h"
-#include "../src/grain.c"
-#include "../include/openssl_rsa.h"
-#include "../include/DES.h"
-#include "../include/Clefia.h"
 
 using namespace std;
 

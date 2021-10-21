@@ -27,7 +27,7 @@ public:
     void ClefiaRandomSet(unsigned char *rs);
 
 /* S0 (8-bit S-box based on four 4-bit S-boxes) */
-    const unsigned char clefia_s0[256] = {
+    unsigned char clefia_s0[256] = {
             0x57U, 0x49U, 0xd1U, 0xc6U, 0x2fU, 0x33U, 0x74U, 0xfbU,
             0x95U, 0x6dU, 0x82U, 0xeaU, 0x0eU, 0xb0U, 0xa8U, 0x1cU,
             0x28U, 0xd0U, 0x4bU, 0x92U, 0x5cU, 0xeeU, 0x85U, 0xb1U,
@@ -63,7 +63,7 @@ public:
     };
 
 /* S1 (8-bit S-box based on inverse function) */
-    const unsigned char clefia_s1[256] = {
+    unsigned char clefia_s1[256] = {
             0x6cU, 0xdaU, 0xc3U, 0xe9U, 0x4eU, 0x9dU, 0x0aU, 0x3dU,
             0xb8U, 0x36U, 0xb4U, 0x38U, 0x13U, 0x34U, 0x0cU, 0xd9U,
             0xbfU, 0x74U, 0x94U, 0x8fU, 0xb7U, 0x9cU, 0xe5U, 0xdcU,
@@ -99,7 +99,6 @@ public:
     };
 
     void ByteCpy(unsigned char *dst, const unsigned char *src, int bytelen);
-
     void ByteXor(unsigned char *dst, const unsigned char *a, const unsigned char *b, int bytelen);
 
     unsigned char ClefiaMul2(unsigned char x);
@@ -109,50 +108,22 @@ public:
 #define ClefiaMul8(_x) (ClefiaMul2(ClefiaMul4((_x))))
 #define ClefiaMulA(_x) (ClefiaMul2((_x)) ^ ClefiaMul8((_x)))
 
-    void WBF0Xor(unsigned char **tables, unsigned char *dst, const unsigned char *src, const unsigned char *rk,
-                 const unsigned char *r1, const unsigned char *r2, const unsigned char *r3) ;
 
-    void WBF1Xor(unsigned char **tables, unsigned char *dst, const unsigned char *src, const unsigned char *rk,
-                 const unsigned char *r1, const unsigned char *r2, const unsigned char *r3) ;
-
-    void ClefiaF0Xor(unsigned char *dst, const unsigned char *src, const unsigned char *rk);
-
-    void ClefiaF1Xor(unsigned char *dst, const unsigned char *src, const unsigned char *rk);
-
+    void ClefiaF0Xor(unsigned char *y, const unsigned char *x, const unsigned char *rk);
+    void ClefiaF1Xor(unsigned char *y, const unsigned char *x, const unsigned char *rk);
     void ClefiaGfn4(unsigned char *y, const unsigned char *x, const unsigned char *rk, int r);
+    void ClefiaGfn8(unsigned char *y, const unsigned char *x, const unsigned char *rk, int r);
+    void ClefiaGfn4Inv(unsigned char *y, const unsigned char *x, const unsigned char *rk, int r);
 
-    void WBtableSet128(unsigned char **tables, const unsigned char *x, unsigned char *rk, const unsigned char *rs,
-                  const unsigned char *skey) ;
-
-    void ClefiaGfn8(unsigned char *y, const unsigned char *x, const unsigned char *rk, int r) ;
-
-    void ClefiaGfn4Inv(unsigned char *y, const unsigned char *x, const unsigned char *rk, int r) ;
-
-    void ClefiaDoubleSwap(unsigned char *lk) ;
-
-    void ClefiaConSet(unsigned char *con, const unsigned char *iv, int lk) ;
-
-    void ClefiaKeySet128(unsigned char *rk, const unsigned char *skey) ;
-
+    void ClefiaDoubleSwap(unsigned char *lk);
+    void ClefiaConSet(unsigned char *con, const unsigned char *iv, int lk);
+    void ClefiaKeySet128(unsigned char *rk, const unsigned char *skey);
     void ClefiaKeySet192(unsigned char *rk, const unsigned char *skey);
-
     void ClefiaKeySet256(unsigned char *rk, const unsigned char *skey);
 
     int ClefiaKeySet(unsigned char *rk, const unsigned char *skey, const int key_bitlen);
-
-    void ClefiaEncrypt(unsigned char *ct, const unsigned char *pt, const unsigned char *rk, const int r) ;
-
-    void WBInterEnc128(unsigned char *ct, const unsigned char *pt, unsigned char **tables);
-
-    void ClefiaDecrypt(unsigned char *pt, const unsigned char *ct, const unsigned char *rk, const int r) ;
-
-/* Test */
-
-//#ifdef _CLEFIA_TEST
-
-
-    void BytePut(const unsigned char *data, int bytelen) ;
+    void ClefiaEncrypt(unsigned char *ct, const unsigned char *pt, const unsigned char *rk, const int r);
+    void ClefiaDecrypt(unsigned char *pt, const unsigned char *ct, const unsigned char *rk, const int r);
+    void BytePut(const unsigned char *data, int bytelen);
 };
-
-
 #endif //ENCRYPTED_COVERT_CHANNEL_CLEFIA_H

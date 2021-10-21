@@ -358,7 +358,6 @@ void Sender::send_message(string message_to_send) {
         std::cout << "Decrypt check: " << decrypted << endl;
     }
 
-
     // Get starting timepoint
     auto start = high_resolution_clock::now();
     if (method == "storage") {
@@ -378,9 +377,8 @@ void Sender::send_message(string message_to_send) {
     }
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
-    std::string time_of_sending = "";
+    std::string time_of_sending;
     time_of_sending = std::to_string(duration.count());
-    cout << "Time taken by sending function: " << time_of_sending << " microseconds" << endl;
     string channel_message = Globals::channel_message;
     float message_entropy = Evaluation::calculate_entropy(Globals::channel_message);
 
