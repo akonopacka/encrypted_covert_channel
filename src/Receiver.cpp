@@ -585,8 +585,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
                 output += c;
             }
             Globals::last_seq_ = 1;
-            std::cout << "Received message: bin " << Globals::message_ << " len: " << Globals::message_.length()
-                      << std::endl << output << endl;
+            std::cout << "Received message: bin " << Globals::message_ << " len: " << Globals::message_.length() << endl;
             std::string received_message = output;
             string duration_of_decryption;
 
