@@ -2,9 +2,9 @@ import glob
 
 import pandas as pd
 
-folder_path = "/home/ak/results/general/"
+folder_path = "/home/ak/results/"
 # files = os.listdir(folder_path)
-files = glob.glob("/home/ak/results/general/*.csv")
+files = glob.glob("/home/ak/results/*.csv")
 
 print("--- Aggregating data ---")
 
@@ -18,19 +18,25 @@ for file in files:
         df = pd.read_csv(file, sep=';', header=None)
         # print (df)
         mean = df.mean(axis=0)
-        is_client = file.startswith('/home/ak/results/general/_client')
-        is_server = file.startswith('/home/ak/results/general/_server')
+        std = df.std()
+        is_client = file.startswith('/home/ak/results/_client')
+        is_server = file.startswith('/home/ak/results/_server')
+        # print(std)
 
         if is_client:
-            configuration = file.replace('/home/ak/results/general/_client_', '')
+            configuration = file.replace('/home/ak/results/_client_', '')
             configuration = configuration.replace('.csv', '')
             mean.name = configuration
-            results_client = results_server.append(mean)
+            std.name = configuration + '_std'
+            results_client = results_client.append(mean)
+            results_client = results_client.append(std)
         if is_server:
-            configuration = file.replace('/home/ak/results/general/_server_', '')
+            configuration = file.replace('/home/ak/results/_server_', '')
             configuration = configuration.replace('.csv', '')
             mean.name = configuration
+            std.name = configuration + '_std'
             results_server = results_server.append(mean)
+            results_server = results_server.append(std)
 
     except pd.errors.EmptyDataError:
         print("No columns to parse from file : ", file)
