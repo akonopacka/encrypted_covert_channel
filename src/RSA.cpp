@@ -1,4 +1,4 @@
-#include "../include/rsa.h"
+#include "../include/RSA.h"
 #include <cstdlib>
 #include <ctime>
 #include <string>

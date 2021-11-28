@@ -7,8 +7,6 @@
 
 #include <string>
 #include <vector>
-
-
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
@@ -25,16 +23,14 @@
 #include <chrono>
 
 #include "../src/aes.hpp"
-#include "../src/trivium.hpp"
-#include "../src/grain.c"
+#include "../src/Grain.c"
 #include "../include/openssl_rsa.h"
 #include "../include/DES.h"
 #include "../include/Clefia.h"
 
-//#include "Present.h"
 extern "C" {
 // Get declaration for f(int i, char c, float x)
-#include "../src/PRESENT.c"
+#include "../src/Present.c"
 
 }
 

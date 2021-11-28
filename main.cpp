@@ -16,12 +16,7 @@
 using namespace Tins;
 using namespace std;
 
-//std::chrono::high_resolution_clock::time_point time_of_last_packet_;
-//std::chrono::high_resolution_clock::time_point time_received_;
-//std::chrono::duration<double, std::milli> time_span_;
-//double last_packet_timestamp_;
 string message_to_send = "";
-
 
 int main(int argc, char **argv) {
 //    Load config file
