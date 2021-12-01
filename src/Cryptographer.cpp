@@ -543,12 +543,13 @@ string Cryptographer::encrypt_rsa_(string plaintext_) {
         printf("RSA_public_encrypt error\n");
         return "";
     } else {
+        cout<<"Encrypted:"<<encryptMsg<<endl;
         string s(reinterpret_cast< char const * >(encryptMsg));
 
         for (char &_char: s) {
             binaryString += bitset<8>(_char).to_string();
         }
-//        cout<<binaryString<<endl;
+        cout<<binaryString<<endl;
         string decrypted = decrypt_rsa(binaryString);
         cout << "dec: " << decrypted << endl;
         if (decrypted.compare("") == 0)

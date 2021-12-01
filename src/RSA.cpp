@@ -1,6 +1,6 @@
 
 
-#include "../include/openssl_rsa.h"
+#include "../include/RSA.h"
 
 using namespace std;
 

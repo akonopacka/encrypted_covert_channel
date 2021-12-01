@@ -7,9 +7,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_library(TINS_LIBRARY tins)
 include(FindPCAP.cmake)
-add_executable(encrypted_covert_channel main.cpp include/Globals.h src/aes.hpp include/Receiver.h
+add_executable(encrypted_covert_channel main.cpp include/Globals.h src/AES.hpp include/Receiver.h
         src/Receiver.cpp src/Sender.cpp include/Cryptographer.h src/Cryptographer.cpp
-        include/Sender.h src/MethodTypeEnum.cpp include/openssl_rsa.h src/openssl_rsa.cpp
+        include/Sender.h include/RSA.h src/RSA.cpp
         src/Globals.cpp include/Grain.h src/Grain.c
         src/Evaluation.cpp include/Evaluation.h include/DES.h src/DES.cpp src/Clefia.cpp include/Clefia.h)
 

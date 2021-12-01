@@ -11,7 +11,6 @@
 #include <tins/tins.h>
 #include <chrono>
 #include <thread>
-#include "../src/MethodTypeEnum.cpp"
 #include "Globals.h"
 #include <iostream>
 #include <iostream>

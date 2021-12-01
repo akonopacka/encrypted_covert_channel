@@ -22,9 +22,9 @@
 #include <unistd.h>
 #include <chrono>
 
-#include "../src/aes.hpp"
+#include "../src/AES.hpp"
 #include "../src/Grain.c"
-#include "../include/openssl_rsa.h"
+#include "../include/RSA.h"
 #include "../include/DES.h"
 #include "../include/Clefia.h"
 
