@@ -39,7 +39,7 @@ using namespace std;
 class Cryptographer {
     string method = "aes";
     char *public_key_path = "../keys/public.pem";
-    char * private_key_path = "../keys/key.pem";
+    char * private_key_path = "../keys/private.pem";
 
 public:
     Cryptographer(const string &method);

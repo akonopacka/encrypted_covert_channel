@@ -518,7 +518,7 @@ return rsa;
 }
 
 string Cryptographer::encrypt_rsa_(string plaintext_) {
-    int padding = RSA_NO_PADDING; //RSA_PKCS1_PADDING;
+    int padding = RSA_NO_PADDING;
     unsigned char  encrypted[2048/8]={};
     unsigned char * plaintext;
     char plainText[2048/8];
