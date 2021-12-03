@@ -178,7 +178,7 @@ inline uint64_t *generateSubkeys(char *key) {
 }
 
 // function for encrypting a block using a key
-inline char *encrypt_present_(char *plaintext, char *key) {
+inline char *present_enc(char *plaintext, char *key) {
 //    printf(plaintext);
 //    printf("\n");
     //generate the subkeys using the function defined above
@@ -212,7 +212,7 @@ inline char *encrypt_present_(char *plaintext, char *key) {
 }
 
 // function for decrypting a block using a key
-inline char *decrypt_present_(char *ciphertext, char *key) {
+inline char *present_dec(char *ciphertext, char *key) {
     //generate the subkeys using the function defined above
     uint64_t *subkeys = generateSubkeys(key);
     //convert the plaintext from a Hex String to a 64-bit integer

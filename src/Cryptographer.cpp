@@ -415,17 +415,16 @@ string Cryptographer::encrypt_present(string plaintext_) {
         if (part_of_message.length() != block_size) {
             part_of_message.resize(block_size, char(0));
         }
-        string encrypted_part = encrypt_present__(part_of_message);
-        string decrypted_check = decrypt_present__(encrypted_part);
+        string encrypted_part = encrypt_present_(part_of_message);
+        string decrypted_check = decrypt_present_(encrypted_part);
         ciphertext_complete += encrypted_part;
     }
     string decrypted_check = decrypt_present(ciphertext_complete);
     return ciphertext_complete;
 }
 
-string Cryptographer::encrypt_present__(string plaintext_) {
+string Cryptographer::encrypt_present_(string plaintext_) {
     string p = string_to_hex(plaintext_);
-
 // the plaintext (64 bits) in hexadecimal format
     const char *plaintext = p.c_str();
     char *p_ = const_cast<char *>(plaintext);
@@ -434,11 +433,8 @@ string Cryptographer::encrypt_present__(string plaintext_) {
 
     //declare a pointer for the ciphertext
     char *ciphertext;
-    char *ciphertext1;
-    char *ciphertext2;
 
-    ciphertext = encrypt_present_(p_, key_);
-//    puts(ciphertext);
+    ciphertext = present_enc(p_, key_);
     string binaryString = "";
     string hex(ciphertext);
 
@@ -456,13 +452,13 @@ string Cryptographer::decrypt_present(string ciphertext_bin) {
     string plaintext_complete;
     for (int i = 0; i < counter; i++) {
         string part_of_message = ciphertext_bin.substr(i * block_size, block_size);
-        string decrypted_part = decrypt_present__(part_of_message);
+        string decrypted_part = decrypt_present_(part_of_message);
         plaintext_complete += decrypted_part;
     }
     return plaintext_complete;
 }
 
-string Cryptographer::decrypt_present__(string ciphertext_bin) {
+string Cryptographer::decrypt_present_(string ciphertext_bin) {
     char *key_ = "1f1f1ffa90e329231f1f1ffa90e32923";
     std::stringstream sstream(ciphertext_bin);
     std::string ciphertext_hex;
@@ -475,7 +471,7 @@ string Cryptographer::decrypt_present__(string ciphertext_bin) {
     //calling the decrypt function and printing the result
     char *cstr = new char[ciphertext_hex.length() + 1];
     strcpy(cstr, ciphertext_hex.c_str());
-    char *s = decrypt_present_(cstr, key_);
+    char *s = present_dec(cstr, key_);
     string s_(s);
     string deciphered = hex_to_string(s_);
     return deciphered;

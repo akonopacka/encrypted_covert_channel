@@ -12,13 +12,9 @@
 #include <stdexcept>
 #include <iomanip>
 #include <cstdint>
-
-//#include <openssl/rsa.h>
-//#include <openssl/pem.h>
-//#include <openssl/err.h>
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cmath>
+#include <cstdlib>
 #include <unistd.h>
 #include <chrono>
 
@@ -70,9 +66,9 @@ public:
 
     string decrypt_present(string ciphertext_bin);
 
-    string encrypt_present__(string plaintext_);
+    string encrypt_present_(string plaintext_);
 
-    string decrypt_present__(string ciphertext_bin);
+    string decrypt_present_(string ciphertext_bin);
 
     string encrypt_rsa(string plaintext_);
 
