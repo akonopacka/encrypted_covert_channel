@@ -5,8 +5,7 @@
 #include "../include/Cryptographer.h"
 
 #define PASS "8888"
-#define PUBLICKEY "../keys/pub.pem"
-#define PRIVATEKEY "../keys/pri.pem"
+
 
 Cryptographer::Cryptographer(const string &method) : method(method) {}
 
@@ -46,13 +45,7 @@ string Cryptographer::encrypt(string plaintext) {
     } else if (method == "present") {
         return encrypt_present(plaintext);
     } else if (method == "rsa") {
-        string encrypted = "";
-        encrypted = encrypt_rsa(plaintext);
-        while (encrypted.compare("") == 0) {
-            encrypted = encrypt_rsa(plaintext);
-            sleep(2);
-        }
-        return encrypted;
+        return encrypt_rsa(plaintext);
     } else if (method == "clefia") {
         return encrypt_clefia(plaintext);
     } else if (method == "grain") {
@@ -489,7 +482,7 @@ string Cryptographer::decrypt_present__(string ciphertext_bin) {
 }
 
 string Cryptographer::encrypt_rsa(string plaintext_) {
-    int block_size = 128;
+    int block_size = 2048/8;
     int counter = ceil((float) plaintext_.length() / block_size);
     string ciphertext_complete;
     for (int i = 0; i < counter; i++) {
@@ -503,68 +496,55 @@ string Cryptographer::encrypt_rsa(string plaintext_) {
     return ciphertext_complete;
 }
 
+RSA * createRSAWithFilename(char * filename,int is_public){
+    FILE * fp = fopen(filename,"rb");
+
+    if(fp == NULL)
+    {
+    printf("Unable to open file %s \n",filename);
+    return NULL;
+    }
+    RSA *rsa= RSA_new() ;
+
+    if(is_public)
+    {
+    rsa = PEM_read_RSA_PUBKEY(fp, &rsa,NULL, NULL);
+    }
+    else
+    {
+    rsa = PEM_read_RSAPrivateKey(fp, &rsa,NULL, NULL);
+}
+return rsa;
+}
+
 string Cryptographer::encrypt_rsa_(string plaintext_) {
-    FILE *fp = NULL;
-    RSA *publicRsa = NULL;
-    RSA *privateRsa = NULL;
-    if ((fp = fopen(PUBLICKEY, "r")) == NULL) {
-        printf("public key path error\n");
-        return "-1";
+    int padding = RSA_NO_PADDING; //RSA_PKCS1_PADDING;
+    unsigned char  encrypted[2048/8]={};
+    unsigned char * plaintext;
+    char plainText[2048/8];
+    strcpy((char *)plainText,plaintext_.c_str());
+    const unsigned char * constStr = reinterpret_cast<const unsigned char *> (plaintext_.c_str());
+
+    RSA * rsa = createRSAWithFilename(public_key_path,1);
+
+    int encrypted_length = RSA_public_encrypt(plaintext_.length(), constStr, encrypted, rsa, padding);
+    if(encrypted_length == -1)
+    {
+        char buf[128];
+        cerr << "RSA_public_encrypt: " << ERR_error_string(ERR_get_error(), buf) << endl;
+        exit(0);
     }
+    string binary_string;
+    string s = reinterpret_cast <char*>(encrypted);
 
-    if ((publicRsa = PEM_read_RSA_PUBKEY(fp, NULL, NULL, NULL)) == NULL) {
-        printf("PEM_read_RSA_PUBKEY error\n");
-        return "-1";
+    for (unsigned char &_char: encrypted) {
+        binary_string += bitset<8>(_char).to_string();
     }
-    fclose(fp);
-
-    if ((fp = fopen(PRIVATEKEY, "r")) == NULL) {
-        printf("private key path error\n");
-        return "-1";
-    }
-//    OpenSSL_add_all_algorithms();
-    if ((privateRsa = PEM_read_RSAPrivateKey(fp, NULL, NULL, (char *) PASS)) == NULL) {
-        printf("PEM_read_RSAPrivateKey error\n");
-        return "NULL";
-    }
-    fclose(fp);
-
-    unsigned char *source = (unsigned char *) plaintext_.c_str();
-
-    int rsa_len = RSA_size(publicRsa);
-
-    unsigned char *encryptMsg = (unsigned char *) malloc(rsa_len);
-    memset(encryptMsg, 0, rsa_len);
-
-    int len = rsa_len - 11;
-    string binaryString = "";
-
-    if (RSA_public_encrypt(len, source, encryptMsg, publicRsa, RSA_PKCS1_PADDING) < 0) {
-        printf("RSA_public_encrypt error\n");
-        return "";
-    } else {
-        cout<<"Encrypted:"<<encryptMsg<<endl;
-        string s(reinterpret_cast< char const * >(encryptMsg));
-
-        for (char &_char: s) {
-            binaryString += bitset<8>(_char).to_string();
-        }
-        cout<<binaryString<<endl;
-        string decrypted = decrypt_rsa(binaryString);
-        cout << "dec: " << decrypted << endl;
-        if (decrypted.compare("") == 0)
-            return "";
-        return binaryString;
-    }
-
-    RSA_free(publicRsa);
-    RSA_free(privateRsa);
-    return binaryString;
-
+    return binary_string;
 }
 
 string Cryptographer::decrypt_rsa(string ciphertext_bin) {
-    int block_size = 1024;
+    int block_size = 2048;
     int counter = ceil((float) ciphertext_bin.length() / block_size);
     string plaintext_complete;
     for (int i = 0; i < counter; i++) {
@@ -576,38 +556,6 @@ string Cryptographer::decrypt_rsa(string ciphertext_bin) {
 }
 
 string Cryptographer::decrypt_rsa_(string ciphertext_bin) {
-    FILE *fp = NULL;
-    RSA *publicRsa = NULL;
-    RSA *privateRsa = NULL;
-    if ((fp = fopen("../keys/pub.pem", "r")) == NULL) {
-        printf("public key path error\n");
-        return "-1";
-    }
-
-    if ((publicRsa = PEM_read_RSA_PUBKEY(fp, NULL, NULL, NULL)) == NULL) {
-        printf("PEM_read_RSA_PUBKEY error\n");
-        return "-1";
-    }
-    fclose(fp);
-
-    if ((fp = fopen(PRIVATEKEY, "r")) == NULL) {
-        printf("private key path error\n");
-        return "-1";
-    }
-    if ((privateRsa = PEM_read_RSAPrivateKey(fp, NULL, NULL, (char *) PASS)) == NULL) {
-        printf("PEM_read_RSAPrivateKey error\n");
-        return "NULL";
-    }
-    fclose(fp);
-    OpenSSL_add_all_algorithms();
-    int rsa_len = RSA_size(publicRsa);
-
-    rsa_len = RSA_size(privateRsa);
-    unsigned char *decryptMsg = (unsigned char *) malloc(rsa_len);
-    memset(decryptMsg, 0, rsa_len);
-
-    unsigned char *encryptMsg = (unsigned char *) malloc(rsa_len);
-
     std::stringstream sstream(ciphertext_bin);
     std::string output;
     while (sstream.good()) {
@@ -616,20 +564,19 @@ string Cryptographer::decrypt_rsa_(string ciphertext_bin) {
         unsigned char c = (unsigned char) (bits.to_ulong());
         output += c;
     }
-
-    unsigned char *val = new unsigned char[output.length() + 1];
-    strcpy((char *) val, output.c_str());
-    encryptMsg = val;
-    int mun = RSA_private_decrypt(rsa_len, encryptMsg, decryptMsg, privateRsa, RSA_PKCS1_PADDING);
-    if (mun < 0) {
-        printf("RSA_private_decrypt error\n");
+    const unsigned char * encrypted = reinterpret_cast<const unsigned char *> (output.c_str());
+    int padding = RSA_NO_PADDING;
+    unsigned char decrypted[2048/8]={};
+    RSA * rsa_decrypt = createRSAWithFilename(private_key_path ,0);
+    int  decrypted_length = RSA_private_decrypt(2048/8, encrypted, decrypted, rsa_decrypt, padding);
+    if(decrypted_length == -1)
+    {
+        char buf[128];
+        cerr << "RSA_private_decrypt: " << ERR_error_string(ERR_get_error(), buf) << endl;
         return "";
-    } else {
-//        printf("RSA_private_decrypt %s\n", decryptMsg);
-//        printf("RSA_public_encrypt %s\n", encryptMsg);
-        string s_(reinterpret_cast<char *>(decryptMsg));
-        return s_;
     }
+    string decrypted_part (reinterpret_cast<char*>(decrypted));
+    return decrypted_part;
 }
 
 string Cryptographer::encrypt_grain(string plaintext_) {

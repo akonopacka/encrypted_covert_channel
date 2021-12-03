@@ -126,10 +126,12 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_timing_" + Globals::cipher_type_ + ".csv";
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                log << std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                       + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                       + duration_of_decryption + "\n";
+                std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                                     + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
+                                     + duration_of_decryption + "\n";
+                log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
+                std::cout << results << std::endl;
 
                 Globals::is_started_receiving = false;
                 Globals::timing_counter = 0;
@@ -191,10 +193,12 @@ bool Receiver::storage_callback(const PDU &pdu) {
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_storage_" + Globals::cipher_type_ + ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            log << std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                   + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                   + duration_of_decryption + "\n";
+            std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                                 + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
+                                 + duration_of_decryption + "\n";
+            log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
+            std::cout << results << std::endl;
             Globals::message_ = "";
             Globals::is_started_receiving = false;
         } else {
@@ -269,12 +273,12 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_IP_id_" + Globals::cipher_type_ + ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-
-            log << std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                   + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                   + duration_of_decryption + "\n";
-
+            std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                                 + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
+                                 + duration_of_decryption + "\n";
+            log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
+            std::cout << results << std::endl;
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
@@ -394,11 +398,12 @@ void Receiver::HTTP_callback() {
                 std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_HTTP_" + Globals::cipher_type_ + ".csv";
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                string log_ = std::to_string(BER);
-                log << std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                       + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                       + duration_of_decryption + "\n";
+                std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                                     + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
+                                     + duration_of_decryption + "\n";
+                log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
+                std::cout << results << std::endl;
 
                 Globals::message_ = "";
                 Globals::is_started_receiving = false;
@@ -491,10 +496,12 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         std::string combined_results_path = Globals::results_path;
         combined_results_path += "_server_LSB_" + Globals::cipher_type_ + ".csv";
         std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-        log << std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-               + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-               + duration_of_decryption + "\n";
+        std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                             + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
+                             + duration_of_decryption + "\n";
+        log << results;
         std::cout << "General results saved to : " << combined_results_path << std::endl;
+        std::cout << results << std::endl;
 
         Globals::message_ = "";
         Globals::is_started_receiving = false;
@@ -568,10 +575,12 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_sequence_" + Globals::cipher_type_ + ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            log << std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-            + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                   + duration_of_decryption + "\n";
+            std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                                 + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
+                                 + duration_of_decryption + "\n";
+            log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
+            std::cout << results << std::endl;
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;
@@ -645,13 +654,13 @@ bool Receiver::loss_callback(const PDU &pdu) {
 //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_loss_" + Globals::cipher_type_ + ".csv";
-
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            log << std::to_string(BER) + ";" + std::to_string(capacity_channel)
-            + ";" + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-            + duration_of_decryption + "\n";
-
+            std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                                 + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
+                                 + duration_of_decryption + "\n";
+            log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
+            std::cout << results << std::endl;
 
             Globals::message_ = "";
             Globals::is_started_receiving = false;

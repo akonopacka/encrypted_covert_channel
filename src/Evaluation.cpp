@@ -111,6 +111,7 @@ void Evaluation::save_results_to_file(std::string results, std::string path, std
     myfile.open(path);
     myfile << results;
     myfile.close();
+    std::cout<<results<<std::endl;
 }
 
 float Evaluation::get_BER(std::string original_message, std::string received_message) {
