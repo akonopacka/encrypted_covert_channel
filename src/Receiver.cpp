@@ -134,6 +134,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
                                  + duration_of_decryption + "\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
+                std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
                 std::cout << results << std::endl;
 
                 Globals::is_started_receiving = false;
@@ -204,6 +205,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
+            std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
             std::cout << results << std::endl;
             Globals::message_ = "";
             Globals::is_started_receiving = false;
@@ -287,6 +289,7 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
+            std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
             std::cout << results << std::endl;
 
             Globals::message_ = "";
@@ -415,6 +418,7 @@ void Receiver::HTTP_callback() {
                                  + duration_of_decryption + "\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
+                std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
                 std::cout << results << std::endl;
 
                 Globals::message_ = "";
@@ -515,6 +519,7 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
                          + duration_of_decryption + "\n";
         log << results;
         std::cout << "General results saved to : " << combined_results_path << std::endl;
+        std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
         std::cout << results << std::endl;
 
         Globals::message_ = "";
@@ -597,6 +602,7 @@ bool Receiver::sequence_callback(const PDU &pdu) {
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
+            std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
             std::cout << results << std::endl;
 
             Globals::message_ = "";
@@ -681,6 +687,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
+            std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
             std::cout << results << std::endl;
 
             Globals::message_ = "";
