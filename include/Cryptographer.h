@@ -13,9 +13,9 @@
 #include <iomanip>
 #include <cstdint>
 
-#include <openssl/rsa.h>
-#include <openssl/pem.h>
-#include <openssl/err.h>
+//#include <openssl/rsa.h>
+//#include <openssl/pem.h>
+//#include <openssl/err.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -38,8 +38,6 @@ using namespace std;
 
 class Cryptographer {
     string method = "aes";
-    char *public_key_path = "../keys/public.pem";
-    char * private_key_path = "../keys/private.pem";
 
 public:
     Cryptographer(const string &method);
@@ -79,10 +77,6 @@ public:
     string encrypt_rsa(string plaintext_);
 
     string decrypt_rsa(string ciphertext_bin);
-
-    string encrypt_rsa_(string plaintext_);
-
-    string decrypt_rsa_(string ciphertext_bin);
 
     string encrypt_grain(string plaintext_);
 
