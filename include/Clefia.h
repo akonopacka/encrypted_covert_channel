@@ -1,5 +1,6 @@
 #ifndef ENCRYPTED_COVERT_CHANNEL_CLEFIA_H
 #define ENCRYPTED_COVERT_CHANNEL_CLEFIA_H
+
 /******************************************************************************
  * Copyright 2007, 2008 Sony Corporation
  *
@@ -18,6 +19,7 @@
  * implementation attacks.
  *
  *****************************************************************************/
+
 #include <cstdio>
 #include <ctime>
 #include <cstdlib>
@@ -122,6 +124,5 @@ public:
     int ClefiaKeySet(unsigned char *rk, const unsigned char *skey, const int key_bitlen);
     void ClefiaEncrypt(unsigned char *ct, const unsigned char *pt, const unsigned char *rk, const int r);
     void ClefiaDecrypt(unsigned char *pt, const unsigned char *ct, const unsigned char *rk, const int r);
-    void BytePut(const unsigned char *data, int bytelen);
 };
 #endif //ENCRYPTED_COVERT_CHANNEL_CLEFIA_H

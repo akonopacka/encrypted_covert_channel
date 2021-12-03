@@ -117,7 +117,8 @@ bool Receiver::timing_callback(const PDU &pdu) {
 //          calculate channel capacity based on messages sent in channel
                 float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-                float capacity_based_on_original_message = float(received_message.length()) * 8 / (duration.count() * 0.001);
+                float capacity_based_on_original_message =
+                        float(received_message.length()) * 8 / (duration.count() * 0.001);
 //            Calculate BER
                 float BER = Evaluation::get_BER(original_message, received_message);
 
@@ -126,9 +127,11 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_timing_" + Globals::cipher_type_ + ".csv";
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                                     + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                                     + duration_of_decryption + "\n";
+                std:
+                string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                                 + std::to_string(capacity_based_on_original_message) + ";" +
+                                 std::to_string(duration.count()) + ";"
+                                 + duration_of_decryption + "\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
                 std::cout << results << std::endl;
@@ -185,7 +188,8 @@ bool Receiver::storage_callback(const PDU &pdu) {
 //          calculate channel capacity based on messages sent in channel
             float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-            float capacity_based_on_original_message = float(received_message.length()) * 8 / (duration.count() * 0.001);
+            float capacity_based_on_original_message =
+                    float(received_message.length()) * 8 / (duration.count() * 0.001);
 //            Calculate BER
             std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
@@ -193,9 +197,11 @@ bool Receiver::storage_callback(const PDU &pdu) {
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_storage_" + Globals::cipher_type_ + ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                                 + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                                 + duration_of_decryption + "\n";
+            std:
+            string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                             + std::to_string(capacity_based_on_original_message) + ";" +
+                             std::to_string(duration.count()) + ";"
+                             + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
             std::cout << results << std::endl;
@@ -263,7 +269,8 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
 //          calculate channel capacity based on messages sent in channel
             float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-            float capacity_based_on_original_message = float(received_message.length()) * 8 / (duration.count() * 0.001);
+            float capacity_based_on_original_message =
+                    float(received_message.length()) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
             std::string original_message = Globals::original_message_;
@@ -273,9 +280,11 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_IP_id_" + Globals::cipher_type_ + ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                                 + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                                 + duration_of_decryption + "\n";
+            std:
+            string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                             + std::to_string(capacity_based_on_original_message) + ";" +
+                             std::to_string(duration.count()) + ";"
+                             + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
             std::cout << results << std::endl;
@@ -389,7 +398,8 @@ void Receiver::HTTP_callback() {
 //          calculate channel capacity based on messages sent in channel
                 float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-                float capacity_based_on_original_message = float(received_message.length()) * 8 / (duration.count() * 0.001);
+                float capacity_based_on_original_message =
+                        float(received_message.length()) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
                 std::string original_message = Globals::original_message_;
@@ -398,9 +408,11 @@ void Receiver::HTTP_callback() {
                 std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_HTTP_" + Globals::cipher_type_ + ".csv";
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                                     + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                                     + duration_of_decryption + "\n";
+                std:
+                string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                                 + std::to_string(capacity_based_on_original_message) + ";" +
+                                 std::to_string(duration.count()) + ";"
+                                 + duration_of_decryption + "\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
                 std::cout << results << std::endl;
@@ -496,9 +508,11 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         std::string combined_results_path = Globals::results_path;
         combined_results_path += "_server_LSB_" + Globals::cipher_type_ + ".csv";
         std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-        std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                             + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                             + duration_of_decryption + "\n";
+        std:
+        string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                         + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) +
+                         ";"
+                         + duration_of_decryption + "\n";
         log << results;
         std::cout << "General results saved to : " << combined_results_path << std::endl;
         std::cout << results << std::endl;
@@ -565,7 +579,8 @@ bool Receiver::sequence_callback(const PDU &pdu) {
 //          calculate channel capacity based on messages sent in channel
             float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-            float capacity_based_on_original_message = float(received_message.length()) * 8 / (duration.count() * 0.001);
+            float capacity_based_on_original_message =
+                    float(received_message.length()) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
             std::string original_message = Globals::original_message_;
@@ -575,9 +590,11 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_sequence_" + Globals::cipher_type_ + ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                                 + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                                 + duration_of_decryption + "\n";
+            std:
+            string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                             + std::to_string(capacity_based_on_original_message) + ";" +
+                             std::to_string(duration.count()) + ";"
+                             + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
             std::cout << results << std::endl;
@@ -615,7 +632,8 @@ bool Receiver::loss_callback(const PDU &pdu) {
                 output += c;
             }
             Globals::last_seq_ = 1;
-            std::cout << "Received message: bin " << Globals::message_ << " len: " << Globals::message_.length() << endl;
+            std::cout << "Received message: bin " << Globals::message_ << " len: " << Globals::message_.length()
+                      << endl;
             std::string received_message = output;
             string duration_of_decryption;
 
@@ -643,7 +661,8 @@ bool Receiver::loss_callback(const PDU &pdu) {
 //          calculate channel capacity based on messages sent in channel
             float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-            float capacity_based_on_original_message = float(received_message.length()) * 8 / (duration.count() * 0.001);
+            float capacity_based_on_original_message =
+                    float(received_message.length()) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
             std::string original_message = Globals::original_message_;
@@ -655,9 +674,11 @@ bool Receiver::loss_callback(const PDU &pdu) {
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_loss_" + Globals::cipher_type_ + ".csv";
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                                 + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) + ";"
-                                 + duration_of_decryption + "\n";
+            std:
+            string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                             + std::to_string(capacity_based_on_original_message) + ";" +
+                             std::to_string(duration.count()) + ";"
+                             + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
             std::cout << results << std::endl;

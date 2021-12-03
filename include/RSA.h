@@ -12,10 +12,6 @@
 
 using namespace std;
 
-
-//    char *public_key_path = "../keys/public.pem";
-//    char *private_key_path = "../keys/private.pem";
-
 RSA *createRSAWithFilename(char *filename, int is_public);
 
 string encrypt_rsa_(string plaintext_);

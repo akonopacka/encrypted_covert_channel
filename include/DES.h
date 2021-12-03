@@ -1,15 +1,10 @@
-//
-// Created by ak on 17.10.2021.
-//
-
 #ifndef ENCRYPTED_COVERT_CHANNEL_DES_H
 #define ENCRYPTED_COVERT_CHANNEL_DES_H
 
 #include <bitset>
-#include "string.h"
+#include <cstring>
 #include <iostream>
 
-#define bs_24 bitset<24>
 #define bs_28 bitset<28>
 #define bs_32 bitset<32>
 #define bs_48 bitset<48>

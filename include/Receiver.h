@@ -8,11 +8,11 @@
 #include <bitset>
 #include <sstream>
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <sys/socket.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <netinet/in.h>
-#include <string.h>
+#include <cstring>
 #include <fstream>
 
 #include "Globals.h"

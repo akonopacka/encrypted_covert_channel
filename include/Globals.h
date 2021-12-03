@@ -1,7 +1,3 @@
-//
-// Created by root on 02/11/2020.
-//
-
 #ifndef ENCRYPTED_COVERT_CHANNEL_GLOBALS_H
 #define ENCRYPTED_COVERT_CHANNEL_GLOBALS_H
 

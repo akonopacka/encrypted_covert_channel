@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////
 
 #include <stdio.h>
-#include<stdint.h>
+#include <stdint.h>
 
 // define a byte structure consisted of two 4 bit nibbles
 // the structure has packed attributes (prevent the compiler from adding padding in memory between them)
