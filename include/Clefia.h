@@ -18,14 +18,12 @@
  * implementation attacks.
  *
  *****************************************************************************/
-#include <stdio.h>
-#include <time.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <ctime>
+#include <cstdlib>
 
 class Clefia {
 public:
-    void ClefiaRandomSet(unsigned char *rs);
-
 /* S0 (8-bit S-box based on four 4-bit S-boxes) */
     unsigned char clefia_s0[256] = {
             0x57U, 0x49U, 0xd1U, 0xc6U, 0x2fU, 0x33U, 0x74U, 0xfbU,
