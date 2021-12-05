@@ -546,7 +546,12 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
 //          calculate channel capacity based on messages sent in channel
         float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-        float capacity_based_on_original_message = float(received_message.length()) * 8 / (duration.count() * 0.001);
+        float len = received_message.length();
+        if (!Globals::is_encrypted){
+            len = float(received_message.length()-1);
+        }
+
+        float capacity_based_on_original_message = float(len) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
         std::string original_message = Globals::original_message_;
