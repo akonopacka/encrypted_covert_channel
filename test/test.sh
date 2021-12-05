@@ -11,7 +11,7 @@ ip_address=0.0.0.0
 echo "Path $project_path_client"
 cd $project_path_client
 
-# covert channel types: timing storage IP_id HTTP LSB sequence loss
+# covert channel types: storage IP_id HTTP LSB sequence loss timing
 # cipher types: aes des present rsa clefia grain
 
 for covert_channel_type in storage IP_id HTTP LSB sequence loss timing

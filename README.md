@@ -18,7 +18,7 @@ Encryption methods:
 aes, des, present, rsa, clefia, grain
 
 Covert channels types:
-"timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss"
+storage, IP_id, HTTP, LSB, sequence, loss, timing
 
 ### Server
 --server loss --is_encrypted aes
