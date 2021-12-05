@@ -729,13 +729,16 @@ bool Receiver::loss_callback(const PDU &pdu) {
             }
             std::cout << "Received message: " << received_message << std::endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
+            float len = received_message.length();
+            if (!Globals::is_encrypted){
+                len = float(received_message.length()-1);
+            }
             int sent_bits = Globals::message_.length();
 
 //          calculate channel capacity based on messages sent in channel
             float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-            float capacity_based_on_original_message =
-                    float(received_message.length()) * 8 / (duration.count() * 0.001);
+            float capacity_based_on_original_message = float(len) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
             std::string original_message = Globals::original_message_;
