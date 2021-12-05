@@ -21,12 +21,10 @@ Covert channels types:
 "timing", "storage", "IP_id", "HTTP", "LSB", "sequence", "loss"
 
 ### Server
-
 --server loss --is_encrypted aes
 
-Start server:
+Start client:
 sudo ncat -lkv 5000 -c "sh"
 
 ### Client
-
 --client loss --is_encrypted aes

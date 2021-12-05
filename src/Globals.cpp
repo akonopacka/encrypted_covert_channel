@@ -12,6 +12,7 @@ namespace Globals {
     std::chrono::duration<double, std::milli> time_span_ = Globals::time_received_ - Globals::time_of_last_packet_;
     std::chrono::high_resolution_clock::time_point start_receiving = std::chrono::system_clock::from_time_t(0);
     std::chrono::high_resolution_clock::time_point stop_receiving = std::chrono::system_clock::from_time_t(0);
+
     long last_packet_timestamp_ = 0;
     int last_seq_ = 0;
     std::string message_ = "";

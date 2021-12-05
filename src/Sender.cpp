@@ -10,7 +10,6 @@ Sender::Sender(const string &method, bool is_encrypted, string cipher_type) : me
 
 void Sender::send_with_timing_method(const string message_to_send) {
     std::cout << "Timing method" << endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     string word = message_to_send;
     string binaryString = "";
     string message = message_to_send;
@@ -46,7 +45,7 @@ void Sender::send_with_timing_method(const string message_to_send) {
 
 void Sender::send_with_storage_method(const string message_to_send) {
     std::cout << "Storage method" << endl;
-    std::cout << "Sending message:" << message_to_send << endl;
+//    std::cout << "Sending message:" << message_to_send << endl;
     string message = "";
     if (!is_encrypted) {
         Globals::channel_message = message_to_send;
@@ -93,7 +92,7 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
     string message = message_to_send;
     if (!is_encrypted) {
         Globals::channel_message = message_to_send;
-        cout << "Message to send: " << message << endl;
+//        cout << "Message to send: " << message << endl;
         PacketSender sender;
         for (std::string::size_type i = 0; i < message.size(); i++) {
             char a = message[i];
@@ -107,7 +106,7 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
             sender.send(pkt);
 //            std::cout << message[i] << ' ' << ia << endl;
         }
-        int ia = 1;
+        int ia = 1000;
         IP ip = IP(Globals::IPv4_address);
         ip.id(ia);
         ip.ttl(100);
@@ -132,9 +131,9 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
             tcp.flags(Tins::TCP::RST);
             IP pkt = ip / tcp / RawPDU("");
             sender.send(pkt);
-//            std::cout << number << ' ' << bin_string << endl;
+//            std::cout << ip.id() << ' ' << ip.dst_addr() << endl;
         }
-        int ia = 1;
+        int ia = 1000;
         ip.id(ia);
         ip.ttl(100);
         TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
@@ -176,7 +175,7 @@ void Sender::send_with_HTTP_case_method(const string message_to_send) {
     }
 
     Globals::channel_message = binaryString;
-    cout << "Message to send: " << message_to_send << endl;
+//    cout << "Message to send: " << message_to_send << endl;
     string message = binaryString;
     PacketSender sender;
     stringstream ss;
@@ -222,7 +221,7 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
         binaryString = message_to_send;
     }
     Globals::channel_message = binaryString;
-    cout << "Message to send: " << word << endl << "Bin: " << binaryString << endl;
+//    cout << "Message to send: " << word << endl << "Bin: " << binaryString << endl;
     string message = binaryString;
     PacketSender sender;
     for (std::string::size_type i = 0; i < message.size(); i++) {
@@ -267,7 +266,7 @@ void Sender::send_with_sequence_method(const string message_to_send) {
         binaryString = message_to_send;
     }
     Globals::channel_message = binaryString;
-    cout << "Message to send: " << word << endl << "Bin: " << binaryString << endl;
+//    cout << "Message to send: " << word << endl << "Bin: " << binaryString << endl;
     string message = binaryString;
     PacketSender sender;
     int seq = 1;
@@ -300,8 +299,6 @@ void Sender::send_with_sequence_method(const string message_to_send) {
 
 void Sender::send_with_loss_method(const string message_to_send) {
     std::cout << "Loss method" << endl;
-    cout << "Configuration: " << Globals::IPv4_address << " " << Globals::dst_port_ << " " << Globals::src_port_
-         << endl;
     string word = message_to_send;
     string binaryString = "";
     if (!is_encrypted) {
@@ -312,7 +309,6 @@ void Sender::send_with_loss_method(const string message_to_send) {
         binaryString = message_to_send;
     }
     Globals::channel_message = binaryString;
-    cout << "Bin: " << binaryString << endl;
     string message = binaryString;
     PacketSender sender;
     int seq = 1;
@@ -342,8 +338,8 @@ void Sender::send_with_loss_method(const string message_to_send) {
 
 void Sender::send_message(string message_to_send) {
     std::cout << "Sending method: " << method << ", Message is encrypted: " << std::boolalpha << is_encrypted << endl;
-
-    std::string duration_of_encryption = "----";
+    string m = method;
+    std::string duration_of_encryption_with_key_loading = "----";
     if (is_encrypted) {
         message_to_send += char(0);
         Cryptographer cryptographer = Cryptographer(cipher_type);
@@ -352,10 +348,10 @@ void Sender::send_message(string message_to_send) {
         message_to_send = cryptographer.encrypt(message_to_send);
         auto stop = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stop - start);
-        duration_of_encryption = std::to_string(duration.count());
+        duration_of_encryption_with_key_loading = std::to_string(duration.count());
         std::cout << "Encrypted message: " << message_to_send << endl;
-        string decrypted = cryptographer.decrypt(message_to_send);
-        std::cout << "Decrypt check: " << decrypted << endl;
+//        string decrypted = cryptographer.decrypt(message_to_send);
+//        std::cout << "Decrypt check: " << decrypted << endl;
     }
 
     // Get starting timepoint
@@ -385,12 +381,21 @@ void Sender::send_message(string message_to_send) {
     //            Saving to general file
     std::string combined_results_path = Globals::results_path;
     combined_results_path += "_client_" + Globals::covert_channel_type_ + "_" + Globals::cipher_type_ + ".csv";
+
+    //              Write the column names to result file
+    std::ifstream infile(combined_results_path);
+    bool file_exists = infile.good();
+    if (!file_exists){
+        std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
+        infile_stream << "message_entropy;duration_of_encryption_with_key_loading[ns];time_of_sending[ns]\n";
+    }
+
     std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-    std:string results = std::to_string(message_entropy) + ";" + duration_of_encryption + ";"
-                     + time_of_sending + "\n";
+    std:string results = std::to_string(message_entropy) + ";" + duration_of_encryption_with_key_loading + ";"
+                         + time_of_sending + "\n";
     log << results;
     std::cout << "General results saved to : " << combined_results_path << std::endl;
-    std::cout<< "message_entropy;duration_of_encryption;time_of_sending"<<endl;
+    std::cout<< "message_entropy;duration_of_encryption_with_key_loading[ns];time_of_sending[ns]"<<endl;
     std::cout << results << std::endl;
 }
 

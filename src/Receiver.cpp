@@ -43,7 +43,7 @@ Receiver::Receiver() {
         sniffer_configuration.set_immediate_mode(true);
         sniffer_configuration.set_promisc_mode(true);
         string filter = "udp and dst port " + to_string(Globals::dst_port_) + " and ip src " + Globals::IPv4_address;
-        std::cout << "Filter : " << filter << "\n";
+//        std::cout << "Filter : " << filter << "\n";
         sniffer_configuration.set_filter(filter);
         Sniffer sniffer(Globals::interface_, sniffer_configuration);
         sniffer.sniff_loop(timing_callback);
@@ -59,10 +59,10 @@ bool Receiver::timing_callback(const PDU &pdu) {
         Tins::Packet packet = Tins::Packet(pdu);
         Timestamp ts = packet.timestamp();
         long timestamp = ts.seconds() * 1000000 + ts.microseconds();
-        std::cout << std::fixed << "Timestamp: " << timestamp << " Seconds: " << ts.seconds() << " microseconds:"
-                  << ts.microseconds() << endl;
+//        std::cout << std::fixed << "Timestamp: " << timestamp << " Seconds: " << ts.seconds() << " microseconds:"
+//                  << ts.microseconds() << endl;
         long interval = timestamp - Globals::last_packet_timestamp_;
-        std::cout << "Inter: " << interval << " " << "Ts: " << timestamp << std::endl;
+//        std::cout << "Inter: " << interval << " " << "Ts: " << timestamp << std::endl;
         if (!Globals::is_started_receiving) {
             Globals::start_receiving = high_resolution_clock::now();
             Globals::is_started_receiving = true;
@@ -91,7 +91,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 std::string original_message = Globals::original_message_;
                 std::string received_message = output;
                 auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
-                int sent_bits = received_message.length();
+                int sent_bits = Globals::message_.length();
 
 //                std::string results = "Capacity:  " + std::to_string(capacity) + " b/s\n";
 //                results += "Time taken for receiving: " + std::to_string(duration.count()) + " microseconds\n";
@@ -115,10 +115,10 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 std::cout << "Encoded message: " << output << endl;
                 std::cout << "Received message: " << received_message << endl;
 //          calculate channel capacity based on messages sent in channel
+
                 float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-                float capacity_based_on_original_message =
-                        float(received_message.length()) * 8 / (duration.count() * 0.001);
+                float capacity_based_on_original_message = float(received_message.length()-1) * 8 / (duration.count() * 0.001);
 //            Calculate BER
                 float BER = Evaluation::get_BER(original_message, received_message);
 
@@ -126,15 +126,23 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 //            Saving to general file
                 std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_timing_" + Globals::cipher_type_ + ".csv";
+
+                //              Write the column names to result file
+                std::ifstream infile(combined_results_path);
+                bool file_exists = infile.good();
+                if (!file_exists){
+                    std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
+                    infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                }
+
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                std:
                 string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
                                  + std::to_string(capacity_based_on_original_message) + ";" +
                                  std::to_string(duration.count()) + ";"
                                  + duration_of_decryption + "\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
-                std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
+                std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
                 std::cout << results << std::endl;
 
                 Globals::is_started_receiving = false;
@@ -166,6 +174,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
             std::string received_message = Globals::message_;
             std::cout << "Original received message: " << Globals::message_ << std::endl;
             string duration_of_decryption;
+            int sent_bits = 0;
             if (Globals::is_encrypted) {
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
                 auto start_decryption = high_resolution_clock::now();
@@ -181,11 +190,14 @@ bool Receiver::storage_callback(const PDU &pdu) {
                 } else {
                     received_message = decrypted_message;
                 }
+                sent_bits = Globals::message_.length();
+            }
+            else{
+                sent_bits = Globals::message_.length()*8;
             }
             std::cout << "Received message: " << received_message << std::endl;
             std::cout << "Received message: " << Globals::message_ << endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
-            int sent_bits = Globals::message_.length();
 //          calculate channel capacity based on messages sent in channel
             float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
@@ -197,15 +209,23 @@ bool Receiver::storage_callback(const PDU &pdu) {
             //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_storage_" + Globals::cipher_type_ + ".csv";
+
+            //              Write the column names to result file
+            std::ifstream infile(combined_results_path);
+            bool file_exists = infile.good();
+            if (!file_exists){
+                std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
+                infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+            }
+
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            std:
             string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
                              + std::to_string(capacity_based_on_original_message) + ";" +
                              std::to_string(duration.count()) + ";"
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
-            std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
+            std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
             Globals::message_ = "";
             Globals::is_started_receiving = false;
@@ -234,11 +254,12 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
 //                  << ip.id() << endl;
         int a = ip.id();
         char c = static_cast<char>(a);
-        if (a == 1) {
+        if (a == 1000) {
             Globals::stop_receiving = high_resolution_clock::now();
             string received_message = "";
-            std::cout << "Original received message: " << Globals::message_ << std::endl;
+//            std::cout << "Original received message: " << Globals::message_ << std::endl;
             string duration_of_decryption;
+            int sent_bits = 0;
             if (Globals::is_encrypted) {
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
                 auto start_decryption = high_resolution_clock::now();
@@ -254,6 +275,7 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
                 } else {
                     received_message = decrypted_message;
                 }
+                sent_bits = Globals::message_.length();
             } else {
                 string received_message_ = Globals::message_;
                 std::size_t pos = received_message_.find(char(0));
@@ -261,13 +283,14 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
                     int len = received_message_.length();
                     received_message_ = received_message_.erase(pos, len);
                 }
-                received_message = received_message_;
+                else {
+                    received_message = received_message_;
+                }
+                sent_bits = Globals::message_.length()*8;
             }
 
             std::cout << "Received message: " << received_message << std::endl;
-
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
-            int sent_bits = received_message.length();
 //          calculate channel capacity based on messages sent in channel
             float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
@@ -281,15 +304,23 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_IP_id_" + Globals::cipher_type_ + ".csv";
+
+            //              Write the column names to result file
+            std::ifstream infile(combined_results_path);
+            bool file_exists = infile.good();
+            if (!file_exists){
+                std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
+                infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+            }
+
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            std:
             string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
                              + std::to_string(capacity_based_on_original_message) + ";" +
                              std::to_string(duration.count()) + ";"
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
-            std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
+            std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
 
             Globals::message_ = "";
@@ -392,17 +423,21 @@ void Receiver::HTTP_callback() {
                     }
                 } else
                     received_message = output;
-
                 std::cout << "Received unencrypted message: " << output << std::endl;
                 std::cout << "Received message: " << received_message << std::endl;
 
                 auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
-                int sent_bits = received_message.length();
+                int sent_bits = Globals::message_.length();
 //          calculate channel capacity based on messages sent in channel
                 float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
+                float len = received_message.length();
+                if (!Globals::is_encrypted){
+                    len = float(received_message.length()-1);
+                }
+
                 float capacity_based_on_original_message =
-                        float(received_message.length()) * 8 / (duration.count() * 0.001);
+                        float(len) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
                 std::string original_message = Globals::original_message_;
@@ -410,16 +445,25 @@ void Receiver::HTTP_callback() {
                 //            Saving to general file
                 std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_HTTP_" + Globals::cipher_type_ + ".csv";
+
+//              Write the column names to result file
+                std::ifstream infile(combined_results_path);
+                bool file_exists = infile.good();
+                if (!file_exists){
+                    std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
+                    infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                }
+
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                std:
                 string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
                                  + std::to_string(capacity_based_on_original_message) + ";" +
                                  std::to_string(duration.count()) + ";"
                                  + duration_of_decryption + "\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
-                std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
+                std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
                 std::cout << results << std::endl;
+                log.close();
 
                 Globals::message_ = "";
                 Globals::is_started_receiving = false;
@@ -511,15 +555,23 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         //            Saving to general file
         std::string combined_results_path = Globals::results_path;
         combined_results_path += "_server_LSB_" + Globals::cipher_type_ + ".csv";
+
+        //              Write the column names to result file
+        std::ifstream infile(combined_results_path);
+        bool file_exists = infile.good();
+        if (!file_exists){
+            std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
+            infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+        }
+
         std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-        std:
-        string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+        std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
                          + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) +
                          ";"
                          + duration_of_decryption + "\n";
         log << results;
         std::cout << "General results saved to : " << combined_results_path << std::endl;
-        std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
+        std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
         std::cout << results << std::endl;
 
         Globals::message_ = "";
@@ -575,7 +627,6 @@ bool Receiver::sequence_callback(const PDU &pdu) {
                 received_message = output;
             }
             std::cout << "Received message: " << received_message << std::endl;
-
             std::cout << "Global message: " << Globals::message_ << std::endl << output << std::endl;
 
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
@@ -594,15 +645,23 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_sequence_" + Globals::cipher_type_ + ".csv";
+
+            //              Write the column names to result file
+            std::ifstream infile(combined_results_path);
+            bool file_exists = infile.good();
+            if (!file_exists){
+                std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
+                infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+            }
+
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            std:
             string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
                              + std::to_string(capacity_based_on_original_message) + ";" +
                              std::to_string(duration.count()) + ";"
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
-            std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
+            std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
 
             Globals::message_ = "";
@@ -638,8 +697,8 @@ bool Receiver::loss_callback(const PDU &pdu) {
                 output += c;
             }
             Globals::last_seq_ = 1;
-            std::cout << "Received message: bin " << Globals::message_ << " len: " << Globals::message_.length()
-                      << endl;
+//            std::cout << "Received message: bin " << Globals::message_ << " len: " << Globals::message_.length()
+//                      << endl;
             std::string received_message = output;
             string duration_of_decryption;
 
@@ -679,15 +738,23 @@ bool Receiver::loss_callback(const PDU &pdu) {
 //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_loss_" + Globals::cipher_type_ + ".csv";
+
+            //  Write the column names to result file
+            std::ifstream infile(combined_results_path);
+            bool file_exists = infile.good();
+            if (!file_exists){
+                std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
+                infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+            }
+
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            std:
             string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
                              + std::to_string(capacity_based_on_original_message) + ";" +
                              std::to_string(duration.count()) + ";"
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
-            std::cout<< "BER;capacity_channel;capacity_based_on_original_message;sending_duration;duration_of_decryption"<<endl;
+            std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
 
             Globals::message_ = "";
