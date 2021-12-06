@@ -62,7 +62,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
 //        std::cout << std::fixed << "Timestamp: " << timestamp << " Seconds: " << ts.seconds() << " microseconds:"
 //                  << ts.microseconds() << endl;
         long interval = timestamp - Globals::last_packet_timestamp_;
-//        std::cout << "Inter: " << interval << " " << "Ts: " << timestamp << std::endl;
+        std::cout << "Inter: " << interval << " " << "Ts: " << timestamp << std::endl;
         if (!Globals::is_started_receiving) {
             Globals::start_receiving = high_resolution_clock::now();
             Globals::is_started_receiving = true;
@@ -144,7 +144,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
                 std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
                 std::cout << results << std::endl;
-
+                log.close();
                 Globals::is_started_receiving = false;
                 Globals::timing_counter = 0;
             }
@@ -227,6 +227,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
             std::cout << "General results saved to : " << combined_results_path << std::endl;
             std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
+            log.close();
             Globals::message_ = "";
             Globals::is_started_receiving = false;
         } else {
@@ -322,7 +323,7 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             std::cout << "General results saved to : " << combined_results_path << std::endl;
             std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
-
+            log.close();
             Globals::message_ = "";
             Globals::is_started_receiving = false;
         } else {
@@ -767,7 +768,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
             std::cout << "General results saved to : " << combined_results_path << std::endl;
             std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
-
+            log.close();
             Globals::message_ = "";
             Globals::is_started_receiving = false;
         } else {

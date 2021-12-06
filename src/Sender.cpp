@@ -397,5 +397,6 @@ void Sender::send_message(string message_to_send) {
     std::cout << "General results saved to : " << combined_results_path << std::endl;
     std::cout<< "message_entropy;duration_of_encryption_with_key_loading[ns];time_of_sending[ns]"<<endl;
     std::cout << results << std::endl;
+    log.close();
 }
 
