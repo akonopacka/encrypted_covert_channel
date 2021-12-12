@@ -14,7 +14,7 @@ cd $project_path_client
 # covert channel types: storage IP_id HTTP LSB sequence loss timing
 # cipher types: aes des present rsa clefia grain
 
-for covert_channel_type in storage IP_id HTTP LSB sequence loss timing
+for covert_channel_type in timing
 do
   cct=$covert_channel_type
   echo "Testing covert channel type : $cct "

@@ -350,8 +350,8 @@ void Sender::send_message(string message_to_send) {
         auto duration = duration_cast<microseconds>(stop - start);
         duration_of_encryption_with_key_loading = std::to_string(duration.count());
         std::cout << "Encrypted message: " << message_to_send << endl;
-//        string decrypted = cryptographer.decrypt(message_to_send);
-//        std::cout << "Decrypt check: " << decrypted << endl;
+        string decrypted = cryptographer.decrypt(message_to_send);
+        std::cout << "Decrypt check: " << decrypted << endl;
     }
 
     // Get starting timepoint
