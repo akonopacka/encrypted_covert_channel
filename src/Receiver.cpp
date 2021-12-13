@@ -69,11 +69,11 @@ bool Receiver::timing_callback(const PDU &pdu) {
             Globals::start_receiving = high_resolution_clock::now();
             Globals::is_started_receiving = true;
         }
-        if (interval < 1000) {
+        if (interval < (Globals::time_interval_1_ms_)) {
             Globals::message_ = Globals::message_ + "0";
             std::cout << Globals::timing_counter << ". 0" << endl;
             Globals::timing_counter += 1;
-        } else if (interval < 4000000) {
+        } else if (interval < 4500000) {
             Globals::message_ = Globals::message_ + "1";
             std::cout << Globals::timing_counter << ". 1" << endl;
             Globals::timing_counter += 1;
@@ -134,14 +134,14 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 bool file_exists = infile.good();
                 if (!file_exists){
                     std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                    infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                    infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns];message\n";
                 }
 
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
                 string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
                                  + std::to_string(capacity_based_on_original_message) + ";" +
                                  std::to_string(duration.count()) + ";"
-                                 + duration_of_decryption + "\n";
+                                 + duration_of_decryption + ";" + Globals::message_+"\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
                 std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
