@@ -26,7 +26,7 @@ void Sender::send_with_timing_method(const string message_to_send) {
     PacketSender sender;
     IP pkt = IP(Globals::IPv4_address) / UDP(Globals::dst_port_, Globals::src_port_);
     sender.send(pkt);
-    int interval = Globals::time_interval_1_ms_*2;
+    int interval = Globals::time_interval_1_ms_*1.5;
     for (std::string::size_type i = 0; i < message.size(); i++) {
         if (message[i] == '0') {
             std::cout << i << ". " << message[i] << endl;

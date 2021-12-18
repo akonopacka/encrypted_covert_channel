@@ -21,40 +21,46 @@ do
   #  Test without encryption
   echo "Server starting for $cct"
   pwd
-  sudo ./encrypted_covert_channel --server $cct &
-  sleep 5
+
   for i in $(seq 1 1 $repeat_number)
   do
     echo "Repeat number $i"
+    sudo ./encrypted_covert_channel --server $cct &
+    sleep 5
+    
     echo "sudo ./encrypted_covert_channel --client  $cct" | nc -w 5 $ip_address 5000
     echo "--- Sending finished ---"
     sleep 2
-  done
-  echo "Waiting"
-  sleep 10
-  echo "Killing server"
-  sudo pkill -f encrypted_covert_channel
-  echo "sudo pkill -f encrypted_covert_channel" | nc -w 5 $ip_address 5000
-  sleep 2
-
-  for cipher_type in clefia aes des present rsa grain
-  do
-    echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
-    sudo ./encrypted_covert_channel --server $cct --is_encrypted $cipher_type &
-    sleep 2
-    for i in $(seq 1 1 $repeat_number)
-    do
-       echo ""
-       echo "./encrypted_covert_channel --client  $cct --is_encrypted $cipher_type " | nc -w 5 $ip_address 5000
-       echo "Raz dwa trzy"
-     sleep 2
-    done
+    echo "Waiting"
     sleep 10
     echo "Killing server"
     sudo pkill -f encrypted_covert_channel
     sleep 2
-    sudo pkill -f encrypted_covert_channel
     echo "sudo pkill -f encrypted_covert_channel" | nc -w 5 $ip_address 5000
+  done
+
+  sleep 2
+  sudo pkill -f encrypted_covert_channel
+  for cipher_type in clefia aes des present rsa grain
+  do
+
+    for i in $(seq 1 1 $repeat_number)
+    do
+       echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
+       sudo ./encrypted_covert_channel --server $cct --is_encrypted $cipher_type &
+       sleep 5
+       echo ""
+       echo "./encrypted_covert_channel --client  $cct --is_encrypted $cipher_type " | nc -w 5 $ip_address 5000
+       echo "--- Sending finished ---"
+       sleep 2
+       echo "Waiting"
+       sleep 10
+       echo "Killing server"
+       sudo pkill -f encrypted_covert_channel
+       sleep 2
+       sudo pkill -f encrypted_covert_channel
+       echo "sudo pkill -f encrypted_covert_channel" | nc -w 5 $ip_address 5000
+    done
   done
 done
 

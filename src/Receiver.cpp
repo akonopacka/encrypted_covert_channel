@@ -42,7 +42,7 @@ Receiver::Receiver() {
         SnifferConfiguration sniffer_configuration = SnifferConfiguration();
         sniffer_configuration.set_immediate_mode(true);
         sniffer_configuration.set_promisc_mode(true);
-        sniffer_configuration.set_timeout(1);
+        sniffer_configuration.set_timeout(50);
         string filter = "udp and dst port " + to_string(Globals::dst_port_) + " and ip src " + Globals::IPv4_address;
         std::cout << "Filter : " << filter << "\n";
         sniffer_configuration.set_filter(filter);
@@ -128,25 +128,29 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 //            Saving to general file
                 std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_timing_" + Globals::cipher_type_ + ".csv";
+                string message_path = Globals::results_path + "_server_timing_" + Globals::cipher_type_ + "_message.csv";
 
                 //              Write the column names to result file
                 std::ifstream infile(combined_results_path);
                 bool file_exists = infile.good();
                 if (!file_exists){
                     std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                    infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns];message\n";
+                    infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
                 }
 
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
                 string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
                                  + std::to_string(capacity_based_on_original_message) + ";" +
                                  std::to_string(duration.count()) + ";"
-                                 + duration_of_decryption + ";" + Globals::message_+"\n";
+                                 + duration_of_decryption +"\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
                 std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
                 std::cout << results << std::endl;
                 log.close();
+                std::ofstream log_message(message_path, std::ios_base::app | std::ios_base::out);
+                log_message << Globals::last_packet_timestamp_<<";"<<Globals::message_<<endl;
+                log_message.close();
                 Globals::is_started_receiving = false;
                 Globals::timing_counter = 0;
             }
