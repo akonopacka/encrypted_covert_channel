@@ -11,30 +11,50 @@ Receiver::Receiver() {
     std::cout << " \n\n";
     if (Globals::covert_channel_type_ == "storage") {
         std::cout << "Server! - Storage method\n";
-        Sniffer sniffer(Globals::interface_);
+        SnifferConfiguration sniffer_configuration = SnifferConfiguration();
+        sniffer_configuration.set_immediate_mode(true);
+        sniffer_configuration.set_promisc_mode(true);
+        sniffer_configuration.set_timeout(50);
+        Sniffer sniffer(Globals::interface_, sniffer_configuration);
         sniffer.set_filter("tcp&&port 1234");
-        Sniffer(Globals::interface_).sniff_loop(storage_callback);
+        sniffer.sniff_loop(storage_callback);
     } else if (Globals::covert_channel_type_ == "IP_id") {
         std::cout << "Server! - IP_id method\n";
-        Sniffer sniffer(Globals::interface_);
+        SnifferConfiguration sniffer_configuration = SnifferConfiguration();
+        sniffer_configuration.set_immediate_mode(true);
+        sniffer_configuration.set_promisc_mode(true);
+        sniffer_configuration.set_timeout(50);
+        Sniffer sniffer(Globals::interface_, sniffer_configuration);
         sniffer.set_filter("tcp&&port 1234");
-        Sniffer(Globals::interface_).sniff_loop(IP_id_callback);
+        sniffer.sniff_loop(IP_id_callback);
     } else if (Globals::covert_channel_type_ == "HTTP") {
         std::cout << "Server! - HTTP method\n";
         HTTP_callback();
     } else if (Globals::covert_channel_type_ == "LSB") {
         std::cout << "Server! - LSB Hop limit method\n";
-        Sniffer sniffer(Globals::interface_);
+        SnifferConfiguration sniffer_configuration = SnifferConfiguration();
+        sniffer_configuration.set_immediate_mode(true);
+        sniffer_configuration.set_promisc_mode(true);
+        sniffer_configuration.set_timeout(50);
+        Sniffer sniffer(Globals::interface_, sniffer_configuration);
         sniffer.set_filter("tcp&&port 1234");
-        Sniffer(Globals::interface_).sniff_loop(LSB_Hop_callback);
+        sniffer.sniff_loop(LSB_Hop_callback);
     } else if (Globals::covert_channel_type_ == "sequence") {
         std::cout << "Server! - sequence method\n";
-        Sniffer sniffer(Globals::interface_);
+        SnifferConfiguration sniffer_configuration = SnifferConfiguration();
+        sniffer_configuration.set_immediate_mode(true);
+        sniffer_configuration.set_promisc_mode(true);
+        sniffer_configuration.set_timeout(50);
+        Sniffer sniffer(Globals::interface_, sniffer_configuration);
         sniffer.set_filter("tcp.dstport==1234");
         sniffer.sniff_loop(sequence_callback);
     } else if (Globals::covert_channel_type_ == "loss") {
         std::cout << "Server! - Loss method\n";
-        Sniffer sniffer(Globals::interface_);
+        SnifferConfiguration sniffer_configuration = SnifferConfiguration();
+        sniffer_configuration.set_immediate_mode(true);
+        sniffer_configuration.set_promisc_mode(true);
+        sniffer_configuration.set_timeout(50);
+        Sniffer sniffer(Globals::interface_, sniffer_configuration);
         sniffer.set_filter("tcp.dstport==1234");
         sniffer.sniff_loop(loss_callback);
     } else if (Globals::covert_channel_type_ == "timing") {
@@ -123,7 +143,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 float capacity_based_on_original_message = float(received_message.length()-1) * 8 / (duration.count() * 0.001);
 //            Calculate BER
                 float BER = Evaluation::get_BER(original_message, received_message);
-
+                int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, received_message);
 //                Evaluation::save_results_to_file(results, Globals::results_path, "timing", "server");
                 //            Saving to general file
                 std::string combined_results_path = Globals::results_path;
@@ -135,17 +155,17 @@ bool Receiver::timing_callback(const PDU &pdu) {
                 bool file_exists = infile.good();
                 if (!file_exists){
                     std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                    infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                    infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
                 }
 
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                string results = std::to_string(BER) + ";" + std::to_string(levenshtein_distance) + ";"+ std::to_string(capacity_channel) + ";"
                                  + std::to_string(capacity_based_on_original_message) + ";" +
                                  std::to_string(duration.count()) + ";"
-                                 + duration_of_decryption +"\n";
+                                 + duration_of_decryption + "\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
-                std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+                std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
                 std::cout << results << std::endl;
                 log.close();
                 std::ofstream log_message(message_path, std::ios_base::app | std::ios_base::out);
@@ -215,23 +235,24 @@ bool Receiver::storage_callback(const PDU &pdu) {
             //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_storage_" + Globals::cipher_type_ + ".csv";
+            int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, received_message);
 
             //              Write the column names to result file
             std::ifstream infile(combined_results_path);
             bool file_exists = infile.good();
             if (!file_exists){
                 std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                infile_stream << "BER;levenstein_dist;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
             }
 
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+            string results = std::to_string(BER) + ";" + std::to_string(levenshtein_distance) + ";"+ std::to_string(capacity_channel) + ";"
                              + std::to_string(capacity_based_on_original_message) + ";" +
                              std::to_string(duration.count()) + ";"
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
-            std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+            std::cout<< "BER;levenstein_dist;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
             log.close();
             Globals::message_ = "";
@@ -307,7 +328,7 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
 //            Calculate BER
             std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
-
+            int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, received_message);
             //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_IP_id_" + Globals::cipher_type_ + ".csv";
@@ -317,17 +338,17 @@ bool Receiver::IP_id_callback(const PDU &pdu) {
             bool file_exists = infile.good();
             if (!file_exists){
                 std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
             }
 
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+            string results = std::to_string(BER) + ";" + std::to_string(levenshtein_distance) + ";"+ std::to_string(capacity_channel) + ";"
                              + std::to_string(capacity_based_on_original_message) + ";" +
                              std::to_string(duration.count()) + ";"
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
-            std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+            std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
             log.close();
             Globals::message_ = "";
@@ -449,6 +470,7 @@ void Receiver::HTTP_callback() {
 //            Calculate BER
                 std::string original_message = Globals::original_message_;
                 float BER = Evaluation::get_BER(original_message, received_message);
+                int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, received_message);
                 //            Saving to general file
                 std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_HTTP_" + Globals::cipher_type_ + ".csv";
@@ -458,17 +480,17 @@ void Receiver::HTTP_callback() {
                 bool file_exists = infile.good();
                 if (!file_exists){
                     std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                    infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                    infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
                 }
 
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-                string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+                string results = std::to_string(BER) + ";" + std::to_string(levenshtein_distance) + ";"+ std::to_string(capacity_channel) + ";"
                                  + std::to_string(capacity_based_on_original_message) + ";" +
                                  std::to_string(duration.count()) + ";"
                                  + duration_of_decryption + "\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
-                std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+                std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
                 std::cout << results << std::endl;
                 log.close();
 
@@ -563,7 +585,7 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
 //            Calculate BER
         std::string original_message = Globals::original_message_;
         float BER = Evaluation::get_BER(original_message, received_message);
-
+        int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, received_message);
         //            Saving to general file
         std::string combined_results_path = Globals::results_path;
         combined_results_path += "_server_LSB_" + Globals::cipher_type_ + ".csv";
@@ -573,17 +595,17 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         bool file_exists = infile.good();
         if (!file_exists){
             std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-            infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+            infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
         }
 
         std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-        std:string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
-                         + std::to_string(capacity_based_on_original_message) + ";" + std::to_string(duration.count()) +
-                         ";"
+        string results = std::to_string(BER) + ";" + std::to_string(levenshtein_distance) + ";"+ std::to_string(capacity_channel) + ";"
+                         + std::to_string(capacity_based_on_original_message) + ";" +
+                         std::to_string(duration.count()) + ";"
                          + duration_of_decryption + "\n";
         log << results;
         std::cout << "General results saved to : " << combined_results_path << std::endl;
-        std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+        std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
         std::cout << results << std::endl;
 
         Globals::message_ = "";
@@ -656,7 +678,7 @@ bool Receiver::sequence_callback(const PDU &pdu) {
 //            Calculate BER
             std::string original_message = Globals::original_message_;
             float BER = Evaluation::get_BER(original_message, received_message);
-
+            int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, received_message);
             //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_sequence_" + Globals::cipher_type_ + ".csv";
@@ -666,17 +688,17 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             bool file_exists = infile.good();
             if (!file_exists){
                 std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
             }
 
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+            string results = std::to_string(BER) + ";" + std::to_string(levenshtein_distance) + ";"+ std::to_string(capacity_channel) + ";"
                              + std::to_string(capacity_based_on_original_message) + ";" +
                              std::to_string(duration.count()) + ";"
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
-            std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+            std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
 
             Globals::message_ = "";
@@ -752,7 +774,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
 
 //          BER for channel (compare message send via channel and received)
             float BER = Evaluation::get_BER(original_message, received_message);
-
+            int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, received_message);
 //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_loss_" + Globals::cipher_type_ + ".csv";
@@ -762,17 +784,17 @@ bool Receiver::loss_callback(const PDU &pdu) {
             bool file_exists = infile.good();
             if (!file_exists){
                 std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                infile_stream << "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
             }
 
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
-            string results = std::to_string(BER) + ";" + std::to_string(capacity_channel) + ";"
+            string results = std::to_string(BER) + ";" + std::to_string(levenshtein_distance) + ";"+ std::to_string(capacity_channel) + ";"
                              + std::to_string(capacity_based_on_original_message) + ";" +
                              std::to_string(duration.count()) + ";"
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
-            std::cout<< "BER;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+            std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
             log.close();
             Globals::message_ = "";

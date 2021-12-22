@@ -11,6 +11,7 @@
 #include "sys/times.h"
 #include "sys/vtimes.h"
 #include "Globals.h"
+#include <algorithm>
 
 class Evaluation {
 public:
@@ -32,6 +33,8 @@ public:
     std::string currentDateTime();
 
     static float get_BER(std::string original_message, std::string received_message);
+
+    static int get_levenshtein_distance(std::string original_message, std::string received_message);
 
     static float calculate_entropy(std::string message);
 };

@@ -25,22 +25,49 @@ void Sender::send_with_timing_method(const string message_to_send) {
     message = binaryString;
     PacketSender sender;
     IP pkt = IP(Globals::IPv4_address) / UDP(Globals::dst_port_, Globals::src_port_);
-    sender.send(pkt);
+    try{
+        sender.send(pkt);
+    }
+    catch (Tins::socket_write_error){
+        cout<<"Sending error \n";
+    }
     int interval = Globals::time_interval_1_ms_*1.5;
     for (std::string::size_type i = 0; i < message.size(); i++) {
         if (message[i] == '0') {
             std::cout << i << ". " << message[i] << endl;
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
         } else {
             std::cout << i << ". " << message[i] << endl;
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(interval));
         }
     }
-    sender.send(pkt);
+    try{
+        sender.send(pkt);
+    }
+    catch (Tins::socket_write_error){
+        cout<<"Sending error \n";
+        sender.send(pkt);
+    }
     std::cout << endl;
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-    sender.send(pkt);
+    try{
+        sender.send(pkt);
+    }
+    catch (Tins::socket_write_error){
+        cout<<"Sending error \n";
+        sender.send(pkt);
+    }
     std::cout << "Sending completed.";
 }
 
@@ -57,13 +84,25 @@ void Sender::send_with_storage_method(const string message_to_send) {
             PacketSender sender;
             std::string s(ia, 'a');
             IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
+
         }
         PacketSender sender;
         int ia = 500;
         std::string s(ia, 'a');
         IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
-        sender.send(pkt);
+        try{
+            sender.send(pkt);
+        }
+        catch (Tins::socket_write_error){
+            cout<<"Sending error \n";
+            sender.send(pkt);
+        }
     } else {
         message = message_to_send;
         int block_size = 8;
@@ -76,14 +115,25 @@ void Sender::send_with_storage_method(const string message_to_send) {
             std::string s(number, 'a');
             Globals::channel_message += std::to_string(number);
             IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
 //            cout<<"Send : "<< number << " " <<  bin_string << endl;
         }
         PacketSender sender;
         int ia = 500;
         std::string s(ia, 'a');
         IP pkt = IP(Globals::IPv4_address) / TCP(Globals::dst_port_, Globals::src_port_) / RawPDU(s);
-        sender.send(pkt);
+        try{
+            sender.send(pkt);
+        }
+        catch (Tins::socket_write_error){
+            cout<<"Sending error \n";
+            sender.send(pkt);
+        }
     }
 }
 
@@ -104,7 +154,12 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
             tcp.flags(Tins::TCP::RST);
             IP pkt = ip / tcp / RawPDU("");
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
 //            std::cout << message[i] << ' ' << ia << endl;
         }
         int ia = 1000;
@@ -114,7 +169,13 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
         TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
         tcp.flags(Tins::TCP::RST);
         IP pkt = ip / tcp / RawPDU("");
-        sender.send(pkt);
+        try{
+            sender.send(pkt);
+        }
+        catch (Tins::socket_write_error){
+            cout<<"Sending error \n";
+            sender.send(pkt);
+        }
 //        std::cout << ia << endl;
     } else {
         int block_size = 8;
@@ -131,7 +192,12 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
             tcp.flags(Tins::TCP::RST);
             IP pkt = ip / tcp / RawPDU("");
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
 //            std::cout << ip.id() << ' ' << ip.dst_addr() << endl;
         }
         int ia = 1000;
@@ -140,7 +206,13 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
         TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
         tcp.flags(Tins::TCP::RST);
         IP pkt = ip / tcp / RawPDU("");
-        sender.send(pkt);
+        try{
+            sender.send(pkt);
+        }
+        catch (Tins::socket_write_error){
+            cout<<"Sending error \n";
+            sender.send(pkt);
+        }
 //        std::cout << ia << endl;
     }
 }
@@ -232,7 +304,12 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
 //            tcp.flags(Tins::TCP::RST);
             IPv6 pkt = iPv6 / tcp / RawPDU("");
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
 //            std::cout << message[i] << endl;
         } else {
             IPv6 iPv6 = IPv6();
@@ -241,7 +318,12 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
 //            tcp.flags(Tins::TCP::RST);
             IPv6 pkt = iPv6 / tcp / RawPDU("");
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
 //            std::cout << message[i] << endl;
         }
     }
@@ -251,7 +333,13 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
     TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
 //    tcp.flags(Tins::TCP::RST);
     IPv6 pkt = iPv6 / tcp / RawPDU("");
-    sender.send(pkt);
+    try{
+        sender.send(pkt);
+    }
+    catch (Tins::socket_write_error){
+        cout<<"Sending error \n";
+        sender.send(pkt);
+    }
     std::cout << "Finished sending" << endl;
 }
 
@@ -283,18 +371,34 @@ void Sender::send_with_sequence_method(const string message_to_send) {
             seq = seq + 1;
             tcp.seq(seq);
             IP pkt = ip / tcp / RawPDU("");
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
         } else {
             IP ip = IP(Globals::IPv4_address);
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
             tcp.seq(seq);
             IP pkt = ip / tcp / RawPDU("");
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
         }
     }
     tcp.seq(0);
     pkt = ip / tcp / RawPDU("");
-    sender.send(pkt);
+    try{
+        sender.send(pkt);
+    }
+    catch (Tins::socket_write_error){
+        cout<<"Sending error \n";
+        sender.send(pkt);
+    }
     std::cout << "Sending finished" << endl;
 }
 
@@ -318,22 +422,44 @@ void Sender::send_with_loss_method(const string message_to_send) {
     tcp.flags(Tins::TCP::RST);
     tcp.seq(seq);
     IP pkt = ip / tcp / RawPDU("");
-    sender.send(pkt);
+    try{
+        sender.send(pkt);
+    }
+    catch (Tins::socket_write_error){
+        cout<<"Sending error \n";
+    }
     seq = seq + 1;
     for (std::string::size_type i = 0; i < message.size(); i++) {
         if (message[i] == '0') {
             tcp.seq(seq);
             IP pkt = ip / tcp / RawPDU("");
-            sender.send(pkt);
+            try{
+                sender.send(pkt);
+            }
+            catch (Tins::socket_write_error){
+                cout<<"Sending error \n";
+            }
         }
         seq = seq + 1;
     }
     tcp.seq(seq);
     pkt = ip / tcp / RawPDU("");
-    sender.send(pkt);
+    try{
+        sender.send(pkt);
+    }
+    catch (Tins::socket_write_error){
+        cout<<"Sending error \n";
+        sender.send(pkt);
+    }
     tcp.seq(0);
     pkt = ip / tcp / RawPDU("");
-    sender.send(pkt);
+    try{
+        sender.send(pkt);
+    }
+    catch (Tins::socket_write_error){
+        cout<<"Sending error \n";
+        sender.send(pkt);
+    }
     std::cout << "Sending finished" << endl;
 }
 

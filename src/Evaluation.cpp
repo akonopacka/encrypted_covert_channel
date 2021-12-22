@@ -193,3 +193,19 @@ float Evaluation::calculate_entropy(std::string message) {
     return entropy;
 }
 
+int Evaluation::get_levenshtein_distance(std::string original_message, std::string received_message) {
+    const std::size_t len1 = original_message.size(), len2 = received_message.size();
+    std::vector<std::vector<unsigned int>> d(len1 + 1, std::vector<unsigned int>(len2 + 1));
+
+    d[0][0] = 0;
+    for(unsigned int i = 1; i <= len1; ++i) d[i][0] = i;
+    for(unsigned int i = 1; i <= len2; ++i) d[0][i] = i;
+
+    for(unsigned int i = 1; i <= len1; ++i)
+        for(unsigned int j = 1; j <= len2; ++j)
+            // note that std::min({arg1, arg2, arg3}) works only in C++11,
+            // for C++98 use std::min(std::min(arg1, arg2), arg3)
+            d[i][j] = std::min({ d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (original_message[i - 1] == received_message[j - 1] ? 0 : 1) });
+    return d[len1][len2];
+}
+

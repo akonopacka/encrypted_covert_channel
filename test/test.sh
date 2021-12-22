@@ -14,7 +14,7 @@ cd $project_path_client
 # covert channel types: storage IP_id HTTP LSB sequence loss timing
 # cipher types: aes des present rsa clefia grain
 
-for covert_channel_type in storage IP_id HTTP LSB sequence loss timing
+for covert_channel_type in storage IP_id HTTP LSB sequence loss
 do
   cct=$covert_channel_type
   echo "Testing covert channel type : $cct "
@@ -45,7 +45,7 @@ do
     for i in $(seq 1 1 $repeat_number)
     do
        echo ""
-       echo "./encrypted_covert_channel --client  $cct --is_encrypted $cipher_type " | nc -w 5 $ip_address 5000
+       echo "sudo ./encrypted_covert_channel --client  $cct --is_encrypted $cipher_type " | nc -w 5 $ip_address 5000
        echo "Raz dwa trzy"
      sleep 2
     done
