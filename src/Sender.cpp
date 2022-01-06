@@ -139,7 +139,7 @@ void Sender::send_with_storage_method(const string message_to_send) {
 
 void send_thread(IP pkt ){
     PacketSender sender;
-    sender.send(pkt, "eno2");
+    sender.send(pkt, Globals::interface_);
 }
 void Sender::send_with_storage_method_IP_id(const string message_to_send) {
     std::cout << "Storage IP_id method" << endl;
