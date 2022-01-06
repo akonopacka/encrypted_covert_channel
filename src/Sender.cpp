@@ -137,6 +137,10 @@ void Sender::send_with_storage_method(const string message_to_send) {
     }
 }
 
+void send_thread(IP pkt ){
+    PacketSender sender;
+    sender.send(pkt, "eno2");
+}
 void Sender::send_with_storage_method_IP_id(const string message_to_send) {
     std::cout << "Storage IP_id method" << endl;
     string binaryString = "";
@@ -144,18 +148,17 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
     if (!is_encrypted) {
         Globals::channel_message = message_to_send;
 //        cout << "Message to send: " << message << endl;
-        PacketSender sender;
+        IP ip = IP(Globals::IPv4_address);
         for (std::string::size_type i = 0; i < message.size(); i++) {
             char a = message[i];
             int ia = (int) a;
-            IP ip = IP(Globals::IPv4_address);
             ip.id(ia);
-            ip.ttl(100);
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
             tcp.flags(Tins::TCP::RST);
             IP pkt = ip / tcp / RawPDU("");
             try{
-                sender.send(pkt);
+                thread t(send_thread, pkt);
+                t.detach();
             }
             catch (Tins::socket_write_error){
                 cout<<"Sending error \n";
@@ -163,18 +166,19 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
 //            std::cout << message[i] << ' ' << ia << endl;
         }
         int ia = 1000;
-        IP ip = IP(Globals::IPv4_address);
         ip.id(ia);
-        ip.ttl(100);
         TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
         tcp.flags(Tins::TCP::RST);
         IP pkt = ip / tcp / RawPDU("");
         try{
-            sender.send(pkt);
+            thread t(send_thread, pkt);
+            t.detach();
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
         catch (Tins::socket_write_error){
             cout<<"Sending error \n";
-            sender.send(pkt);
+            thread t(send_thread, pkt);
+            t.detach();
         }
 //        std::cout << ia << endl;
     } else {
@@ -188,12 +192,13 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
             int number = stoi(bin_string, 0, 2);
             Globals::channel_message += std::to_string(number);
             ip.id(number);
-            ip.ttl(100);
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
             tcp.flags(Tins::TCP::RST);
             IP pkt = ip / tcp / RawPDU("");
             try{
-                sender.send(pkt);
+                thread t(send_thread, pkt);
+                t.detach();
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
             catch (Tins::socket_write_error){
                 cout<<"Sending error \n";
@@ -202,16 +207,17 @@ void Sender::send_with_storage_method_IP_id(const string message_to_send) {
         }
         int ia = 1000;
         ip.id(ia);
-        ip.ttl(100);
         TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
         tcp.flags(Tins::TCP::RST);
         IP pkt = ip / tcp / RawPDU("");
         try{
-            sender.send(pkt);
+            thread t(send_thread, pkt);
+            t.detach();
         }
         catch (Tins::socket_write_error){
             cout<<"Sending error \n";
-            sender.send(pkt);
+            thread t(send_thread, pkt);
+            t.detach();
         }
 //        std::cout << ia << endl;
     }
@@ -299,7 +305,7 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
     PacketSender sender;
     for (std::string::size_type i = 0; i < message.size(); i++) {
         if (message[i] == '0') {
-            IPv6 iPv6 = IPv6("::1");
+            IPv6 iPv6 = IPv6(Globals::IPv6_address);
             iPv6.hop_limit(254);
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
 //            tcp.flags(Tins::TCP::RST);
@@ -313,7 +319,7 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
 //            std::cout << message[i] << endl;
         } else {
             IPv6 iPv6 = IPv6();
-            iPv6.dst_addr("::1");
+            iPv6.dst_addr(Globals::IPv6_address);
             iPv6.hop_limit(255);
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
 //            tcp.flags(Tins::TCP::RST);
@@ -328,7 +334,7 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
         }
     }
     IPv6 iPv6 = IPv6();
-    iPv6.dst_addr("::1");
+    iPv6.dst_addr(Globals::IPv6_address);
     iPv6.hop_limit(100);
     TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
 //    tcp.flags(Tins::TCP::RST);

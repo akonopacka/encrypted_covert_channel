@@ -21,6 +21,7 @@ namespace Globals {
     extern std::string results_path;
     extern std::string interface_;
     extern std::string IPv4_address;
+    extern std::string IPv6_address;
     extern int number_of_repeat_;
     extern int src_port_;
     extern int dst_port_;

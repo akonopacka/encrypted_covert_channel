@@ -1,13 +1,15 @@
 {
-  "interface": "lo",
+  "interface": "eno2",
   "message_to_send": "All that is gold does not glitter,\nNot all those who wander are lost;\nThe old that is strong does not wither,\nDeep roots are not reached by the frost.\nFrom the ashes a fire shall be woken,\nA light from the shadows shall spring;\nRenewed shall be blade that was broken,\nThe crownless again shall be king. J.R.R. Tolkien, The Fellowship of the Ring",
   "results_path": "/home/ak/results/",
   "number_of_repeat": 1,
-  "server_IPv4_address": "127.0.0.1",
+  "server_IPv4_address": "10.10.1.5",
+  "server_IPv6_address": "fe80::fd0e:a83d:a743:7fc0",
+  "server_IPv6_address_eno2": "fe80::4529:58b7:198e:da14",
   "dst_port": 1234,
   "src_port": 4321,
   "timing_method": {
-    "time_interval_1_ms" : 250,
+    "time_interval_1_ms" : 650,
     "time_interval_stop_ms" : 5000
   }
 }

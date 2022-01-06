@@ -15,6 +15,8 @@ add_executable(encrypted_covert_channel main.cpp include/Globals.h src/AES.hpp i
 
 target_link_libraries(encrypted_covert_channel ${PCAP_LIBRARY})
 target_link_libraries(encrypted_covert_channel "${TINS_LIBRARY}")
+target_link_libraries(encrypted_covert_channel libpthread.so.0)
+
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(JSONCPP jsoncpp)

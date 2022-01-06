@@ -20,6 +20,8 @@ namespace Globals {
     std::string original_message_ = "";
     std::string interface_ = "lo";
     std::string IPv4_address = "127.0.0.1";
+    std::string IPv6_address = "::1";
+
     int number_of_repeat_ = 1;
     int src_port_ = 1111;
     int dst_port_ = 1111;
@@ -35,6 +37,7 @@ namespace Globals {
     void load_globals(Json::Value config) {
         Globals::interface_ = config["interface"].asString();
         Globals::IPv4_address = config["server_IPv4_address"].asString();
+        Globals::IPv6_address = config["server_IPv6_address"].asString();
         Globals::dst_port_ = config["dst_port"].asInt();
         Globals::src_port_ = config["src_port"].asInt();
         Globals::time_interval_1_ms_ = config["timing_method"]["time_interval_1_ms"].asInt();

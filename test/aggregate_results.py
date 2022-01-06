@@ -1,5 +1,4 @@
 import glob
-
 import pandas as pd
 
 folder_path = "/home/ak/results/"
@@ -10,18 +9,24 @@ print("--- Aggregating data ---")
 
 results_client = pd.DataFrame()
 results_server = pd.DataFrame()
+files.sort()
+print("FILES: ",files)
 counter = 3
 for file in files:
     print("Processing file", file)
     # file_path = folder_path + file
     try:
         df = pd.read_csv(file, sep=';', header=None)
-        # print (df)
+        print (df)
+        df = df.apply(pd.to_numeric, errors='coerce')
+        print (df)
         mean = df.mean(axis=0)
         std = df.std()
         is_client = file.startswith('/home/ak/results/_client')
         is_server = file.startswith('/home/ak/results/_server')
-        # print(std)
+        print("STD: ")
+        print(std)
+        print("--------------------------------------------")
 
         if is_client:
             configuration = file.replace('/home/ak/results/_client_', '')

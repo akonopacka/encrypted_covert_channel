@@ -569,7 +569,6 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         std::cout << "Received unencrypted message: " << output << std::endl;
         std::cout << "Received message: " << received_message << std::endl;
 
-
         auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
         int sent_bits = Globals::message_.length();
 //          calculate channel capacity based on messages sent in channel
@@ -579,7 +578,6 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         if (!Globals::is_encrypted){
             len = float(received_message.length()-1);
         }
-
         float capacity_based_on_original_message = float(len) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
