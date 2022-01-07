@@ -257,7 +257,7 @@ bool Receiver::storage_callback(const PDU &pdu) {
             log.close();
             Globals::message_ = "";
             Globals::is_started_receiving = false;
-        } else {
+        } else if(a<300) {
             if (Globals::is_encrypted) {
                 string bin_string = bitset<8>(a).to_string();
                 Globals::message_ = Globals::message_ + bin_string;
@@ -803,15 +803,18 @@ bool Receiver::loss_callback(const PDU &pdu) {
                 Globals::is_started_receiving = true;
             }
 
+
             if (seq != 1) {
                 int i = seq - Globals::last_seq_;
                 if (i == 1) {
                     Globals::message_ = Globals::message_ + '0';
                     Globals::last_seq_ = seq;
+                    cout<<seq<<"  "<<'0'<<endl;
                 } else {
                     std::string s(i - 1, '1');
                     Globals::message_ = Globals::message_ + s + '0';
                     Globals::last_seq_ = Globals::last_seq_ + i;
+                    cout<<seq<<"  "<<'0'<<endl;
                 }
             }
         }
