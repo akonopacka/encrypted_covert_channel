@@ -119,8 +119,10 @@ void Sender::send_with_storage_method(const string message_to_send) {
         cout<<"Sending error \n";
         sender_.send(pkt_);
     }
-    auto start_sending = high_resolution_clock::now();
+
     int counter = 0;
+//    int sum_values=0;
+
     for (int x : message_vector){
         PacketSender sender(Globals::interface_,0,0);
         TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
@@ -128,7 +130,14 @@ void Sender::send_with_storage_method(const string message_to_send) {
         std::string s(x, 'a');
         IP pkt = IP(Globals::IPv4_address) / tcp / RawPDU(s);
         try{
-            sender.send_recv(pkt);
+            auto start_sending_packet = high_resolution_clock::now();
+            sender.send(pkt);
+            auto stop_sending_packet = high_resolution_clock::now();
+            usleep(20);
+            auto sending_duration_packet_nano = duration_cast<nanoseconds>(stop_sending_packet - start_sending_packet);
+            cout<<"Sending packets time: "<< sending_duration_packet_nano.count() <<" ns;  send value: "<< x  <<  endl;
+            sum = sum + sending_duration_packet_nano.count();
+//            sum_values = sum_values + x;
         }
         catch (Tins::socket_write_error){
             cout<<"Sending error \n";
@@ -148,10 +157,10 @@ void Sender::send_with_storage_method(const string message_to_send) {
         sender_.send(pkt);
     }
     cout<<"Number of sent packets: "<<counter<<endl;
-    auto stop_sending = high_resolution_clock::now();
-    auto sending_duration = duration_cast<microseconds>(stop_sending - start_sending);
-    auto sending_duration_nano = duration_cast<nanoseconds>(stop_sending - start_sending);
-    cout<<"Sending packets time: "<< sending_duration.count() << " ms; "<< sending_duration_nano.count() <<" ns"<< endl;
+    cout<<"avg packet send duraation: "<<sum/counter<<endl;
+//    cout<<"avg packet value: "<<sum_values/counter<<endl;
+
+
 }
 
 void Sender::send_with_storage_method_IP_id(const string message_to_send) {
@@ -307,44 +316,61 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
         binaryString = message_to_send;
     }
     Globals::channel_message = binaryString;
-//    cout << "Message to send: " << word << endl << "Bin: " << binaryString << endl;
     string message = binaryString;
-    PacketSender sender;
+
+    int sum = 0;
+    int counter =0;
     for (std::string::size_type i = 0; i < message.size(); i++) {
         if (message[i] == '0') {
+            PacketSender sender(Globals::interface_,0,0);
             IPv6 iPv6 = IPv6(Globals::IPv6_address);
             iPv6.hop_limit(254);
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
-//            tcp.flags(Tins::TCP::RST);
+            tcp.flags(Tins::TCP::RST);
             IPv6 pkt = iPv6 / tcp / RawPDU("");
             try{
+                auto start_sending_packet = high_resolution_clock::now();
                 sender.send(pkt);
+                auto stop_sending_packet = high_resolution_clock::now();
+                usleep(20);
+                auto sending_duration_packet_nano = duration_cast<nanoseconds>(stop_sending_packet - start_sending_packet);
+                cout<<"Sending packets time: "<< sending_duration_packet_nano.count() <<" ns"  <<  endl;
+                sum = sum + sending_duration_packet_nano.count();
             }
             catch (Tins::socket_write_error){
                 cout<<"Sending error \n";
             }
 //            std::cout << message[i] << endl;
         } else {
+            PacketSender sender(Globals::interface_,0,0);
             IPv6 iPv6 = IPv6(Globals::IPv6_address);
             iPv6.hop_limit(255);
             TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
-//            tcp.flags(Tins::TCP::RST);
+            tcp.flags(Tins::TCP::RST);
             IPv6 pkt = iPv6 / tcp / RawPDU("");
             try{
+                auto start_sending_packet = high_resolution_clock::now();
                 sender.send(pkt);
+                auto stop_sending_packet = high_resolution_clock::now();
+                usleep(20);
+                auto sending_duration_packet_nano = duration_cast<nanoseconds>(stop_sending_packet - start_sending_packet);
+//                cout<<"Sending packets time: "<< sending_duration_packet_nano.count() <<" ns" <<  endl;
+                sum = sum + sending_duration_packet_nano.count();
             }
             catch (Tins::socket_write_error){
                 cout<<"Sending error \n";
             }
 //            std::cout << message[i] << endl;
         }
+        counter++;
     }
     IPv6 iPv6 = IPv6();
     iPv6.dst_addr(Globals::IPv6_address);
     iPv6.hop_limit(100);
     TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
-//    tcp.flags(Tins::TCP::RST);
+    tcp.flags(Tins::TCP::RST);
     IPv6 pkt = iPv6 / tcp / RawPDU("");
+    PacketSender sender(Globals::interface_,0,0);
     try{
         sender.send(pkt);
     }
@@ -352,6 +378,8 @@ void Sender::send_with_LSB_Hop_method(const string message_to_send) {
         cout<<"Sending error \n";
         sender.send(pkt);
     }
+    cout<<"Number of sent packets: "<<counter<<endl;
+    cout<<"avg packet send duration: "<<sum/counter<<endl;
     std::cout << "Finished sending" << endl;
 }
 
@@ -376,6 +404,7 @@ void Sender::send_with_sequence_method(const string message_to_send) {
     tcp.seq(seq);
     IP pkt = ip / tcp / RawPDU("");
     sender.send(pkt);
+    int counter = 0;
     for (std::string::size_type i = 0; i < message.size(); i++) {
         if (message[i] == '0') {
             IP ip = IP(Globals::IPv4_address);
@@ -411,7 +440,7 @@ void Sender::send_with_sequence_method(const string message_to_send) {
         cout<<"Sending error \n";
         sender.send(pkt);
     }
-    std::cout << "Sending finished" << endl;
+
 }
 
 void Sender::send_with_loss_method(const string message_to_send) {
