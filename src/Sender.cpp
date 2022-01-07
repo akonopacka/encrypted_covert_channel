@@ -83,7 +83,7 @@ void Sender::send_with_storage_method(const string message_to_send) {
     std::cout << "Storage method" << endl;
 //    std::cout << "Sending message:" << message_to_send << endl;
     string message = message_to_send;
-    PacketSender sender(Globals::interface_,0,0);
+
     int count = 0;
     long sum = 0;
 //    Initiate message vector
@@ -105,20 +105,24 @@ void Sender::send_with_storage_method(const string message_to_send) {
             message_vector.push_back(char_number);
         }
     }
+    cout<<"Message_vector size: "<<message_vector.size()<<endl;
 //  Sending the message
-    auto start_sending = high_resolution_clock::now();
+    PacketSender sender_(Globals::interface_);
     std::string s_data(400, 'a');
     TCP tcp_first = TCP(Globals::dst_port_, Globals::src_port_);
     tcp_first.flags(Tins::TCP::RST);
     IP pkt_ = IP(Globals::IPv4_address) / tcp_first/ RawPDU(s_data);
     try{
-        sender.send_recv(pkt_);
+        sender_.send(pkt_);
     }
     catch (Tins::socket_write_error){
         cout<<"Sending error \n";
-        sender.send(pkt_);
+        sender_.send(pkt_);
     }
+    auto start_sending = high_resolution_clock::now();
+    int counter = 0;
     for (int x : message_vector){
+        PacketSender sender(Globals::interface_,0,0);
         TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
         tcp.flags(Tins::TCP::RST);
         std::string s(x, 'a');
@@ -129,6 +133,7 @@ void Sender::send_with_storage_method(const string message_to_send) {
         catch (Tins::socket_write_error){
             cout<<"Sending error \n";
         }
+        counter ++;
     }
     int end_number = 500;
     std::string s(end_number, 'a');
@@ -136,99 +141,17 @@ void Sender::send_with_storage_method(const string message_to_send) {
     tcp.flags(Tins::TCP::RST);
     IP pkt = IP(Globals::IPv4_address) / tcp/ RawPDU(s);
     try{
-        sender.send_recv(pkt);
+        sender_.send(pkt);
     }
     catch (Tins::socket_write_error){
         cout<<"Sending error \n";
-        sender.send_recv(pkt);
+        sender_.send(pkt);
     }
+    cout<<"Number of sent packets: "<<counter<<endl;
     auto stop_sending = high_resolution_clock::now();
     auto sending_duration = duration_cast<microseconds>(stop_sending - start_sending);
-    cout<<"Sending packets time: "<< sending_duration.count() << endl;
-
-//    if (is_encrypted) {
-//        message = message_to_send;
-//        int block_size = 8;
-//        int counter = ceil((float) message.length() / block_size);
-//        string ciphertext_complete;
-//        for (int i = 0; i < counter; i++) {
-//            auto start_send= high_resolution_clock::now();
-//            string bin_string = message.substr(i * block_size, block_size);
-//            int number = stoi(bin_string, 0, 2);
-//            std::string s(number, 'a');
-//            Globals::channel_message += std::to_string(number);
-//            TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
-//            tcp.flags(Tins::TCP::URG);
-//            tcp.flags(Tins::TCP::RST);
-//            IP pkt = IP(Globals::IPv4_address) / tcp / RawPDU(s);
-//            auto stop_send = high_resolution_clock::now();
-//            try{
-//                sender.send(pkt);
-//            }
-//            catch (Tins::socket_write_error){
-//                cout<<"Sending error \n";
-//            }
-//
-//            auto send_duration = duration_cast<microseconds>(stop_send - start_send);
-//            sum =sum + send_duration.count();
-//            count++;
-////            cout<<"Send : "<< number << " " <<  bin_string << endl;
-//            cout<< "Time for one packet: "<< send_duration.count() <<endl;
-//        }
-//        cout<<"avg time of sending one packet: "<< sum/count<<endl;
-//        int ia = 500;
-//        std::string s(ia, 'a');
-//        TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
-//        tcp.flags(Tins::TCP::URG);
-//        tcp.flags(Tins::TCP::RST);
-//        IP pkt = IP(Globals::IPv4_address) / tcp/ RawPDU(s);
-//        try{
-//            sender.send(pkt);
-//        }
-//        catch (Tins::socket_write_error){
-//            cout<<"Sending error \n";
-//            sender.send(pkt);
-//        }
-//    } else {
-//        Globals::channel_message = message_to_send;
-//        message = message_to_send;
-//        for (char a : message) {
-//            auto start_send= high_resolution_clock::now();
-//            int ia = (int) a;
-//            std::string s(ia, 'a');
-//            TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
-//            tcp.flags(Tins::TCP::URG);
-//            tcp.flags(Tins::TCP::RST);
-//            IP pkt = IP(Globals::IPv4_address) / tcp / RawPDU(s);
-//            auto stop_send = high_resolution_clock::now();
-//            try{
-//                sender.send(pkt);
-//            }
-//            catch (Tins::socket_write_error){
-//                cout<<"Sending error \n";
-//            }
-//
-//            auto send_duration = duration_cast<microseconds>(stop_send - start_send);
-//            sum =sum + send_duration.count();
-//            count++;
-////            cout<<"Send : "<< number << " " <<  bin_string << endl;
-//            cout<< "Time for one packet: "<< send_duration.count() <<endl;
-//        }
-//        cout<<"avg time of sending one packet: "<< sum/count<<endl;
-//        int ia = 500;
-//        std::string s(ia, 'a');
-//        TCP tcp = TCP(Globals::dst_port_, Globals::src_port_);
-//        tcp.flags(Tins::TCP::URG);
-//        tcp.flags(Tins::TCP::RST);
-//        IP pkt = IP(Globals::IPv4_address) / tcp / RawPDU(s);
-//        try{
-//            sender.send(pkt);
-//        }
-//        catch (Tins::socket_write_error){
-//            cout<<"Sending error \n";
-//            sender.send(pkt);
-//        }
-//    }
+    auto sending_duration_nano = duration_cast<nanoseconds>(stop_sending - start_sending);
+    cout<<"Sending packets time: "<< sending_duration.count() << " ms; "<< sending_duration_nano.count() <<" ns"<< endl;
 }
 
 void Sender::send_with_storage_method_IP_id(const string message_to_send) {

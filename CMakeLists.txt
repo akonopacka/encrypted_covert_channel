@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 
 project(encrypted_covert_channel)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_library(TINS_LIBRARY tins)
