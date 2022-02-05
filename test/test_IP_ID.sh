@@ -5,8 +5,8 @@ echo "-------------------------------- Performing tests ------------------------
 
 # Variables
 project_path_client="/home/ak/encrypted_covert_channel/cmake-build-debug"
-repeat_number=20
-ip_address=10.10.1.5
+repeat_number=50
+ip_address=192.168.1.53
 
 echo "Path $project_path_client"
 cd $project_path_client

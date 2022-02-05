@@ -95,11 +95,11 @@ string Cryptographer::encrypt_aes_(string plaintext_) {
     };
 
     // encrypt
-    const unsigned long encrypted_size = plusaes::get_padded_encrypted_size(raw_data.size());
-    std::vector<unsigned char> encrypted(encrypted_size);
+//    const unsigned long encrypted_size = plusaes::get_padded_encrypted_size(raw_data.size());
+    std::vector<unsigned char> encrypted(16);
 
     plusaes::encrypt_cbc((unsigned char *) raw_data.data(), raw_data.size(), &key_[0], key_.size(), &iv_, &encrypted[0],
-                         encrypted.size(), true);
+                         encrypted.size(),false);
     // fb 7b ae 95 d5 0f c5 6f 43 7d 14 6b 6a 29 15 70
 
 //    cout << "Message: " << plaintext_ << " \nEncrypted: ";
@@ -115,6 +115,7 @@ string Cryptographer::encrypt_aes_(string plaintext_) {
     }
 //    Checking decription
 //    decrypt_aes(binaryString);
+    int len = binaryString.length();
     return binaryString;
 }
 
@@ -138,7 +139,7 @@ string bintohex(const string &s) {
 }
 
 string Cryptographer::decrypt_aes(string ciphertext_bin) {
-    int block_size = 256;
+    int block_size = 128;
     int counter = ceil((float) ciphertext_bin.length() / block_size);
     string plaintext_complete;
     for (int i = 0; i < counter; i++) {
@@ -162,7 +163,7 @@ string Cryptographer::decrypt_aes_(string ciphertext_bin) {
             0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
             0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
     };
-    const unsigned long encrypted_size = 32;
+    const unsigned long encrypted_size = 16;
 //            plusaes::get_padded_encrypted_size(raw_data.size());
     std::vector<unsigned char> encrypted(encrypted_size);
 
@@ -182,7 +183,7 @@ string Cryptographer::decrypt_aes_(string ciphertext_bin) {
     }
 
     plusaes::decrypt_cbc(&encrypted[0], encrypted.size(), &key_1[0], key_1.size(), &iv_1, &decrypted[0],
-                         decrypted.size(), &padded_size);
+                         decrypted.size(), 0);
     // Hello, plusaes
 
     string s(decrypted.begin(), decrypted.end());
@@ -437,17 +438,19 @@ string Cryptographer::encrypt_present_(string plaintext_) {
     ciphertext = present_enc(p_, key_);
     string binaryString = "";
     string hex(ciphertext);
+//
+    string ciphertext_ascii = hex_to_string(ciphertext);
 
 // hex to bin
-    for (int i = 0; i < hex.size(); ++i) {
-        binaryString += bitset<8>(hex[i]).to_string();
+    for (int i = 0; i < ciphertext_ascii.size(); ++i) {
+        binaryString += bitset<8>(ciphertext_ascii[i]).to_string();
     }
 // return hex string as bin
     return binaryString;
 }
 
 string Cryptographer::decrypt_present(string ciphertext_bin) {
-    int block_size = 128;
+    int block_size = 64;
     int counter = ceil((float) ciphertext_bin.length() / block_size);
     string plaintext_complete;
     for (int i = 0; i < counter; i++) {
@@ -461,13 +464,14 @@ string Cryptographer::decrypt_present(string ciphertext_bin) {
 string Cryptographer::decrypt_present_(string ciphertext_bin) {
     char *key_ = "1f1f1ffa90e329231f1f1ffa90e32923";
     std::stringstream sstream(ciphertext_bin);
-    std::string ciphertext_hex;
+    std::string ciphertext_hex, ciphertext;
     while (sstream.good()) {
         std::bitset<8> bits;
         sstream >> bits;
         char c = char(bits.to_ulong());
-        ciphertext_hex += c;
+        ciphertext += c;
     }
+    ciphertext_hex = string_to_hex(ciphertext);
     //calling the decrypt function and printing the result
     char *cstr = new char[ciphertext_hex.length() + 1];
     strcpy(cstr, ciphertext_hex.c_str());

@@ -9,6 +9,7 @@ print("--- Aggregating data ---")
 
 results_client = pd.DataFrame()
 results_server = pd.DataFrame()
+results_chart = pd.DataFrame()
 files.sort()
 print("FILES: ",files)
 counter = 3
@@ -17,13 +18,15 @@ for file in files:
     # file_path = folder_path + file
     try:
         df = pd.read_csv(file, sep=';', header=None)
-        print (df)
+        print(df)
         df = df.apply(pd.to_numeric, errors='coerce')
-        print (df)
+        print(df)
         mean = df.mean(axis=0)
         std = df.std()
         is_client = file.startswith('/home/ak/results/_client')
         is_server = file.startswith('/home/ak/results/_server')
+        print("MEAN:")
+        print(mean)
         print("STD: ")
         print(std)
         print("--------------------------------------------")
@@ -40,6 +43,7 @@ for file in files:
             configuration = configuration.replace('.csv', '')
             mean.name = configuration
             std.name = configuration + '_std'
+            results_chart.name = configuration
             results_server = results_server.append(mean)
             results_server = results_server.append(std)
 

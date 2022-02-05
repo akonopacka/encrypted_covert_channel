@@ -20,7 +20,6 @@ do
   echo "Testing covert channel type : $cct "
   #  Test without encryption
   echo "Server starting for $cct"
-  pwd
   sudo ./encrypted_covert_channel --server $cct &
   sleep 5
   for i in $(seq 1 1 $repeat_number)
@@ -28,7 +27,7 @@ do
     echo "Repeat number $i"
     echo "sudo ./encrypted_covert_channel --client  $cct" | nc -w 5 $ip_address 5000
     echo "--- Sending finished ---"
-    sleep 2
+    sleep 4
   done
   echo "Waiting"
   sleep 10
@@ -41,13 +40,13 @@ do
   do
     echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
     sudo ./encrypted_covert_channel --server $cct --is_encrypted $cipher_type &
-    sleep 2
+    sleep 5
     for i in $(seq 1 1 $repeat_number)
     do
-       echo ""
-       echo "sudo ./encrypted_covert_channel --client  $cct --is_encrypted $cipher_type " | nc -w 5 $ip_address 5000
-       echo "Raz dwa trzy"
-     sleep 2
+      echo "Repeat number $i"
+      echo "sudo ./encrypted_covert_channel --client  $cct --is_encrypted $cipher_type " | nc -w 5 $ip_address 5000
+      echo "Raz dwa trzy"
+      sleep 4
     done
     sleep 10
     echo "Killing server"

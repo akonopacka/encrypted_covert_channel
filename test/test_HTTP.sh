@@ -6,7 +6,7 @@ echo "-------------------------------- Performing tests ------------------------
 # Variables
 project_path_client="/home/ak/encrypted_covert_channel/cmake-build-debug"
 repeat_number=50
-ip_address=172.27.50.15
+ip_address=192.168.1.53
 
 echo "Path $project_path_client"
 cd $project_path_client
@@ -14,7 +14,7 @@ cd $project_path_client
 # covert channel types: storage IP_id HTTP LSB sequence loss timing
 # cipher types: aes des present rsa clefia grain
 
-for covert_channel_type in storage
+for covert_channel_type in HTTP
 do
   cct=$covert_channel_type
   echo "Testing covert channel type : $cct "

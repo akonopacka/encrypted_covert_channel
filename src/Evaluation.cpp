@@ -194,7 +194,7 @@ float Evaluation::calculate_entropy(std::string message) {
 }
 
 int Evaluation::get_levenshtein_distance(std::string original_message, std::string received_message) {
-    const std::size_t len1 = original_message.size(), len2 = received_message.size();
+    const std::size_t len1 = original_message.length(), len2 = received_message.length();
     std::vector<std::vector<unsigned int>> d(len1 + 1, std::vector<unsigned int>(len2 + 1));
 
     d[0][0] = 0;

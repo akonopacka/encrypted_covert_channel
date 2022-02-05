@@ -5,7 +5,7 @@ echo "-------------------------------- Performing tests ------------------------
 
 # Variables
 project_path_client="/home/ak/encrypted_covert_channel/cmake-build-debug"
-repeat_number=20
+repeat_number=50
 ip_address=10.10.1.5
 
 echo "Path $project_path_client"
@@ -18,26 +18,26 @@ for covert_channel_type in loss
 do
   cct=$covert_channel_type
   echo "Testing covert channel type : $cct "
-  #  Test without encryption
-#  echo "Server starting for $cct"
-#  pwd
-#  sudo ./encrypted_covert_channel --server $cct &
-#  sleep 5
-#  for i in $(seq 1 1 $repeat_number)
-#  do
-#    echo "Repeat number $i"
-#    echo "sudo ./encrypted_covert_channel --client  $cct" | nc -w 5 $ip_address 5000
-#    echo "--- Sending finished ---"
-#    sleep 2
-#  done
-#  echo "Waiting"
-#  sleep 10
-#  echo "Killing server"
-#  sudo pkill -f encrypted_covert_channel
-#  echo "sudo pkill -f encrypted_covert_channel" | nc -w 5 $ip_address 5000
-#  sleep 2
+#    Test without encryption
+  echo "Server starting for $cct"
+  pwd
+  sudo ./encrypted_covert_channel --server $cct &
+  sleep 5
+  for i in $(seq 1 1 $repeat_number)
+  do
+    echo "Repeat number $i"
+    echo "sudo ./encrypted_covert_channel --client  $cct" | nc -w 5 $ip_address 5000
+    echo "--- Sending finished ---"
+    sleep 2
+  done
+  echo "Waiting"
+  sleep 10
+  echo "Killing server"
+  sudo pkill -f encrypted_covert_channel
+  echo "sudo pkill -f encrypted_covert_channel" | nc -w 5 $ip_address 5000
+  sleep 2
 
-  for cipher_type in aes
+  for cipher_type in aes des present rsa clefia grain
   do
     echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
     sudo ./encrypted_covert_channel --server $cct --is_encrypted $cipher_type &

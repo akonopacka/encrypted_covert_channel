@@ -5,7 +5,7 @@ echo "-------------------------------- Performing tests ------------------------
 
 # Variables
 project_path_client="/home/ak/encrypted_covert_channel/cmake-build-debug"
-repeat_number=4
+repeat_number=5
 ip_address=10.10.1.5
 
 echo "Path $project_path_client"
@@ -37,7 +37,7 @@ do
 #  echo "sudo pkill -f encrypted_covert_channel" | nc -w 5 $ip_address 5000
 #  sleep 2
 
-  for cipher_type in rsa grain
+  for cipher_type in aes des present rsa grain
   do
     echo "Testing covert channel type : $covert_channel_type ; cipher: $cipher_type"
     sudo ./encrypted_covert_channel --server $cct --is_encrypted $cipher_type &

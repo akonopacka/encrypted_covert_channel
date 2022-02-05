@@ -63,10 +63,10 @@ Receiver::Receiver() {
         sniffer_configuration.set_immediate_mode(true);
         sniffer_configuration.set_promisc_mode(true);
         sniffer_configuration.set_timeout(50);
-        string filter = "udp and dst port " + to_string(Globals::dst_port_) + " and ip src " + Globals::IPv4_address;
+        string filter = "udp and dst port " + to_string(Globals::dst_port_) ;
         std::cout << "Filter : " << filter << "\n";
-        sniffer_configuration.set_filter(filter);
         Sniffer sniffer(Globals::interface_, sniffer_configuration);
+        sniffer.set_filter(filter);
         sniffer.sniff_loop(timing_callback);
     }
 }
@@ -89,7 +89,7 @@ bool Receiver::timing_callback(const PDU &pdu) {
             Globals::start_receiving = high_resolution_clock::now();
             Globals::is_started_receiving = true;
         }
-        if (interval < (Globals::time_interval_1_ms_)) {
+        if (interval < (100000)) {
             Globals::message_ = Globals::message_ + "0";
             std::cout << Globals::timing_counter << ". 0" << endl;
             Globals::timing_counter += 1;
@@ -421,18 +421,17 @@ void Receiver::HTTP_callback() {
             continue;
         else {
             string str(buffer);
-            memset(buffer, 0, 1024);
             if (str.find("fin.com") != string::npos) {
                 Globals::stop_receiving = high_resolution_clock::now();
-                std::stringstream sstream(Globals::message_);
-                std::string output;
-                while (sstream.good()) {
+                std::stringstream sstream_bin(Globals::message_);
+                std::string received_raw;
+                while (sstream_bin.good()) {
                     std::bitset<8> bits;
-                    sstream >> bits;
+                    sstream_bin >> bits;
                     char c = char(bits.to_ulong());
-                    output += c;
+                    received_raw += c;
                 }
-                string received_message = "";
+                string final_message;
                 string duration_of_decryption;
                 if (Globals::is_encrypted) {
                     Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
@@ -445,32 +444,32 @@ void Receiver::HTTP_callback() {
                     std::size_t pos = decrypted_message.find(char(0));
                     if (pos != string::npos) {
                         int len = decrypted_message.length();
-                        received_message = decrypted_message.erase(pos, len);
+                        final_message = decrypted_message.erase(pos, len);
                     } else {
-                        received_message = decrypted_message;
+                        final_message = decrypted_message;
                     }
-                } else
-                    received_message = output;
-                std::cout << "Received unencrypted message: " << output << std::endl;
-                std::cout << "Received message: " << received_message << std::endl;
-
-                auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
-                int sent_bits = Globals::message_.length();
-//          calculate channel capacity based on messages sent in channel
-                float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
-//          calculate channel capacity based on original message
-                float len = received_message.length();
-                if (!Globals::is_encrypted){
-                    len = float(received_message.length()-1);
+                } else{
+                    std::size_t pos = received_raw.find(char(0));
+                    if (pos != string::npos) {
+                        int len = received_raw.length();
+                        final_message = received_raw.erase(pos, len);
+                    } else {
+                        final_message = received_raw;
+                    }
                 }
+                std::cout << "Received unencrypted message: " << received_raw << std::endl;
+                std::cout << "Received message: " << final_message << std::endl;
 
-                float capacity_based_on_original_message =
-                        float(len) * 8 / (duration.count() * 0.001);
+                auto receive_duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
+                int number_of_bits_channel = received_raw.length()*8;
+                int number_of_bits_original_message = final_message.length()*8;
+                float capacity_channel = float(number_of_bits_channel) / (receive_duration.count() * 0.001);
+                float capacity_original_message = float(number_of_bits_original_message / (receive_duration.count() * 0.001));
 
 //            Calculate BER
                 std::string original_message = Globals::original_message_;
-                float BER = Evaluation::get_BER(original_message, received_message);
-                int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, received_message);
+                float BER = Evaluation::get_BER(original_message, final_message);
+                int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, final_message);
                 //            Saving to general file
                 std::string combined_results_path = Globals::results_path;
                 combined_results_path += "_server_HTTP_" + Globals::cipher_type_ + ".csv";
@@ -480,17 +479,17 @@ void Receiver::HTTP_callback() {
                 bool file_exists = infile.good();
                 if (!file_exists){
                     std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                    infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                    infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];receive_duration[ns];duration_of_decryption[ns]\n";
                 }
 
                 std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
                 string results = std::to_string(BER) + ";" + std::to_string(levenshtein_distance) + ";"+ std::to_string(capacity_channel) + ";"
-                                 + std::to_string(capacity_based_on_original_message) + ";" +
-                                 std::to_string(duration.count()) + ";"
+                                 + std::to_string(capacity_original_message) + ";" +
+                                 std::to_string(receive_duration.count()) + ";"
                                  + duration_of_decryption + "\n";
                 log << results;
                 std::cout << "General results saved to : " << combined_results_path << std::endl;
-                std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+                std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];receive_duration[ns];duration_of_decryption[ns]"<<endl;
                 std::cout << results << std::endl;
                 log.close();
 
@@ -502,7 +501,9 @@ void Receiver::HTTP_callback() {
                     perror("accept");
                     exit(EXIT_FAILURE);
                 }
+                memset(buffer, 0, 1024);
             } else {
+                send(new_socket, "Hello from server", strlen("Hello from server"), 0);
                 string s = "Host:";
                 bool is_Host = in_quote(str, s);
                 s = "host:";
@@ -514,7 +515,6 @@ void Receiver::HTTP_callback() {
                     Globals::message_ = Globals::message_ + '1';
                     str = "";
                 }
-                send(new_socket, "Hello from server", strlen("Hello from server"), 0);
             }
             memset(buffer, 0, 1024);
         }
@@ -564,7 +564,13 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
                 received_message = decrypted_message;
             }
         } else {
-            received_message = output;
+            std::size_t pos = output.find(char(0));
+            if (pos != string::npos) {
+                int len = output.length();
+                received_message = output.erase(pos, len);
+            } else {
+                received_message = output;
+            }
         }
         std::cout << "Received unencrypted message: " << output << std::endl;
         std::cout << "Received message: " << received_message << std::endl;
@@ -574,11 +580,8 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
 //          calculate channel capacity based on messages sent in channel
         float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-        float len = received_message.length();
-        if (!Globals::is_encrypted){
-            len = float(received_message.length()-1);
-        }
-        float capacity_based_on_original_message = float(len) * 8 / (duration.count() * 0.001);
+
+        float capacity_based_on_original_message = float(received_message.length()) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
         std::string original_message = Globals::original_message_;
@@ -593,7 +596,7 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
         bool file_exists = infile.good();
         if (!file_exists){
             std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-            infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+            infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];receive_duration[ns];duration_of_decryption[ns]\n";
         }
 
         std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
@@ -603,7 +606,7 @@ bool Receiver::LSB_Hop_callback(const PDU &pdu) {
                          + duration_of_decryption + "\n";
         log << results;
         std::cout << "General results saved to : " << combined_results_path << std::endl;
-        std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+        std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];receive_duration[ns];duration_of_decryption[ns]"<<endl;
         std::cout << results << std::endl;
 
         Globals::message_ = "";
@@ -628,17 +631,18 @@ bool Receiver::sequence_callback(const PDU &pdu) {
         if (seq == 0) {
             Globals::stop_receiving = high_resolution_clock::now();
             Globals::message_.erase(0, 1);
-            std::stringstream sstream(Globals::message_);
-            std::string output;
-            while (sstream.good()) {
+            string bin_message = Globals::message_;
+            std::stringstream sstream_bin(Globals::message_);
+            std::string received_raw;
+            while (sstream_bin.good()) {
                 std::bitset<8> bits;
-                sstream >> bits;
+                sstream_bin >> bits;
                 char c = char(bits.to_ulong());
-                output += c;
+                received_raw += c;
             }
-            Globals::last_seq_ = 0;
-            std::string received_message = "";
+            string final_message;
             string duration_of_decryption;
+            Globals::last_seq_ = 0;
 
             if (Globals::is_encrypted) {
                 Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
@@ -651,32 +655,40 @@ bool Receiver::sequence_callback(const PDU &pdu) {
                 std::size_t pos = decrypted_message.find(char(0));
                 if (pos != string::npos) {
                     int len = decrypted_message.length();
-                    received_message = decrypted_message.erase(pos, len);
+                    final_message = decrypted_message.erase(pos, len);
                 } else {
-                    received_message = decrypted_message;
+                    final_message = decrypted_message;
                 }
             } else {
-                received_message = output;
+                std::size_t pos = received_raw.find(char(0));
+                if (pos != string::npos) {
+                    int len = received_raw.length();
+                    final_message = received_raw.erase(pos, len);
+                } else {
+                    final_message = received_raw;
+                }
+                pos = received_raw.find(char(1));
+                if (pos != string::npos) {
+                    int len = received_raw.length();
+                    final_message = received_raw.erase(pos, len);
+                } else {
+                    final_message = received_raw;
+                }
             }
-            std::cout << "Received message: " << received_message << std::endl;
-            std::cout << "Global message: " << Globals::message_ << std::endl << output << std::endl;
 
-            auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
-            int sent_bits = Globals::message_.length();
-            float len = received_message.length();
-            if (!Globals::is_encrypted){
-                len = float(received_message.length()-1);
-            }
+            std::cout << "Received unencrypted message: " << received_raw << std::endl;
+            std::cout << "Received message: " << final_message << std::endl;
 
-//          calculate channel capacity based on messages sent in channel
-            float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
-//          calculate channel capacity based on original message
-            float capacity_based_on_original_message = float(len) * 8 / (duration.count() * 0.001);
+            auto receive_duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
+            int number_of_bits_channel = received_raw.length()*8;
+            int number_of_bits_original_message = final_message.length()*8;
+            float capacity_channel = float(number_of_bits_channel) / (receive_duration.count() * 0.001);
+            float capacity_original_message = float(number_of_bits_original_message / (receive_duration.count() * 0.001));
 
 //            Calculate BER
             std::string original_message = Globals::original_message_;
-            float BER = Evaluation::get_BER(original_message, received_message);
-            int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, received_message);
+            float BER = Evaluation::get_BER(original_message, final_message);
+            int levenshtein_distance = Evaluation::get_levenshtein_distance(original_message, final_message);
             //            Saving to general file
             std::string combined_results_path = Globals::results_path;
             combined_results_path += "_server_sequence_" + Globals::cipher_type_ + ".csv";
@@ -686,17 +698,17 @@ bool Receiver::sequence_callback(const PDU &pdu) {
             bool file_exists = infile.good();
             if (!file_exists){
                 std::ofstream infile_stream(combined_results_path, std::ios_base::app | std::ios_base::out);
-                infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]\n";
+                infile_stream << "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];receive_duration[ns];duration_of_decryption[ns]\n";
             }
 
             std::ofstream log(combined_results_path, std::ios_base::app | std::ios_base::out);
             string results = std::to_string(BER) + ";" + std::to_string(levenshtein_distance) + ";"+ std::to_string(capacity_channel) + ";"
-                             + std::to_string(capacity_based_on_original_message) + ";" +
-                             std::to_string(duration.count()) + ";"
+                             + std::to_string(capacity_original_message) + ";" +
+                             std::to_string(receive_duration.count()) + ";"
                              + duration_of_decryption + "\n";
             log << results;
             std::cout << "General results saved to : " << combined_results_path << std::endl;
-            std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];sending_duration[ns];duration_of_decryption[ns]"<<endl;
+            std::cout<< "BER;levenshtein_distance;capacity_channel[bits/ms];capacity_based_on_original_message[bits/ms];receive_duration[ns];duration_of_decryption[ns]"<<endl;
             std::cout << results << std::endl;
 
             Globals::message_ = "";
@@ -721,9 +733,11 @@ bool Receiver::loss_callback(const PDU &pdu) {
         int seq = tcp.seq();
         if (seq == 0) {
             Globals::stop_receiving = high_resolution_clock::now();
+            cout<<"Received message: "<<Globals::message_<<endl;
             Globals::message_.pop_back();
             std::stringstream sstream(Globals::message_);
             std::string output;
+
 
             while (sstream.good()) {
                 std::bitset<8> bits;
@@ -754,18 +768,23 @@ bool Receiver::loss_callback(const PDU &pdu) {
                     received_message = decrypted_message;
                 }
             }
+            else{
+                std::size_t pos = output.find(char(0));
+                if (pos != string::npos) {
+                    int len = output.length();
+                    received_message = output.erase(pos, len);
+                } else {
+                    received_message = output;
+                }
+            }
             std::cout << "Received message: " << received_message << std::endl;
             auto duration = duration_cast<microseconds>(Globals::stop_receiving - Globals::start_receiving);
-            float len = received_message.length();
-            if (!Globals::is_encrypted){
-                len = float(received_message.length()-1);
-            }
             int sent_bits = Globals::message_.length();
 
 //          calculate channel capacity based on messages sent in channel
             float capacity_channel = float(sent_bits) / (duration.count() * 0.001);
 //          calculate channel capacity based on original message
-            float capacity_based_on_original_message = float(len) * 8 / (duration.count() * 0.001);
+            float capacity_based_on_original_message = float(received_message.length()) * 8 / (duration.count() * 0.001);
 
 //            Calculate BER
             std::string original_message = Globals::original_message_;
@@ -803,7 +822,6 @@ bool Receiver::loss_callback(const PDU &pdu) {
                 Globals::is_started_receiving = true;
             }
 
-
             if (seq != 1) {
                 int i = seq - Globals::last_seq_;
                 if (i == 1) {
@@ -814,7 +832,7 @@ bool Receiver::loss_callback(const PDU &pdu) {
                     std::string s(i - 1, '1');
                     Globals::message_ = Globals::message_ + s + '0';
                     Globals::last_seq_ = Globals::last_seq_ + i;
-                    cout<<seq<<"  "<<'0'<<endl;
+                    cout<<seq<<"  "<<s<<endl;
                 }
             }
         }

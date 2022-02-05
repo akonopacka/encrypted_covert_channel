@@ -5,7 +5,7 @@ echo "-------------------------------- Performing tests ------------------------
 
 # Variables
 project_path_client="/home/ak/encrypted_covert_channel/cmake-build-debug"
-repeat_number=20
+repeat_number=50
 ip_address=10.10.1.5
 
 echo "Path $project_path_client"
@@ -18,7 +18,7 @@ for covert_channel_type in LSB
 do
   cct=$covert_channel_type
   echo "Testing covert channel type : $cct "
-  #  Test without encryption
+#    Test without encryption
   echo "Server starting for $cct"
   pwd
   sudo ./encrypted_covert_channel --server $cct &
