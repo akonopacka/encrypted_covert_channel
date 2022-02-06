@@ -4,6 +4,7 @@
 
 #include "../include/Cryptographer.h"
 
+
 #define PASS "8888"
 
 
@@ -83,6 +84,7 @@ string Cryptographer::encrypt_aes(string plaintext_) {
         string encrypted_part = encrypt_aes_(part_of_message);
         ciphertext_complete += encrypted_part;
     }
+
     return ciphertext_complete;
 }
 
@@ -243,7 +245,6 @@ string Cryptographer::encrypt_clefia_(string plaintext_) {
     for (unsigned char _char: dst) {
         binaryString += bitset<8>(_char).to_string();
     }
-
     return binaryString;
 }
 
@@ -445,6 +446,7 @@ string Cryptographer::encrypt_present_(string plaintext_) {
     for (int i = 0; i < ciphertext_ascii.size(); ++i) {
         binaryString += bitset<8>(ciphertext_ascii[i]).to_string();
     }
+
 // return hex string as bin
     return binaryString;
 }
@@ -492,6 +494,7 @@ string Cryptographer::encrypt_rsa(string plaintext_) {
         }
         string encrypted_part = encrypt_rsa_(part_of_message);
         ciphertext_complete += encrypted_part;
+
     }
     return ciphertext_complete;
 }
@@ -532,11 +535,7 @@ string Cryptographer::encrypt_grain_(string plaintext_) {
             plaintext[i] = 0;
     }
 
-//    int plaintext[10]={0xa3,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x02};
-//    plaintext = text;
     int encrypted_text[10];
-    int decrypted_text[10];
-
     grain mygrain;
     int ks[10];
 
@@ -556,8 +555,6 @@ string Cryptographer::encrypt_grain_(string plaintext_) {
         std::string binary = std::bitset<8>(j).to_string();
         ciphertext_bin = ciphertext_bin + binary;
     }
-//    decrypt_grain(ciphertext_bin);
-
     return ciphertext_bin;
 }
 

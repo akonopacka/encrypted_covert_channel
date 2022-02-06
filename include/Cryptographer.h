@@ -19,6 +19,7 @@
 #include "../include/RSA.h"
 #include "../include/DES.h"
 #include "../include/Clefia.h"
+#include "../include/Evaluation.h"
 
 extern "C" {
 // Get declaration for f(int i, char c, float x)

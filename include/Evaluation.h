@@ -12,6 +12,8 @@
 #include "sys/vtimes.h"
 #include "Globals.h"
 #include <algorithm>
+#include <sys/types.h>
+#include <unistd.h>
 
 class Evaluation {
 public:
@@ -26,7 +28,7 @@ public:
 
     float get_CPU_value_of_process();
 
-    float get_mem_value();
+    static float get_mem_value();
 
     static void save_results_to_file(std::string results, std::string path, std::string method, std::string mode);
 
@@ -37,6 +39,8 @@ public:
     static int get_levenshtein_distance(std::string original_message, std::string received_message);
 
     static float calculate_entropy(std::string message);
+
+    static float get_peak_memory_of_process();
 };
 
 

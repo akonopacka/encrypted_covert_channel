@@ -128,8 +128,22 @@ float Evaluation::get_BER(std::string original_message, std::string received_mes
     }
     return ber;
 }
+float Evaluation::get_peak_memory_of_process(){
+//            float mem_value_ = Evaluation::get_peak_memory_of_process();
+    pid_t pid = getpid();
+    std::cout<<"PID: "<< pid<<std::endl;
 
+    string command = "grep ^VmPeak /proc/" + std::to_string(pid) +"/status";
+    FILE *proc = popen(command.c_str(),"r");
+    char buf[1024];
+    while ( !feof(proc) && fgets(buf,sizeof(buf),proc) )
+    {
+        printf("Peak memory used: %s",buf);
+    }
+
+}
 float Evaluation::get_CPU_value_of_process() {
+
     static clock_t lastCPU, lastSysCPU, lastUserCPU;
     static int numProcessors;
     FILE *file;

@@ -27,6 +27,12 @@ int main(int argc, char **argv) {
     Globals::load_globals(config);
 
     if (argc > 1) {
+        //    Load config file
+        Json::Value config;
+        std::ifstream config_file("../config.json", std::ifstream::binary);
+        config_file >> config;
+        message_to_send = config["message_to_send"].asString();
+        Globals::load_globals(config);
         if (argc > 2) {
             Globals::covert_channel_type_ = argv[2];
         }
@@ -48,7 +54,24 @@ int main(int argc, char **argv) {
                 sleep(2);
             }
             return 0;
+        } else if (!strcmp(argv[1], "--crypto_test")){
+            Globals::cipher_type_ = argv[2];
+            string plaintext = "All that is gold does not glitter,\nNot all those who wander are lost;\nThe old that is strong does not wither,\nDeep roots are not reached by the frost.\nFrom the ashes a fire shall be woken,\nA light from the shadows shall spring;\nRenewed shall be blade that was broken,\nThe crownless again shall be king. J.R.R. Tolkien, The Fellowship of the Ring";
+            plaintext = plaintext+ plaintext+plaintext;
+            stringstream ss(argv[3]);
+            int sleep_value = 100;
+            if(!(ss >> sleep_value)){
+                cout<< "Parsing sleeping time not successfull"<<endl;
+            }
+//            cout<<"Waiting time: "<<sleep_value<<endl;
+
+            usleep(sleep_value);
+            Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+            string ciphertext = cryptographer.encrypt(plaintext);
+//            cout<<"OUTPUT"<<message_to_send<<endl;
+            usleep(sleep_value);
         }
+
     } else {
         std::cerr << "Bad usage";
         return 1;

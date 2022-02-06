@@ -40,6 +40,7 @@ string encrypt_rsa_(string plaintext_) {
     for (unsigned char &_char: encrypted) {
         binary_string += bitset<8>(_char).to_string();
     }
+
     return binary_string;
 }
 

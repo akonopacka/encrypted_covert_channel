@@ -33,3 +33,7 @@ sudo ncat -lkv 5000 -c "sh"
 sudo tc qdisc add dev eth0 handle 10: root tbf rate 1mbit burst 1540 latency 10s
 
 sudo tc qdisc add dev eth0 root netem loss 1% delay 0s
+
+
+TEST CPU and MEMORY USAGE
+/usr/bin/time -f "%P; %M" sudo ./encrypted_covert_channel --crypto_test des 1000
