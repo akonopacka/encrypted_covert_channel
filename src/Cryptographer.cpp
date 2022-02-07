@@ -418,10 +418,8 @@ string Cryptographer::encrypt_present(string plaintext_) {
             part_of_message.resize(block_size, char(0));
         }
         string encrypted_part = encrypt_present_(part_of_message);
-        string decrypted_check = decrypt_present_(encrypted_part);
         ciphertext_complete += encrypted_part;
     }
-    string decrypted_check = decrypt_present(ciphertext_complete);
     return ciphertext_complete;
 }
 

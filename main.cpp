@@ -12,6 +12,7 @@
 
 #include "include/Sender.h"
 #include "include/Receiver.h"
+#include "include/Cryptographer.h"
 
 using namespace Tins;
 using namespace std;
@@ -67,7 +68,24 @@ int main(int argc, char **argv) {
 
             usleep(sleep_value);
             Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
-            string ciphertext = cryptographer.encrypt(plaintext);
+            for (int i=0;i<5;i++){
+                if (Globals::cipher_type_ == "aes") {
+                    string encrypted_part = cryptographer.encrypt_aes_("AAAAAAAAAAAAAAAA");
+                } else if (Globals::cipher_type_ == "des") {
+                    string encrypted_part = cryptographer.encrypt_des("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                } else if (Globals::cipher_type_ == "present") {
+                    string encrypted_part = cryptographer.encrypt_present_("AAAAAAAA");
+                } else if (Globals::cipher_type_ == "rsa") {
+                    string encrypted_part = encrypt_rsa_("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+                } else if (Globals::cipher_type_ == "clefia") {
+                    string encrypted_part = cryptographer.encrypt_clefia_("AAAAAAAAAAAAAAAA");
+                } else if (Globals::cipher_type_ == "grain") {
+                    string encrypted_part = cryptographer.encrypt_grain_("AAAAAAAAAA");
+                }
+            }
+
+//            Cryptographer cryptographer = Cryptographer(Globals::cipher_type_);
+//            string ciphertext = cryptographer.encrypt(plaintext);
 //            cout<<"OUTPUT"<<message_to_send<<endl;
             usleep(sleep_value);
         }
